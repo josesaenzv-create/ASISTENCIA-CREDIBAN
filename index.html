@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Control de Asistencia Multi-Sede - CREDIBAN PERÚ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f1f5f9; }
+        .glass-card { background: white; border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08); }
+        .tab-active { background-color: #59B447; color: white; box-shadow: 0 4px 12px rgba(89, 180, 71, 0.35); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-3 md:p-6">
+
+    <!-- =================================================================== -->
+    <!-- PANTALLA 1: BLOQUEO E INICIO DE SESIÓN (Conectado a la Hoja 1)      -->
+    <!-- =================================================================== -->
+    <div id="pantalla-login" class="glass-card w-full max-w-md p-6 my-auto border-t-8 border-[#59B447]">
+        
+        <!-- LOGOTIPO VECTORIAL OFICIAL CREDIBAN -->
+        <div class="flex items-center justify-center gap-3 bg-white px-2 py-2 mb-4 rounded-xl w-full">
+            <div class="w-11 h-auto flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 240" class="w-full h-full">
+                    <g fill="#59B447">
+                        <rect x="90" y="8" width="24" height="13" rx="6.5"/>
+                        <rect x="71" y="31" width="61" height="13" rx="6.5"/>
+                        <rect x="50" y="55" width="74" height="13" rx="6.5"/>
+                        <rect x="31" y="79" width="75" height="13" rx="6.5"/>
+                        <rect x="24" y="103" width="63" height="13" rx="6.5"/>
+                        <rect x="37" y="128" width="24" height="13" rx="6.5"/>
+                        <path d="M143 55 C141 78 130 95 111 107 C96 117 81 122 72 134 C62 147 63 166 70 181 C76 195 87 208 97 216 C107 201 118 189 131 177 C144 166 157 156 164 141 C173 123 173 104 168 89 C164 74 156 62 143 55 Z"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="flex flex-col justify-center">
+                <span class="text-[#59B447] font-bold text-3xl leading-none tracking-widest" style="font-family: Georgia, 'Times New Roman', serif;">CREDIBAN</span>
+                <span class="text-[#59B447] font-bold text-[10px] leading-tight tracking-wide mt-1">empieza a construir tus sueños</span>
+            </div>
+        </div>
+
+        <div class="text-center mb-5">
+            <span class="bg-slate-100 text-slate-600 text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                Sistema de Control de Asistencia Multi-Sede
+            </span>
+        </div>
+
+        <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">1. Rango / Nivel</label>
+                    <select id="login-rango" onchange="actualizarSelectorSedeLogin()" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-[#59B447] outline-none">
+                        <option value="Trabajador">Trabajador</option>
+                        <option value="Administrador">Administrador</option>
+                        <option value="Gerente">Gerente</option>
+                    </select>
+                </div>
+                <div id="contenedor-login-sede">
+                    <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">2. Sede</label>
+                    <select id="login-sede" onchange="filtrarNombresLogin()" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-[#59B447] outline-none">
+                        <option value="HUACHO">HUACHO</option>
+                        <option value="HUARAZ">HUARAZ</option>
+                        <option value="ICA">ICA</option>
+                        <option value="NUEVA OFICINA">NUEVA OFICINA</option>
+                        <option value="SEDE_EXTRA_1">SEDE_EXTRA_1</option>
+                        <option value="SEDE_EXTRA_2">SEDE_EXTRA_2</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex justify-between items-center mb-1">
+                    <label class="block text-[11px] font-bold text-gray-500 uppercase">3. Usuario / Colaborador</label>
+                    <button type="button" onclick="cargarDirectorioDesdeSheet()" class="text-[11px] text-[#59B447] font-bold hover:underline">
+                        <i class="fa-solid fa-arrows-rotate"></i> Sincronizar Hoja 1
+                    </button>
+                </div>
+                <select id="login-nombre" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[#59B447] outline-none bg-white">
+                    <option value="">Cargando usuarios de Hoja 1...</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">4. Contraseña de Acceso</label>
+                <input type="password" id="login-clave" class="w-full border border-gray-300 rounded-xl p-3 font-bold text-center tracking-widest focus:ring-2 focus:ring-[#59B447] outline-none" placeholder="••••••••">
+            </div>
+
+            <!-- BOTÓN RECORDAR DISPOSITIVO / MANTENER SESIÓN INICIADA -->
+            <label class="flex items-center gap-3 bg-green-50 border border-green-200 p-3 rounded-xl cursor-pointer select-none">
+                <input type="checkbox" id="login-recordar" checked class="w-4 h-4 accent-[#59B447] rounded">
+                <div class="text-xs">
+                    <span class="font-bold text-green-900 block">🔒 Recordar mi usuario en este dispositivo</span>
+                    <span class="text-green-700 text-[11px]">No volver a pedir contraseña al abrir la app</span>
+                </div>
+            </label>
+
+            <button id="btn-login" onclick="iniciarSesion()" class="w-full bg-gradient-to-r from-[#59B447] to-[#4a973a] hover:from-[#4a973a] hover:to-[#3d7a2f] text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95 flex justify-center items-center gap-2">
+                <i class="fa-solid fa-right-to-bracket"></i> Ingresar al Sistema
+            </button>
+
+            <p id="msg-login" class="text-center text-xs font-bold text-red-600 mt-2 hidden"></p>
+        </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- CONTENEDOR PRINCIPAL DE LA APP (Visible tras iniciar sesión)        -->
+    <!-- =================================================================== -->
+    <div id="app-principal" class="w-full max-w-5xl hidden space-y-4">
+
+        <!-- BARRA SUPERIOR DE USUARIO, GPS Y PESTAÑAS CONDICIONALES -->
+        <div class="glass-card p-4 flex flex-col md:flex-row justify-between items-center gap-4 border-l-8 border-[#59B447]">
+            <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span id="badge-rango" class="bg-green-100 text-green-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">RANGO</span>
+                        <span id="badge-sede" class="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">SEDE</span>
+                    </div>
+                    <h2 id="header-nombre" class="text-lg font-extrabold text-slate-800 mt-1">NOMBRE USUARIO</h2>
+                </div>
+
+                <!-- Semáforo GPS en vivo -->
+                <div id="gps-status" class="bg-yellow-100 text-yellow-700 text-[11px] font-bold px-3 py-1.5 rounded-full border border-yellow-300 flex items-center gap-1.5">
+                    <i class="fa-solid fa-satellite-dish animate-pulse"></i> Buscando GPS
+                </div>
+            </div>
+
+            <!-- BARRA DE PESTAÑAS DINÁMICAS SEGÚN EL RANGO DETECTADO -->
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+                <!-- Pestaña 1: Visible para TODOS (Trabajador, Administrador y Gerente marcan asistencia) -->
+                <button id="tab-btn-marcar" onclick="cambiarPestana('marcar')" class="tab-active px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-camera"></i> Marcar Asistencia
+                </button>
+
+                <!-- Pestaña 2: Oculta para Trabajadores. Se activa SOLO para ADMINISTRADOR o GERENTE -->
+                <button id="tab-btn-admin" onclick="cambiarPestana('admin')" class="hidden bg-slate-100 text-slate-700 hover:bg-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold transition-all items-center gap-2">
+                    <i class="fa-solid fa-clipboard-user"></i> Horarios de Mi Sede
+                </button>
+
+                <!-- Pestaña 3: Pestaña Oculta Especial. Se activa EXCLUSIVAMENTE cuando detecta que es GERENTE -->
+                <button id="tab-btn-gerente" onclick="cambiarPestana('gerente')" class="hidden bg-slate-100 text-amber-700 hover:bg-amber-100 border border-amber-300 px-4 py-2.5 rounded-xl text-xs font-bold transition-all items-center gap-2">
+                    <i class="fa-solid fa-crown text-amber-500"></i> Panel Gerencial / Bases
+                </button>
+
+                <!-- Botón Cerrar Sesión / Cambiar Dispositivo -->
+                <button onclick="cerrarSesion()" title="Cerrar sesión o cambiar de usuario" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2.5 rounded-xl text-xs font-bold transition-all">
+                    <i class="fa-solid fa-power-off"></i> Salir
+                </button>
+            </div>
+        </div>
+
+        <!-- CRONÓMETRO ACTIVO DE REFRIGERIO (Visible cuando marcó Salida a Refrigerio) -->
+        <div id="banner-refrigerio" class="hidden bg-amber-50 border-2 border-amber-400 rounded-2xl p-4 flex justify-between items-center shadow-sm">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-utensils text-2xl text-amber-600 animate-bounce"></i>
+                <div>
+                    <p class="text-xs font-extrabold text-amber-900 uppercase">Refrigerio en Curso</p>
+                    <p class="text-[11px] text-amber-700">Recuerda marcar tu Retorno de Refrigerio con foto antes de que termine el tiempo.</p>
+                </div>
+            </div>
+            <div id="reloj-refrigerio" class="text-2xl font-black text-amber-800 font-mono bg-white px-4 py-2 rounded-xl border border-amber-200">
+                60:00
+            </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- PESTAÑA 1: MÓDULO DE MARCAJE Y CÁMARA (Trabajador/Admin/Gerente) -->
+        <!-- =============================================================== -->
+        <div id="vista-marcar" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div class="md:col-span-7 glass-card p-6 space-y-4">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="font-extrabold text-slate-800 text-base flex items-center gap-2">
+                        <i class="fa-solid fa-fingerprint text-[#59B447]"></i> Registro de Asistencia con Foto
+                    </h3>
+                    <span id="reloj-vivo" class="text-xs font-mono font-bold bg-slate-100 text-slate-700 px-3 py-1 rounded-lg">00:00:00</span>
+                </div>
+
+                <!-- Si es Gerente, puede elegir en qué sede registrar su asistencia -->
+                <div id="selector-sede-gerente-marcaje" class="hidden">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Sede donde te encuentras hoy</label>
+                    <select id="marcaje-sede-gerente" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-700">
+                        <option value="HUACHO">HUACHO</option>
+                        <option value="HUARAZ">HUARAZ</option>
+                        <option value="ICA">ICA</option>
+                        <option value="NUEVA OFICINA">NUEVA OFICINA</option>
+                        <option value="SEDE_EXTRA_1">SEDE_EXTRA_1</option>
+                        <option value="SEDE_EXTRA_2">SEDE_EXTRA_2</option>
+                    </select>
+                </div>
+
+                <!-- 4 Momentos de Marcaje -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">1. Momento de Asistencia</label>
+                    <select id="tipo-marcaje" class="w-full border-2 border-[#59B447] rounded-xl p-3.5 font-extrabold text-slate-800 focus:ring-4 focus:ring-green-100 outline-none">
+                        <option value="Entrada">📥 Hora de Entrada</option>
+                        <option value="Salida a Refrigerio">🍽️ Hora de Refrigerio (Salida)</option>
+                        <option value="Retorno de Refrigerio">✅ Regreso de Refrigerio</option>
+                        <option value="Salida Final">📤 Hora de Salida Final</option>
+                    </select>
+                </div>
+
+                <!-- Modalidad Oficina vs Inicio en Campo -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">2. Ubicación Operativa</label>
+                        <select id="modalidad-marcaje" onchange="toggleCampoObservacion()" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-700 outline-none">
+                            <option value="Oficina">🏢 En Agencia / Sede</option>
+                            <option value="Campo">🛵 En Campo / Visita Cliente</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">3. Detalle / Cliente (Opcional)</label>
+                        <input type="text" id="obs-marcaje" placeholder="Ej. Inicio en cliente / Sin novedad" class="w-full border border-gray-300 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-[#59B447]">
+                    </div>
+                </div>
+
+                <!-- Dirección GPS detectada -->
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs flex items-start gap-2.5">
+                    <i class="fa-solid fa-location-dot text-red-500 text-base mt-0.5"></i>
+                    <div>
+                        <span class="font-bold text-slate-700 block">Geolocalización Detectada (Se estampará en la foto):</span>
+                        <span id="texto-direccion-gps" class="text-slate-500">Obteniendo coordenadas satelitales...</span>
+                    </div>
+                </div>
+
+                <!-- AVISO OBLIGATORIO Y APERTURA DE CÁMARA -->
+                <div class="bg-blue-50 border-2 border-dashed border-blue-300 rounded-2xl p-5 text-center relative">
+                    <span class="inline-block bg-blue-600 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
+                        ⚠️ Requisito Obligatorio de Validación
+                    </span>
+                    <p class="text-xs font-bold text-blue-900">
+                        Dentro de la fotografía debe verse claramente el rostro del Asesor o Administrador.
+                    </p>
+                    <p class="text-[11px] text-blue-700 mt-1 mb-4">
+                        El sistema grabará automáticamente como marca de agua tu <b>Nombre, Rango, Sede, Hora exacta y Geolocalización GPS</b>.
+                    </p>
+
+                    <label for="inputFoto" class="cursor-pointer inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#59B447] to-[#4a973a] hover:from-[#4a973a] hover:to-[#3d7a2f] text-white font-extrabold py-4 px-6 rounded-xl shadow-lg transition-all active:scale-95 w-full">
+                        <i class="fa-solid fa-camera text-lg"></i> Abrir Cámara y Tomar Foto
+                    </label>
+                    <input type="file" id="inputFoto" accept="image/*" capture="user" onchange="generarPrevisualizacion()" class="hidden">
+                </div>
+            </div>
+
+            <!-- Panel lateral: Mis marcajes recientes en este dispositivo -->
+            <div class="md:col-span-5 glass-card p-6 flex flex-col justify-between space-y-4">
+                <div>
+                    <h3 class="font-extrabold text-slate-800 text-sm uppercase tracking-wider border-b pb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-[#59B447]"></i> Mis Últimos Marcajes Hoy
+                    </h3>
+                    <div id="lista-mis-marcajes" class="space-y-2.5 mt-3 max-h-80 overflow-y-auto">
+                        <p class="text-xs text-slate-400 text-center py-8">Aún no has registrado marcajes hoy en este dispositivo.</p>
+                    </div>
+                </div>
+
+                <!-- Cola Offline en caso de corte de señal en campo -->
+                <div id="caja-offline" class="hidden bg-orange-50 border border-orange-300 rounded-xl p-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-orange-800">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> <span id="contador-offline">0</span> registro(s) pendientes de señal
+                        </span>
+                        <button onclick="sincronizarColaOffline()" class="bg-orange-600 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg">
+                            Sincronizar Ahora
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- PESTAÑA 2: VISTA EXCLUSIVA DE ADMINISTRADOR ("Horarios Mi Sede") -->
+        <!-- =============================================================== -->
+        <div id="vista-admin" class="hidden glass-card p-6 space-y-5">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b pb-4">
+                <div>
+                    <span class="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">
+                        Vista de Supervisión de Agencia
+                    </span>
+                    <h3 class="text-lg font-extrabold text-slate-800 mt-1">
+                        Control de Ingresos y Asistencias — Sede <span id="titulo-sede-admin" class="text-[#59B447]"></span>
+                    </h3>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="cargarReporteSedeAdmin()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2">
+                        <i class="fa-solid fa-rotate"></i> Actualizar Datos
+                    </button>
+                    <button onclick="exportarTablaCSV('admin')" class="bg-[#59B447] hover:bg-[#4a973a] text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2">
+                        <i class="fa-solid fa-file-csv"></i> Exportar Excel/CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtros por Asesor, por Día o por Rango de Fechas -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Filtrar por Asesor / Personal</label>
+                    <select id="filtro-admin-asesor" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold">
+                        <option value="TODOS">Todos los de mi sede</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Desde Fecha (o Día Exacto)</label>
+                    <input type="date" id="filtro-admin-desde" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Hasta Fecha (Rango)</label>
+                    <input type="date" id="filtro-admin-hasta" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Momento de Marcaje</label>
+                    <select id="filtro-admin-tipo" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold">
+                        <option value="TODOS">Todos los marcajes</option>
+                        <option value="Entrada">📥 Solo Entradas</option>
+                        <option value="Salida a Refrigerio">🍽️ Salida Refrigerio</option>
+                        <option value="Retorno de Refrigerio">✅ Retorno Refrigerio</option>
+                        <option value="Salida Final">📤 Salida Final</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Resumen rápido de la sede -->
+            <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="bg-slate-50 p-3 rounded-xl border">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">Total Marcajes Filtrados</p>
+                    <p id="kpi-admin-total" class="text-xl font-black text-slate-800">0</p>
+                </div>
+                <div class="bg-red-50 p-3 rounded-xl border border-red-100">
+                    <p class="text-[10px] font-bold text-red-500 uppercase">Entradas con Tardanza</p>
+                    <p id="kpi-admin-tardanzas" class="text-xl font-black text-red-600">0</p>
+                </div>
+                <div class="bg-amber-50 p-3 rounded-xl border border-amber-100">
+                    <p class="text-[10px] font-bold text-amber-600 uppercase">Minutos Acumulados</p>
+                    <p id="kpi-admin-minutos" class="text-xl font-black text-amber-700">0 min</p>
+                </div>
+            </div>
+
+            <!-- Tabla de resultados de la Sede -->
+            <div class="overflow-x-auto border rounded-xl">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-800 text-white text-[11px] uppercase">
+                            <th class="p-3">Fecha / Hora</th>
+                            <th class="p-3">Colaborador</th>
+                            <th class="p-3">Rango</th>
+                            <th class="p-3">Marcaje</th>
+                            <th class="p-3">Tardanza</th>
+                            <th class="p-3">Ubicación GPS</th>
+                            <th class="p-3 text-center">Foto Evidencia</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-admin" class="text-xs divide-y divide-slate-200"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- PESTAÑA 3: PESTAÑA OCULTA DE GERENTE (Todas las Bases + Hoja 1) -->
+        <!-- =============================================================== -->
+        <div id="vista-gerente" class="hidden space-y-5">
+            
+            <!-- Bloque A: Supervisión Global de Todas las Sedes y Administradores -->
+            <div class="glass-card p-6 space-y-5 border-t-4 border-amber-500">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b pb-4">
+                    <div>
+                        <span class="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">
+                            <i class="fa-solid fa-crown"></i> Acceso Total Exclusivo de Gerencia
+                        </span>
+                        <h3 class="text-lg font-extrabold text-slate-800 mt-1">
+                            Auditoría Global de Bases, Administradores y Asesores
+                        </h3>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="cargarDatosGerente()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2">
+                            <i class="fa-solid fa-rotate"></i> Sincronizar Todas las Bases
+                        </button>
+                        <button onclick="exportarTablaCSV('gerente')" class="bg-[#59B447] hover:bg-[#4a973a] text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2">
+                            <i class="fa-solid fa-file-csv"></i> Descargar Base CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selector de Hojas/Bases (Consolidado o cada una de las 6 hojas) y Filtros -->
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-3 bg-amber-50/60 p-4 rounded-xl border border-amber-200">
+                    <div>
+                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">1. Seleccionar Hoja / Base</label>
+                        <select id="filtro-gerente-sede" onchange="actualizarFiltrosGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-extrabold bg-white">
+                            <option value="TODAS">🌍 TODAS LAS SEDES (Global)</option>
+                            <option value="HUACHO">📁 Hoja: HUACHO</option>
+                            <option value="HUARAZ">📁 Hoja: HUARAZ</option>
+                            <option value="ICA">📁 Hoja: ICA</option>
+                            <option value="NUEVA OFICINA">📁 Hoja: NUEVA OFICINA</option>
+                            <option value="SEDE_EXTRA_1">📁 Hoja: SEDE_EXTRA_1 (Por Definir 1)</option>
+                            <option value="SEDE_EXTRA_2">📁 Hoja: SEDE_EXTRA_2 (Por Definir 2)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">2. Filtrar por Rango</label>
+                        <select id="filtro-gerente-rango" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-bold bg-white">
+                            <option value="TODOS">Todos (Admins + Trabajadores)</option>
+                            <option value="Administrador">👔 Solo Administradores</option>
+                            <option value="Trabajador">💼 Solo Trabajadores / Asesores</option>
+                            <option value="Gerente">👑 Solo Gerentes</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">3. Colaborador</label>
+                        <select id="filtro-gerente-asesor" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-bold bg-white">
+                            <option value="TODOS">Todos los colaboradores</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">4. Desde Fecha</label>
+                        <input type="date" id="filtro-gerente-desde" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-bold bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">5. Hasta Fecha</label>
+                        <input type="date" id="filtro-gerente-hasta" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-bold bg-white">
+                    </div>
+                </div>
+
+                <!-- Tabla Global del Gerente -->
+                <div class="overflow-x-auto border rounded-xl">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900 text-white text-[11px] uppercase">
+                                <th class="p-3">Fecha / Hora</th>
+                                <th class="p-3">Hoja / Sede</th>
+                                <th class="p-3">Colaborador</th>
+                                <th class="p-3">Rango</th>
+                                <th class="p-3">Marcaje</th>
+                                <th class="p-3">Tardanza</th>
+                                <th class="p-3">Geolocalización</th>
+                                <th class="p-3 text-center">Foto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-gerente" class="text-xs divide-y divide-slate-200"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Bloque B: Configurar Hoja 1 (Añadir/Editar Usuarios y Horarios desde la App) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- Añadir o Modificar Usuarios en la Hoja 1 -->
+                <div class="glass-card p-5 space-y-4">
+                    <h4 class="font-extrabold text-slate-800 text-sm uppercase border-b pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus text-[#59B447]"></i> Añadir / Editar Usuario en Hoja 1
+                    </h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="col-span-2">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nombre Completo del Usuario</label>
+                            <input type="text" id="cfg-user-nombre" placeholder="Ej. PEDRO CASTILLO" class="w-full border rounded-lg p-2.5 text-xs font-bold uppercase">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Contraseña / Clave</label>
+                            <input type="text" id="cfg-user-clave" placeholder="Ej. 4567" class="w-full border rounded-lg p-2.5 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Rango / Rol</label>
+                            <select id="cfg-user-rango" class="w-full border rounded-lg p-2.5 text-xs font-bold">
+                                <option value="Trabajador">Trabajador</option>
+                                <option value="Administrador">Administrador</option>
+                                <option value="Gerente">Gerente</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Sede Asignada</label>
+                            <select id="cfg-user-sede" class="w-full border rounded-lg p-2.5 text-xs font-bold">
+                                <option value="HUACHO">HUACHO</option>
+                                <option value="HUARAZ">HUARAZ</option>
+                                <option value="ICA">ICA</option>
+                                <option value="NUEVA OFICINA">NUEVA OFICINA</option>
+                                <option value="SEDE_EXTRA_1">SEDE_EXTRA_1</option>
+                                <option value="SEDE_EXTRA_2">SEDE_EXTRA_2</option>
+                                <option value="TODAS">TODAS (Solo Gerente)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Estado</label>
+                            <select id="cfg-user-estado" class="w-full border rounded-lg p-2.5 text-xs font-bold">
+                                <option value="ACTIVO">ACTIVO</option>
+                                <option value="INACTIVO">INACTIVO (Dar de baja)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="guardarUsuarioEnSheet()" class="w-full bg-[#59B447] hover:bg-[#4a973a] text-white font-bold py-3 rounded-xl text-xs shadow">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Usuario en el Google Sheet
+                    </button>
+                </div>
+
+                <!-- Configurar Horarios Oficiales de Entrada y Tolerancia por Sede -->
+                <div class="glass-card p-5 space-y-4">
+                    <h4 class="font-extrabold text-slate-800 text-sm uppercase border-b pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-blue-600"></i> Configurar Horarios y Tolerancia (Hoja 1)
+                    </h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="col-span-2">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Seleccionar Sede a Configurar</label>
+                            <select id="cfg-hor-sede" class="w-full border rounded-lg p-2.5 text-xs font-bold">
+                                <option value="HUACHO">HUACHO</option>
+                                <option value="HUARAZ">HUARAZ</option>
+                                <option value="ICA">ICA</option>
+                                <option value="NUEVA OFICINA">NUEVA OFICINA</option>
+                                <option value="SEDE_EXTRA_1">SEDE_EXTRA_1</option>
+                                <option value="SEDE_EXTRA_2">SEDE_EXTRA_2</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Entrada Lunes a Viernes</label>
+                            <input type="time" id="cfg-hor-lv" value="08:30" class="w-full border rounded-lg p-2.5 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Entrada Sábados</label>
+                            <input type="time" id="cfg-hor-sab" value="09:00" class="w-full border rounded-lg p-2.5 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Minutos de Tolerancia</label>
+                            <input type="number" id="cfg-hor-tol" value="10" class="w-full border rounded-lg p-2.5 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tiempo Refrigerio (Min)</label>
+                            <input type="number" id="cfg-hor-ref" value="60" class="w-full border rounded-lg p-2.5 text-xs font-bold">
+                        </div>
+                    </div>
+                    <button onclick="guardarHorarioEnSheet()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 rounded-xl text-xs shadow">
+                        <i class="fa-solid fa-sliders"></i> Actualizar Horario en el Google Sheet
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- PANTALLA MODAL: PREVISUALIZACIÓN DE FOTO Y MARCA DE AGUA            -->
+    <!-- =================================================================== -->
+    <div id="pantalla-preview" class="fixed inset-0 bg-slate-900/95 z-50 hidden flex-col items-center justify-between p-4">
+        <div class="w-full text-center py-2">
+            <h2 class="text-white text-lg font-extrabold">Verifica tu Fotografía y Marca de Agua</h2>
+            <p class="text-green-400 text-xs">Confirma que tu rostro, nombre, hora y ubicación GPS sean legibles</p>
+        </div>
+
+        <div class="flex-1 w-full max-w-md flex items-center justify-center overflow-hidden my-2">
+            <canvas id="canvas" class="max-w-full max-h-[68vh] object-contain rounded-2xl shadow-2xl border-2 border-slate-700"></canvas>
+        </div>
+
+        <div class="w-full max-w-md grid grid-cols-2 gap-4 pb-4">
+            <button onclick="rechazarFoto()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-4 rounded-xl border border-slate-600 flex flex-col items-center justify-center active:scale-95">
+                <i class="fa-solid fa-camera-rotate text-lg mb-1 text-red-400"></i> Repetir Foto
+            </button>
+            <button id="btnEnviar" onclick="enviarRegistro()" class="bg-gradient-to-r from-[#59B447] to-[#4a973a] text-white text-xs font-extrabold py-4 rounded-xl shadow-lg flex flex-col items-center justify-center active:scale-95">
+                <i class="fa-solid fa-cloud-arrow-up text-lg mb-1"></i> Confirmar y Guardar
+            </button>
+        </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- LÓGICA JAVASCRIPT COMPLETA                                          -->
+    <!-- =================================================================== -->
+    <script>
+        // ⚠️ PEGA AQUÍ LA URL DE TU GOOGLE APPS SCRIPT IMPLEMENTADO
+        const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbxGhuNSyI3U5ktzD0CnaN1ijNxliLG7pXCDP8LSgxznpa9zbhIAMKzpEUxesshrhRNG/exec";
+
+        // Respaldo local en caso aún no hayas pegado la URL o no haya internet al abrir
+        let DIRECTORIO_HOJA_1 = [
+            { nombre: "CARLOS GERENTE", rango: "Gerente", sede: "TODAS" },
+            { nombre: "DAVID SAENZ", rango: "Administrador", sede: "HUACHO" },
+            { nombre: "ARACELLY GRADOS", rango: "Administrador", sede: "HUARAZ" },
+            { nombre: "MELISSA CECILIANO", rango: "Trabajador", sede: "HUACHO" },
+            { nombre: "JUAN PEREZ", rango: "Trabajador", sede: "HUACHO" },
+            { nombre: "MARIA GOMEZ", rango: "Trabajador", sede: "HUARAZ" }
+        ];
+
+        let usuarioActual = null;
+        let globalLat = null, globalLng = null, globalAddress = "Ubicación en proceso...";
+        let fotoProcesadaBase64 = null;
+        let registrosAdminCache = [];
+        let registrosGerenteCache = [];
+
+        // =====================================================================
+        // 1. INICIALIZACIÓN, RELOJ EN VIVO, GPS Y SESIÓN RECORDADA
+        // =====================================================================
+        window.addEventListener("DOMContentLoaded", async () => {
+            iniciarRelojVivo();
+            iniciarMonitorGPS();
+            verificarCronometroRefrigerio();
+            actualizarIndicadorOffline();
+
+            // Cargar lista de usuarios desde la Hoja 1 de Google Sheets
+            await cargarDirectorioDesdeSheet();
+
+            // Verificar si existe una sesión guardada ("Recordar dispositivo")
+            const sesionGuardada = localStorage.getItem("crediban_asistencia_sesion");
+            if (sesionGuardada) {
+                try {
+                    usuarioActual = JSON.parse(sesionGuardada);
+                    activarInterfazPorRol();
+                } catch (e) {
+                    localStorage.removeItem("crediban_asistencia_sesion");
+                }
+            }
+        });
+
+        function iniciarRelojVivo() {
+            setInterval(() => {
+                const ahora = new Date();
+                const el = document.getElementById("reloj-vivo");
+                if (el) el.innerText = ahora.toLocaleTimeString("es-PE");
+            }, 1000);
+        }
+
+        function iniciarMonitorGPS() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.watchPosition(
+                    async (pos) => {
+                        globalLat = pos.coords.latitude;
+                        globalLng = pos.coords.longitude;
+                        const badge = document.getElementById("gps-status");
+                        badge.className = "bg-green-100 text-green-800 text-[11px] font-bold px-3 py-1.5 rounded-full border border-green-300 flex items-center gap-1.5";
+                        badge.innerHTML = '<i class="fa-solid fa-location-crosshairs text-green-600"></i> GPS Activo';
+
+                        try {
+                            const req = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${globalLat}&lon=${globalLng}`);
+                            const res = await req.json();
+                            globalAddress = res.display_name.split(",").slice(0, 3).join(", ");
+                        } catch (e) {
+                            globalAddress = `Lat: ${globalLat.toFixed(5)}, Lng: ${globalLng.toFixed(5)}`;
+                        }
+                        document.getElementById("texto-direccion-gps").innerText = `${globalAddress} (${globalLat.toFixed(5)}, ${globalLng.toFixed(5)})`;
+                    },
+                    () => {
+                        const badge = document.getElementById("gps-status");
+                        badge.className = "bg-red-100 text-red-700 text-[11px] font-bold px-3 py-1.5 rounded-full border border-red-300 flex items-center gap-1.5";
+                        badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Activar GPS';
+                    },
+                    { enableHighAccuracy: true, timeout: 8000 }
+                );
+            }
+        }
+
+        // =====================================================================
+        // 2. LECTURA DE LA HOJA 1 Y SISTEMA DE LOGIN CON "RECORDAR SESIÓN"
+        // =====================================================================
+        async function cargarDirectorioDesdeSheet() {
+            if (URL_GOOGLE_SCRIPT.includes("TU_URL")) {
+                filtrarNombresLogin();
+                return;
+            }
+            try {
+                const resp = await fetch(URL_GOOGLE_SCRIPT);
+                const data = await resp.json();
+                if (data.estado === "exito" && Array.isArray(data.directorio)) {
+                    DIRECTORIO_HOJA_1 = data.directorio;
+                    localStorage.setItem("crediban_directorio_cache", JSON.stringify(DIRECTORIO_HOJA_1));
+                }
+            } catch (e) {
+                const cache = localStorage.getItem("crediban_directorio_cache");
+                if (cache) DIRECTORIO_HOJA_1 = JSON.parse(cache);
+            }
+            filtrarNombresLogin();
+        }
+
+        function actualizarSelectorSedeLogin() {
+            const rango = document.getElementById("login-rango").value;
+            const contSede = document.getElementById("contenedor-login-sede");
+            if (rango === "Gerente") {
+                contSede.classList.add("opacity-40", "pointer-events-none");
+            } else {
+                contSede.classList.remove("opacity-40", "pointer-events-none");
+            }
+            filtrarNombresLogin();
+        }
+
+        function filtrarNombresLogin() {
+            const rango = document.getElementById("login-rango").value;
+            const sede = document.getElementById("login-sede").value;
+            const selectNombre = document.getElementById("login-nombre");
+
+            const filtrados = DIRECTORIO_HOJA_1.filter(u => {
+                if (rango === "Gerente") return u.rango === "Gerente";
+                return u.rango === rango && (u.sede === sede || u.sede === "TODAS");
+            });
+
+            selectNombre.innerHTML = "";
+            if (filtrados.length === 0) {
+                selectNombre.innerHTML = '<option value="">Sin usuarios en esta sede/rango</option>';
+            } else {
+                filtrados.forEach(u => {
+                    selectNombre.innerHTML += `<option value="${u.nombre}">${u.nombre}</option>`;
+                });
+            }
+        }
+
+        async function iniciarSesion() {
+            const rango = document.getElementById("login-rango").value;
+            const sede = (rango === "Gerente") ? "TODAS" : document.getElementById("login-sede").value;
+            const nombre = document.getElementById("login-nombre").value;
+            const clave = document.getElementById("login-clave").value;
+            const recordar = document.getElementById("login-recordar").checked;
+            const msg = document.getElementById("msg-login");
+            const btn = document.getElementById("btn-login");
+
+            if (!nombre || !clave) {
+                msg.innerText = "⚠️ Selecciona tu usuario e ingresa tu contraseña.";
+                msg.classList.remove("hidden");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando en Hoja 1...';
+            msg.classList.add("hidden");
+
+            try {
+                const resp = await fetch(URL_GOOGLE_SCRIPT, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "login", nombre, clave })
+                });
+                const res = await resp.json();
+
+                if (res.estado === "exito") {
+                    usuarioActual = res.usuario;
+                    if (recordar) {
+                        localStorage.setItem("crediban_asistencia_sesion", JSON.stringify(usuarioActual));
+                    }
+                    activarInterfazPorRol();
+                } else {
+                    throw new Error(res.mensaje || "Credenciales inválidas");
+                }
+            } catch (error) {
+                msg.innerText = error.message;
+                msg.classList.remove("hidden");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Ingresar al Sistema';
+            }
+        }
+
+        function activarInterfazPorRol() {
+            document.getElementById("pantalla-login").classList.add("hidden");
+            document.getElementById("app-principal").classList.remove("hidden");
+
+            document.getElementById("header-nombre").innerText = usuarioActual.nombre;
+            document.getElementById("badge-rango").innerText = usuarioActual.rango;
+            document.getElementById("badge-sede").innerText = usuarioActual.sede;
+
+            const btnAdmin = document.getElementById("tab-btn-admin");
+            const btnGerente = document.getElementById("tab-btn-gerente");
+            const selectorSedeGerente = document.getElementById("selector-sede-gerente-marcaje");
+
+            // Mostrar u ocultar pestañas según el rango detectado
+            btnAdmin.classList.add("hidden");
+            btnGerente.classList.add("hidden");
+            selectorSedeGerente.classList.add("hidden");
+
+            if (usuarioActual.rango === "Administrador") {
+                btnAdmin.classList.remove("hidden");
+                btnAdmin.classList.add("flex");
+            } else if (usuarioActual.rango === "Gerente") {
+                btnAdmin.classList.remove("hidden");
+                btnAdmin.classList.add("flex");
+                btnGerente.classList.remove("hidden");
+                btnGerente.classList.add("flex");
+                selectorSedeGerente.classList.remove("hidden");
+            }
+
+            // Establecer fechas de filtro por defecto al día de hoy
+            const hoyISO = new Date().toISOString().split("T")[0];
+            document.getElementById("filtro-admin-desde").value = hoyISO;
+            document.getElementById("filtro-admin-hasta").value = hoyISO;
+            document.getElementById("filtro-gerente-desde").value = hoyISO;
+            document.getElementById("filtro-gerente-hasta").value = hoyISO;
+
+            renderizarMisMarcajesLocales();
+            cambiarPestana("marcar");
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem("crediban_asistencia_sesion");
+            usuarioActual = null;
+            location.reload();
+        }
+
+        function cambiarPestana(tab) {
+            ["marcar", "admin", "gerente"].forEach(t => {
+                const vista = document.getElementById(`vista-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (vista) vista.classList.add("hidden");
+                if (btn) btn.classList.remove("tab-active");
+            });
+
+            document.getElementById(`vista-${tab}`).classList.remove("hidden");
+            document.getElementById(`tab-btn-${tab}`).classList.add("tab-active");
+
+            if (tab === "admin") cargarReporteSedeAdmin();
+            if (tab === "gerente") cargarDatosGerente();
+        }
+
+        // =====================================================================
+        // 3. CÁMARA, MARCA DE AGUA EN CANVAS Y GUARDADO EN GOOGLE SHEET/DRIVE
+        // =====================================================================
+        function generarPrevisualizacion() {
+            const inputFoto = document.getElementById("inputFoto");
+            if (!inputFoto.files[0]) return;
+
+            if (!globalLat) {
+                alert("⚠️ Espera unos segundos a que el semáforo GPS esté en verde.");
+                inputFoto.value = "";
+                return;
+            }
+
+            const lector = new FileReader();
+            lector.onload = (evento) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.getElementById("canvas");
+                    const ctx = canvas.getContext("2d");
+
+                    const maxAncho = 850;
+                    const proporcion = maxAncho / img.width;
+                    canvas.width = maxAncho;
+                    canvas.height = img.height * proporcion;
+
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    // Cintillo semitransparente inferior para que la marca de agua sea 100% legible
+                    const altoCaja = 155;
+                    ctx.fillStyle = "rgba(15, 23, 42, 0.72)";
+                    ctx.fillRect(0, canvas.height - altoCaja, canvas.width, altoCaja);
+
+                    const sedeMarcaje = (usuarioActual.sede === "TODAS")
+                        ? document.getElementById("marcaje-sede-gerente").value
+                        : usuarioActual.sede;
+                    const tipoMarcaje = document.getElementById("tipo-marcaje").value;
+                    const fechaHoraStr = new Date().toLocaleString("es-PE");
+
+                    ctx.textAlign = "left";
+                    ctx.textBaseline = "bottom";
+
+                    // Línea 1: Empresa, Sede y Tipo de Marcaje
+                    ctx.font = "bold 21px Arial";
+                    ctx.fillStyle = "#4ade80";
+                    ctx.fillText(`CREDIBAN PERÚ | SEDE: ${sedeMarcaje} — [${tipoMarcaje.toUpperCase()}]`, 20, canvas.height - 115);
+
+                    // Línea 2: Nombre del Asesor/Administrador y su Rango
+                    ctx.font = "bold 19px Arial";
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillText(`${usuarioActual.rango.toUpperCase()}: ${usuarioActual.nombre}`, 20, canvas.height - 84);
+
+                    // Línea 3: Fecha y Hora
+                    ctx.font = "bold 17px Arial";
+                    ctx.fillStyle = "#facc15";
+                    ctx.fillText(`FECHA Y HORA: ${fechaHoraStr}`, 20, canvas.height - 54);
+
+                    // Línea 4: Dirección y Coordenadas GPS
+                    ctx.font = "15px Arial";
+                    ctx.fillStyle = "#e2e8f0";
+                    ctx.fillText(`GPS: ${globalAddress} (${globalLat.toFixed(5)}, ${globalLng.toFixed(5)})`, 20, canvas.height - 22);
+
+                    fotoProcesadaBase64 = canvas.toDataURL("image/jpeg", 0.75);
+
+                    document.getElementById("pantalla-preview").classList.remove("hidden");
+                    document.getElementById("pantalla-preview").classList.add("flex");
+                };
+                img.src = evento.target.result;
+            };
+            lector.readAsDataURL(inputFoto.files[0]);
+        }
+
+        function rechazarFoto() {
+            document.getElementById("inputFoto").value = "";
+            fotoProcesadaBase64 = null;
+            document.getElementById("pantalla-preview").classList.add("hidden");
+            document.getElementById("pantalla-preview").classList.remove("flex");
+        }
+
+        async function enviarRegistro() {
+            const btn = document.getElementById("btnEnviar");
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-lg mb-1"></i> Subiendo a Google Sheet...';
+
+            const sedeMarcaje = (usuarioActual.sede === "TODAS")
+                ? document.getElementById("marcaje-sede-gerente").value
+                : usuarioActual.sede;
+            const tipo = document.getElementById("tipo-marcaje").value;
+            const modalidad = document.getElementById("modalidad-marcaje").value;
+            const observacion = document.getElementById("obs-marcaje").value;
+
+            const payload = {
+                action: "registrarAsistencia",
+                nombre: usuarioActual.nombre,
+                clave: usuarioActual.clave,
+                sedeMarcaje: sedeMarcaje,
+                tipo: tipo,
+                modalidad: modalidad,
+                observacion: observacion,
+                direccion: globalAddress,
+                lat: globalLat,
+                lng: globalLng,
+                fotoBase64: fotoProcesadaBase64
+            };
+
+            try {
+                const resp = await fetch(URL_GOOGLE_SCRIPT, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                });
+                const res = await resp.json();
+
+                if (res.estado === "exito") {
+                    guardarEnHistorialLocal(res.registro);
+                    gestionarEstadoRefrigerio(tipo);
+                    alert(`✅ ¡${tipo} registrada con éxito en la hoja ${sedeMarcaje}!`);
+                    rechazarFoto();
+                    renderizarMisMarcajesLocales();
+                } else {
+                    throw new Error(res.mensaje);
+                }
+            } catch (error) {
+                // Guardar en cola offline si falló la señal de internet
+                guardarEnColaOffline(payload);
+                alert("📦 Sin señal estable: Tu asistencia con foto y hora quedó guardada en el teléfono. Presiona 'Sincronizar Ahora' cuando recuperes señal.");
+                rechazarFoto();
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up text-lg mb-1"></i> Confirmar y Guardar';
+            }
+        }
+
+        // =====================================================================
+        // 4. CRONÓMETRO DE REFRIGERIO, HISTORIAL LOCAL Y COLA OFFLINE
+        // =====================================================================
+        function gestionarEstadoRefrigerio(tipo) {
+            if (tipo === "Salida a Refrigerio") {
+                const fin = Date.now() + (60 * 60 * 1000);
+                localStorage.setItem("crediban_refrigerio_fin", fin);
+            } else if (tipo === "Retorno de Refrigerio") {
+                localStorage.removeItem("crediban_refrigerio_fin");
+                document.getElementById("banner-refrigerio").classList.add("hidden");
+            }
+            verificarCronometroRefrigerio();
+        }
+
+        function verificarCronometroRefrigerio() {
+            setInterval(() => {
+                const fin = localStorage.getItem("crediban_refrigerio_fin");
+                const banner = document.getElementById("banner-refrigerio");
+                const reloj = document.getElementById("reloj-refrigerio");
+                if (!fin) {
+                    banner.classList.add("hidden");
+                    return;
+                }
+                banner.classList.remove("hidden");
+                const restanteMs = Number(fin) - Date.now();
+                if (restanteMs <= 0) {
+                    reloj.innerText = "TIEMPO EXCEDIDO";
+                    reloj.classList.add("text-red-600");
+                } else {
+                    const min = Math.floor(restanteMs / 60000);
+                    const seg = Math.floor((restanteMs % 60000) / 1000);
+                    reloj.innerText = `${String(min).padStart(2, "0")}:${String(seg).padStart(2, "0")}`;
+                }
+            }, 1000);
+        }
+
+        function guardarEnHistorialLocal(reg) {
+            const lista = JSON.parse(localStorage.getItem("crediban_mis_marcajes_hoy") || "[]");
+            lista.unshift(reg);
+            localStorage.setItem("crediban_mis_marcajes_hoy", JSON.stringify(lista.slice(0, 10)));
+        }
+
+        function renderizarMisMarcajesLocales() {
+            const cont = document.getElementById("lista-mis-marcajes");
+            const lista = JSON.parse(localStorage.getItem("crediban_mis_marcajes_hoy") || "[]");
+            if (lista.length === 0) return;
+
+            cont.innerHTML = lista.map(r => `
+                <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl flex justify-between items-center text-xs">
+                    <div>
+                        <span class="font-extrabold text-slate-800 block">${r.tipo} (${r.sede})</span>
+                        <span class="text-slate-500 text-[11px]">${r.fecha} — ${r.hora}</span>
+                    </div>
+                    <div class="text-right">
+                        ${r.tardanza > 0
+                            ? `<span class="bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full text-[10px]">+\${r.tardanza} min</span>`
+                            : `<span class="bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full text-[10px]">Puntual</span>`
+                        }
+                        ${r.urlFoto && r.urlFoto !== "Sin foto"
+                            ? `<a href="\${r.urlFoto}" target="_blank" class="block text-blue-600 font-bold text-[10px] mt-1 hover:underline"><i class="fa-solid fa-image"></i> Ver Foto</a>`
+                            : ""
+                        }
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function guardarEnColaOffline(payload) {
+            const cola = JSON.parse(localStorage.getItem("crediban_cola_offline") || "[]");
+            cola.push(payload);
+            localStorage.setItem("crediban_cola_offline", JSON.stringify(cola));
+            actualizarIndicadorOffline();
+        }
+
+        function actualizarIndicadorOffline() {
+            const cola = JSON.parse(localStorage.getItem("crediban_cola_offline") || "[]");
+            const caja = document.getElementById("caja-offline");
+            if (cola.length > 0) {
+                caja.classList.remove("hidden");
+                document.getElementById("contador-offline").innerText = cola.length;
+            } else {
+                caja.classList.add("hidden");
+            }
+        }
+
+        async function sincronizarColaOffline() {
+            const cola = JSON.parse(localStorage.getItem("crediban_cola_offline") || "[]");
+            if (cola.length === 0) return;
+            const restantes = [];
+            for (const item of cola) {
+                try {
+                    const resp = await fetch(URL_GOOGLE_SCRIPT, { method: "POST", body: JSON.stringify(item) });
+                    const res = await resp.json();
+                    if (res.estado !== "exito") restantes.push(item);
+                } catch (e) {
+                    restantes.push(item);
+                }
+            }
+            localStorage.setItem("crediban_cola_offline", JSON.stringify(restantes));
+            actualizarIndicadorOffline();
+            if (restantes.length === 0) alert("✅ Todos los registros pendientes fueron subidos al Google Sheet.");
+        }
+
+        // =====================================================================
+        // 5. LÓGICA DE PESTAÑA ADMINISTRADOR (Reporte de Su Sede)
+        // =====================================================================
+        async function cargarReporteSedeAdmin() {
+            document.getElementById("titulo-sede-admin").innerText = usuarioActual.sede;
+            const tbody = document.getElementById("tbody-admin");
+            tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400 font-bold"><i class="fa-solid fa-spinner fa-spin"></i> Consultando hoja de sede...</td></tr>';
+
+            try {
+                const resp = await fetch(URL_GOOGLE_SCRIPT, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "obtenerReportes",
+                        nombre: usuarioActual.nombre,
+                        clave: usuarioActual.clave,
+                        baseFiltro: usuarioActual.sede
+                    })
+                });
+                const res = await resp.json();
+                if (res.estado === "exito") {
+                    registrosAdminCache = res.registros;
+                    poblarSelectorAsesores("filtro-admin-asesor", registrosAdminCache);
+                    renderizarTablaAdmin();
+                }
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500 font-bold">Error al conectar con el Sheet: ${e.message}</td></tr>`;
+            }
+        }
+
+        function renderizarTablaAdmin() {
+            const asesor = document.getElementById("filtro-admin-asesor").value;
+            const desde = document.getElementById("filtro-admin-desde").value;
+            const hasta = document.getElementById("filtro-admin-hasta").value;
+            const tipo = document.getElementById("filtro-admin-tipo").value;
+
+            const filtrados = registrosAdminCache.filter(r => {
+                if (asesor !== "TODOS" && r.nombre !== asesor) return false;
+                if (tipo !== "TODOS" && r.tipo !== tipo) return false;
+                if (desde && r.fecha < desde) return false;
+                if (hasta && r.fecha > hasta) return false;
+                return true;
+            });
+
+            let totalTardanzas = 0, sumaMinutos = 0;
+            filtrados.forEach(r => {
+                if (r.tardanza > 0) {
+                    totalTardanzas++;
+                    sumaMinutos += Number(r.tardanza);
+                }
+            });
+
+            document.getElementById("kpi-admin-total").innerText = filtrados.length;
+            document.getElementById("kpi-admin-tardanzas").innerText = totalTardanzas;
+            document.getElementById("kpi-admin-minutos").innerText = `${sumaMinutos} min`;
+
+            const tbody = document.getElementById("tbody-admin");
+            if (filtrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400">No hay registros en el rango de fechas seleccionado.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtrados.map(r => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 font-mono font-bold text-slate-700">${r.fecha}<br><span class="text-[#59B447]">${r.hora}</span></td>
+                    <td class="p-3 font-extrabold text-slate-800">${r.nombre}</td>
+                    <td class="p-3"><span class="bg-slate-100 px-2 py-0.5 rounded text-[10px] font-bold">${r.rango}</span></td>
+                    <td class="p-3 font-bold">${r.tipo} <span class="block text-[10px] text-slate-400">${r.modalidad} ${r.observacion ? '- ' + r.observacion : ''}</span></td>
+                    <td class="p-3">
+                        ${r.tardanza > 0
+                            ? `<span class="bg-red-100 text-red-700 font-extrabold px-2.5 py-1 rounded-full text-[10px]">+\${r.tardanza} min</span>`
+                            : `<span class="bg-green-100 text-green-700 font-bold px-2.5 py-1 rounded-full text-[10px]">A tiempo</span>`
+                        }
+                    </td>
+                    <td class="p-3 max-w-xs truncate">
+                        <a href="${r.linkMapa}" target="_blank" class="text-blue-600 hover:underline font-bold"><i class="fa-solid fa-map-location-dot"></i> ${r.direccion || 'Ver Mapa'}</a>
+                    </td>
+                    <td class="p-3 text-center">
+                        ${r.linkFoto && r.linkFoto !== "Sin foto"
+                            ? `<a href="\${r.linkFoto}" target="_blank" class="inline-flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-1.5 rounded-lg text-[11px]"><i class="fa-solid fa-camera"></i> Ver Foto</a>`
+                            : `<span class="text-slate-400 text-[10px]">Sin foto</span>`
+                        }
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        // =====================================================================
+        // 6. LÓGICA DE PESTAÑA OCULTA DE GERENTE (Todas las Bases + Hoja 1)
+        // =====================================================================
+        async function cargarDatosGerente() {
+            const tbody = document.getElementById("tbody-gerente");
+            tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400 font-bold"><i class="fa-solid fa-spinner fa-spin"></i> Descargando todas las bases para Gerencia...</td></tr>';
+
+            try {
+                const resp = await fetch(URL_GOOGLE_SCRIPT, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "obtenerReportes",
+                        nombre: usuarioActual.nombre,
+                        clave: usuarioActual.clave,
+                        baseFiltro: "TODAS"
+                    })
+                });
+                const res = await resp.json();
+                if (res.estado === "exito") {
+                    registrosGerenteCache = res.registros;
+                    actualizarFiltrosGerente();
+                }
+            } catch (e) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-red-500 font-bold">Error: ${e.message}</td></tr>`;
+            }
+        }
+
+        function actualizarFiltrosGerente() {
+            const sedeElegida = document.getElementById("filtro-gerente-sede").value;
+            const sublista = (sedeElegida === "TODAS")
+                ? registrosGerenteCache
+                : registrosGerenteCache.filter(r => r.sede === sedeElegida);
+            poblarSelectorAsesores("filtro-gerente-asesor", sublista);
+            renderizarTablaGerente();
+        }
+
+        function renderizarTablaGerente() {
+            const sede = document.getElementById("filtro-gerente-sede").value;
+            const rango = document.getElementById("filtro-gerente-rango").value;
+            const asesor = document.getElementById("filtro-gerente-asesor").value;
+            const desde = document.getElementById("filtro-gerente-desde").value;
+            const hasta = document.getElementById("filtro-gerente-hasta").value;
+
+            const filtrados = registrosGerenteCache.filter(r => {
+                if (sede !== "TODAS" && r.sede !== sede) return false;
+                if (rango !== "TODOS" && r.rango !== rango) return false;
+                if (asesor !== "TODOS" && r.nombre !== asesor) return false;
+                if (desde && r.fecha < desde) return false;
+                if (hasta && r.fecha > hasta) return false;
+                return true;
+            });
+
+            const tbody = document.getElementById("tbody-gerente");
+            if (filtrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400">Sin registros para los filtros seleccionados.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtrados.map(r => `
+                <tr class="hover:bg-amber-50/30">
+                    <td class="p-3 font-mono font-bold">${r.fecha}<br><span class="text-[#59B447]">${r.hora}</span></td>
+                    <td class="p-3"><span class="bg-blue-100 text-blue-800 font-extrabold px-2 py-0.5 rounded text-[10px]">${r.sede}</span></td>
+                    <td class="p-3 font-extrabold text-slate-800">${r.nombre}</td>
+                    <td class="p-3">
+                        <span class="${r.rango === 'Administrador' ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-700'} font-bold px-2 py-0.5 rounded text-[10px]">
+                            ${r.rango}
+                        </span>
+                    </td>
+                    <td class="p-3 font-bold">${r.tipo}</td>
+                    <td class="p-3">
+                        ${r.tardanza > 0
+                            ? `<span class="bg-red-100 text-red-700 font-extrabold px-2 py-0.5 rounded-full text-[10px]">+\${r.tardanza} min</span>`
+                            : `<span class="bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full text-[10px]">Puntual</span>`
+                        }
+                    </td>
+                    <td class="p-3 max-w-xs truncate">
+                        <a href="${r.linkMapa}" target="_blank" class="text-blue-600 hover:underline font-bold"><i class="fa-solid fa-location-dot"></i> ${r.direccion || 'Mapa'}</a>
+                    </td>
+                    <td class="p-3 text-center">
+                        ${r.linkFoto && r.linkFoto !== "Sin foto"
+                            ? `<a href="\${r.linkFoto}" target="_blank" class="bg-[#59B447] text-white font-bold px-3 py-1.5 rounded-lg text-[11px] inline-flex items-center gap-1"><i class="fa-solid fa-eye"></i> Foto</a>`
+                            : `-`
+                        }
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        async function guardarUsuarioEnSheet() {
+            const nombre = document.getElementById("cfg-user-nombre").value.trim();
+            const clave = document.getElementById("cfg-user-clave").value.trim();
+            const rango = document.getElementById("cfg-user-rango").value;
+            const sede = document.getElementById("cfg-user-sede").value;
+            const estado = document.getElementById("cfg-user-estado").value;
+
+            if (!nombre || !clave) {
+                alert("⚠️ Ingresa el nombre completo y la contraseña del usuario.");
+                return;
+            }
+
+            try {
+                const resp = await fetch(URL_GOOGLE_SCRIPT, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "guardarUsuario",
+                        nombreAdmin: usuarioActual.nombre,
+                        claveAdmin: usuarioActual.clave,
+                        usuario: { nombre, clave, rango, sede, estado }
+                    })
+                });
+                const res = await resp.json();
+                alert(res.mensaje);
+                await cargarDirectorioDesdeSheet();
+            } catch (e) {
+                alert("❌ Error al guardar usuario: " + e.message);
+            }
+        }
+
+        async function guardarHorarioEnSheet() {
+            const sede = document.getElementById("cfg-hor-sede").value;
+            const horaLV = document.getElementById("cfg-hor-lv").value;
+            const horaSab = document.getElementById("cfg-hor-sab").value;
+            const tolerancia = document.getElementById("cfg-hor-tol").value;
+            const refrigerio = document.getElementById("cfg-hor-ref").value;
+
+            try {
+                const resp = await fetch(URL_GOOGLE_SCRIPT, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "guardarHorario",
+                        nombreAdmin: usuarioActual.nombre,
+                        claveAdmin: usuarioActual.clave,
+                        horario: { sede, horaLV, horaSab, tolerancia, refrigerio }
+                    })
+                });
+                const res = await resp.json();
+                alert(res.mensaje);
+            } catch (e) {
+                alert("❌ Error al actualizar horario: " + e.message);
+            }
+        }
+
+        function poblarSelectorAsesores(idSelect, lista) {
+            const sel = document.getElementById(idSelect);
+            const nombresUnicos = [...new Set(lista.map(r => r.nombre))].sort();
+            sel.innerHTML = '<option value="TODOS">Todos los colaboradores</option>';
+            nombresUnicos.forEach(n => {
+                sel.innerHTML += `<option value="${n}">${n}</option>`;
+            });
+        }
+
+        function exportarTablaCSV(modo) {
+            const datos = (modo === "gerente") ? registrosGerenteCache : registrosAdminCache;
+            if (!datos || datos.length === 0) {
+                alert("No hay registros cargados para exportar.");
+                return;
+            }
+            const cabeceras = ["ID", "Fecha", "Hora", "Nombre", "Sede", "Rango", "Tipo_Marcaje", "Modalidad", "Minutos_Tardanza", "Direccion_GPS", "Link_Mapa", "Link_Foto"];
+            const filas = datos.map(r => [
+                r.id, r.fecha, r.hora, `"${r.nombre}"`, r.sede, r.rango, r.tipo, r.modalidad, r.tardanza, `"${r.direccion}"`, r.linkMapa, r.linkFoto
+            ].join(","));
+
+            const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [cabeceras.join(","), ...filas].join("\n");
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", `Reporte_Asistencia_CREDIBAN_${modo}_${new Date().toISOString().split("T")[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
