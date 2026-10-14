@@ -7,17 +7,26 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f1f5f9; }
+        body { font-family: 'Arial', sans-serif; background-color: #f1f5f9; overscroll-behavior-y: contain; }
         .glass-card { background: white; border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08); }
         .tab-active { background-color: #59B447; color: white; box-shadow: 0 4px 12px rgba(89, 180, 71, 0.35); }
+        .modo-fecha-activo { background-color: white; color: #59B447; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-vista { animation: fadeIn 0.22s ease-out forwards; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center p-3 md:p-6">
 
+    <!-- NOTIFICACIÓN FLOTANTE (TOAST PARA BOTÓN ATRÁS Y AVISOS RÁPIDOS) -->
+    <div id="toast-notificacion" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white text-xs font-bold px-5 py-3 rounded-2xl shadow-2xl z-[70] hidden items-center gap-2.5 border border-slate-700 transition-all">
+        <i class="fa-solid fa-circle-info text-[#59B447]"></i>
+        <span id="toast-texto">Aviso del sistema</span>
+    </div>
+
     <!-- =================================================================== -->
-    <!-- PANTALLA 1: BLOQUEO E INICIO DE SESIÓN (Conectado a la Hoja 1)      -->
+    <!-- PANTALLA 1: LOGIN BLINDADO (Oculta Sedes, Cargos y Directorio)      -->
     <!-- =================================================================== -->
-    <div id="pantalla-login" class="glass-card w-full max-w-md p-6 my-auto border-t-8 border-[#59B447]">
+    <div id="pantalla-login" class="glass-card w-full max-w-md p-7 my-auto border-t-8 border-[#59B447] animate-vista">
         
         <!-- LOGOTIPO VECTORIAL OFICIAL CREDIBAN -->
         <div class="flex items-center justify-center gap-3 bg-white px-2 py-2 mb-4 rounded-xl w-full">
@@ -40,59 +49,57 @@
             </div>
         </div>
 
-        <div class="text-center mb-5">
-            <span class="bg-slate-100 text-slate-600 text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                Sistema de Control de Asistencia Multi-Sede
+        <div class="text-center mb-6">
+            <span class="bg-slate-100 text-slate-600 text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider">
+                <i class="fa-solid fa-shield-halved text-[#59B447] mr-1"></i> Acceso Privado al Sistema
             </span>
         </div>
 
         <div class="space-y-4">
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">1. Rango / Rol</label>
-                    <select id="login-rango" onchange="actualizarSelectorSedeLogin()" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-[#59B447] outline-none">
-                        <option value="Trabajador">Trabajador</option>
-                        <option value="Administrador">Administrador</option>
-                        <option value="Gerente">Gerente</option>
-                        <option value="Desarrollador">🛠️ Desarrollador</option>
-                    </select>
-                </div>
-                <div id="contenedor-login-sede">
-                    <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">2. Sede</label>
-                    <select id="login-sede" onchange="filtrarNombresLogin()" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-[#59B447] outline-none">
-                        <option value="HUACHO">HUACHO</option>
-                        <option value="HUARAZ">HUARAZ</option>
-                        <option value="ICA">ICA</option>
-                        <option value="NUEVA OFICINA">NUEVA OFICINA</option>
-                        <option value="SEDE_EXTRA_1">SEDE_EXTRA_1</option>
-                        <option value="SEDE_EXTRA_2">SEDE_EXTRA_2</option>
-                    </select>
+            <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1.5">1. Usuario</label>
+                <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                        <i class="fa-solid fa-user"></i>
+                    </span>
+                    <input
+                        type="text"
+                        id="login-nombre"
+                        autocomplete="username"
+                        autocapitalize="characters"
+                        spellcheck="false"
+                        onkeydown="if(event.key==='Enter') document.getElementById('login-clave').focus()"
+                        class="w-full border border-gray-300 rounded-xl py-3.5 pl-10 pr-4 text-sm font-extrabold text-slate-800 uppercase tracking-wide focus:ring-2 focus:ring-[#59B447] outline-none bg-slate-50 focus:bg-white transition-all"
+                        placeholder="Ingresa tu usuario"
+                    >
                 </div>
             </div>
 
             <div>
-                <div class="flex justify-between items-center mb-1">
-                    <label class="block text-[11px] font-bold text-gray-500 uppercase">3. Usuario / Colaborador</label>
-                    <button type="button" onclick="cargarDirectorioDesdeSheet()" class="text-[11px] text-[#59B447] font-bold hover:underline">
-                        <i class="fa-solid fa-arrows-rotate"></i> Sincronizar Hoja 1
+                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1.5">2. Contraseña de Acceso</label>
+                <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                        <i class="fa-solid fa-lock"></i>
+                    </span>
+                    <input
+                        type="password"
+                        id="login-clave"
+                        autocomplete="current-password"
+                        onkeydown="if(event.key==='Enter') iniciarSesion()"
+                        class="w-full border border-gray-300 rounded-xl py-3.5 pl-10 pr-10 font-bold text-center tracking-widest focus:ring-2 focus:ring-[#59B447] outline-none bg-slate-50 focus:bg-white transition-all"
+                        placeholder="••••••••"
+                    >
+                    <button type="button" onclick="toggleVerClaveLogin()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                        <i id="icono-ojo-clave" class="fa-solid fa-eye"></i>
                     </button>
                 </div>
-                <select id="login-nombre" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[#59B447] outline-none bg-white">
-                    <option value="">Cargando usuarios de Hoja 1...</option>
-                </select>
             </div>
 
-            <div>
-                <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">4. Contraseña de Acceso</label>
-                <input type="password" id="login-clave" class="w-full border border-gray-300 rounded-xl p-3 font-bold text-center tracking-widest focus:ring-2 focus:ring-[#59B447] outline-none" placeholder="••••••••">
-            </div>
-
-            <!-- BOTÓN RECORDAR DISPOSITIVO -->
             <label class="flex items-center gap-3 bg-green-50 border border-green-200 p-3 rounded-xl cursor-pointer select-none">
                 <input type="checkbox" id="login-recordar" checked class="w-4 h-4 accent-[#59B447] rounded">
                 <div class="text-xs">
-                    <span class="font-bold text-green-900 block">🔒 Recordar mi usuario en este dispositivo</span>
-                    <span class="text-green-700 text-[11px]">No volver a pedir contraseña al abrir la app</span>
+                    <span class="font-bold text-green-900 block">🔒 Recordar mi sesión en este dispositivo</span>
+                    <span class="text-green-700 text-[11px]">Detectar mi usuario, sede y cargo automáticamente al abrir</span>
                 </div>
             </label>
 
@@ -121,13 +128,12 @@
                     <h2 id="header-nombre" class="text-lg font-extrabold text-slate-800 mt-1">NOMBRE USUARIO</h2>
                 </div>
 
-                <!-- Semáforo GPS (Solo visible para quienes marcan asistencia) -->
                 <div id="gps-status" class="bg-yellow-100 text-yellow-700 text-[11px] font-bold px-3 py-1.5 rounded-full border border-yellow-300 flex items-center gap-1.5">
                     <i class="fa-solid fa-satellite-dish animate-pulse"></i> Buscando Calle...
                 </div>
             </div>
 
-            <!-- BARRA DE PESTAÑAS DINÁMICAS SEGÚN JERARQUÍA -->
+            <!-- BARRA DE PESTAÑAS DINÁMICAS SEGÚN JERARQUÍA DETECTADA -->
             <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
                 <button id="tab-btn-marcar" onclick="cambiarPestana('marcar')" class="tab-active px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
                     <i class="fa-solid fa-camera"></i> Marcar Asistencia
@@ -168,7 +174,7 @@
         <!-- =============================================================== -->
         <!-- PESTAÑA 1: MÓDULO DE MARCAJE Y CÁMARA (Trabajador / Admin)      -->
         <!-- =============================================================== -->
-        <div id="vista-marcar" class="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <div id="vista-marcar" class="grid grid-cols-1 md:grid-cols-12 gap-4 animate-vista">
             <div class="md:col-span-7 glass-card p-6 space-y-4">
                 <div class="flex justify-between items-center border-b pb-3">
                     <h3 class="font-extrabold text-slate-800 text-base flex items-center gap-2">
@@ -177,7 +183,6 @@
                     <span id="reloj-vivo" class="text-xs font-mono font-bold bg-slate-100 text-slate-700 px-3 py-1 rounded-lg">00:00:00</span>
                 </div>
 
-                <!-- Selector de sede solo si el Desarrollador hace una prueba de marcaje -->
                 <div id="selector-sede-dev-marcaje" class="hidden">
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Sede de Prueba (Modo Desarrollador)</label>
                     <select id="marcaje-sede-dev" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-700">
@@ -190,7 +195,6 @@
                     </select>
                 </div>
 
-                <!-- 1. Área Operativa y Momento de Asistencia -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">1. Área Operativa</label>
@@ -211,7 +215,6 @@
                     </div>
                 </div>
 
-                <!-- AVISO AUTOMÁTICO DE HORAS EXTRAS PARA EL ÁREA DE CAJA EN SALIDA -->
                 <div id="aviso-horas-extras-caja" class="hidden bg-purple-50 border-2 border-purple-300 rounded-xl p-3.5 text-xs space-y-1.5">
                     <div class="flex items-center justify-between">
                         <span class="font-extrabold text-purple-900 uppercase flex items-center gap-1.5">
@@ -220,11 +223,10 @@
                         <span class="bg-purple-200 text-purple-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full">Automático</span>
                     </div>
                     <p class="text-[11px] text-purple-800">
-                        Se calcularán los minutos extras si marcas después del cierre oficial de tu sede (Sábados a partir de la <b>1:00 PM / 13:00</b>).
+                        Se calcularán los minutos y horas extras si marcas después del cierre oficial de tu sede (Sábados a partir de la <b>1:00 PM / 13:00</b>).
                     </p>
                 </div>
 
-                <!-- Modalidad Oficina vs Campo y Nombre de Cliente / Motivo -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">3. Ubicación Operativa</label>
@@ -239,7 +241,6 @@
                     </div>
                 </div>
 
-                <!-- BLOQUE DE VALIDACIÓN DE DIRECCIÓN COMPRENSIBLE (NO SOLO DÍGITOS) -->
                 <div id="caja-direccion-validacion" class="bg-amber-50 border-2 border-amber-300 rounded-xl p-3.5 text-xs flex items-start justify-between gap-2.5 transition-all">
                     <div class="flex items-start gap-2.5">
                         <i id="icono-direccion" class="fa-solid fa-spinner fa-spin text-amber-600 text-base mt-0.5"></i>
@@ -258,7 +259,6 @@
                     </button>
                 </div>
 
-                <!-- AVISO OBLIGATORIO Y APERTURA DE CÁMARA -->
                 <div class="bg-blue-50 border-2 border-dashed border-blue-300 rounded-2xl p-5 text-center relative">
                     <span class="inline-block bg-blue-600 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
                         ⚠️ Requisito Obligatorio de Validación
@@ -277,18 +277,20 @@
                 </div>
             </div>
 
-            <!-- Panel lateral: Mis marcajes recientes -->
+            <!-- Panel lateral: Mis marcajes de hoy -->
             <div class="md:col-span-5 glass-card p-6 flex flex-col justify-between space-y-4">
                 <div>
-                    <h3 class="font-extrabold text-slate-800 text-sm uppercase tracking-wider border-b pb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-clock-rotate-left text-[#59B447]"></i> Mis Últimos Marcajes Hoy
-                    </h3>
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <h3 class="font-extrabold text-slate-800 text-sm uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-[#59B447]"></i> Mis Marcajes de Hoy
+                        </h3>
+                        <span id="contador-marcajes-hoy" class="bg-green-100 text-green-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">0 / 4</span>
+                    </div>
                     <div id="lista-mis-marcajes" class="space-y-2.5 mt-3 max-h-80 overflow-y-auto">
-                        <p class="text-xs text-slate-400 text-center py-8">Aún no has registrado marcajes hoy en este dispositivo.</p>
+                        <p class="text-xs text-slate-400 text-center py-8">Aún no has registrado marcajes el día de hoy.</p>
                     </div>
                 </div>
 
-                <!-- Cola Offline -->
                 <div id="caja-offline" class="hidden bg-orange-50 border border-orange-300 rounded-xl p-3 space-y-2">
                     <div class="flex justify-between items-center">
                         <span class="text-xs font-bold text-orange-800">
@@ -310,7 +312,7 @@
         <!-- =============================================================== -->
         <!-- PESTAÑA 2: VISTA EXCLUSIVA DE ADMINISTRADOR ("Horarios Mi Sede") -->
         <!-- =============================================================== -->
-        <div id="vista-admin" class="hidden glass-card p-6 space-y-5">
+        <div id="vista-admin" class="hidden glass-card p-6 space-y-5 animate-vista">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b pb-4">
                 <div>
                     <span class="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">
@@ -320,61 +322,114 @@
                         Control de Asistencia, Refrigerios (90m) y Horas Extras — Sede <span id="titulo-sede-admin" class="text-[#59B447]"></span>
                     </h3>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="cargarReporteSedeAdmin()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2">
-                        <i class="fa-solid fa-rotate"></i> Actualizar Datos
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="aplicarRangoRapido('admin', 'hoy')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl">Hoy</button>
+                    <button onclick="aplicarRangoRapido('admin', 'ayer')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl">Ayer</button>
+                    <button onclick="aplicarRangoRapido('admin', 'mes')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl">Este Mes</button>
+                    <button onclick="cargarReporteSedeAdmin()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2">
+                        <i class="fa-solid fa-rotate"></i> Actualizar
                     </button>
-                    <button onclick="exportarTablaCSV('admin')" class="bg-[#59B447] hover:bg-[#4a973a] text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2">
-                        <i class="fa-solid fa-file-csv"></i> Exportar Excel/CSV
+                    <button onclick="exportarTablaCSV('admin')" class="bg-[#59B447] hover:bg-[#4a973a] text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2">
+                        <i class="fa-solid fa-file-csv"></i> Exportar CSV
                     </button>
                 </div>
             </div>
 
-            <!-- Filtros por Asesor, por Día o por Rango de Fechas -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Filtrar Colaborador de mi Sede</label>
-                    <select id="filtro-admin-asesor" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-white">
-                        <option value="TODOS">Todos los de mi sede</option>
-                    </select>
+            <!-- PANEL MULTIMODAL DE FILTROS: FECHA ESPECÍFICA, POR MES, RANGO DE FECHAS Y TODO -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200">
+                    <span class="text-[11px] font-extrabold text-slate-600 uppercase flex items-center gap-1.5">
+                        <i class="fa-solid fa-calendar-check text-[#59B447]"></i> Modalidad de Filtro de Fecha:
+                    </span>
+                    <div class="flex flex-wrap gap-1.5 bg-slate-200/80 p-1 rounded-xl">
+                        <button type="button" id="btn-modo-admin-dia" onclick="cambiarModoFecha('admin', 'dia')" class="modo-fecha-activo px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
+                            📅 Fecha Específica
+                        </button>
+                        <button type="button" id="btn-modo-admin-mes" onclick="cambiarModoFecha('admin', 'mes')" class="text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
+                            🗓️ Por Mes
+                        </button>
+                        <button type="button" id="btn-modo-admin-rango" onclick="cambiarModoFecha('admin', 'rango')" class="text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
+                            ↔️ Rango de Fechas
+                        </button>
+                        <button type="button" id="btn-modo-admin-todo" onclick="cambiarModoFecha('admin', 'todo')" class="text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
+                            📚 Todo
+                        </button>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Desde Fecha (o Día Exacto)</label>
-                    <input type="date" id="filtro-admin-desde" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-white">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Hasta Fecha (Rango)</label>
-                    <input type="date" id="filtro-admin-hasta" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-white">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Momento de Marcaje</label>
-                    <select id="filtro-admin-tipo" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-white">
-                        <option value="TODOS">Todos los marcajes</option>
-                        <option value="Entrada">📥 Solo Entradas</option>
-                        <option value="Salida a Refrigerio">🍽️ Salida Refrigerio</option>
-                        <option value="Retorno de Refrigerio">✅ Retorno Refrigerio</option>
-                        <option value="Salida Final">📤 Salida Final</option>
-                    </select>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Filtrar Colaborador de mi Sede</label>
+                        <select id="filtro-admin-asesor" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold bg-white">
+                            <option value="TODOS">Todos los de mi sede</option>
+                        </select>
+                    </div>
+
+                    <!-- Opción 1: Fecha Específica -->
+                    <div id="box-admin-dia" class="md:col-span-2">
+                        <label class="block text-[10px] font-bold text-green-700 uppercase mb-1">📅 Seleccionar Fecha Específica (Día Exacto)</label>
+                        <input type="date" id="filtro-admin-dia" onchange="renderizarTablaAdmin()" class="w-full border-2 border-[#59B447] rounded-lg p-2 text-xs font-extrabold bg-white">
+                    </div>
+
+                    <!-- Opción 2: Por Mes y Año -->
+                    <div id="box-admin-mes" class="hidden md:col-span-2">
+                        <label class="block text-[10px] font-bold text-blue-700 uppercase mb-1">🗓️ Seleccionar Mes y Año</label>
+                        <input type="month" id="filtro-admin-mes" onchange="renderizarTablaAdmin()" class="w-full border-2 border-blue-500 rounded-lg p-2 text-xs font-extrabold bg-white">
+                    </div>
+
+                    <!-- Opción 3: Rango de Fechas (Desde / Hasta) -->
+                    <div id="box-admin-rango" class="hidden md:col-span-2 grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Desde Fecha</label>
+                            <input type="date" id="filtro-admin-desde" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Hasta Fecha</label>
+                            <input type="date" id="filtro-admin-hasta" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-white">
+                        </div>
+                    </div>
+
+                    <!-- Opción 4: Todo el Historial -->
+                    <div id="box-admin-todo" class="hidden md:col-span-2">
+                        <div class="bg-slate-200/70 text-slate-700 rounded-lg p-2.5 text-xs font-bold text-center">
+                            📚 Mostrando todos los registros históricos de la sede
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Momento de Marcaje</label>
+                        <select id="filtro-admin-tipo" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold bg-white">
+                            <option value="TODOS">Todos los marcajes</option>
+                            <option value="Entrada">📥 Solo Entradas</option>
+                            <option value="Salida a Refrigerio">🍽️ Salida Refrigerio</option>
+                            <option value="Retorno de Refrigerio">✅ Retorno Refrigerio</option>
+                            <option value="Salida Final">📤 Salida Final</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <!-- KPIs de la Sede -->
+            <!-- KPIs de la Sede (Muestra Minutos + Equivalente en Horas) -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-                <div class="bg-slate-50 p-3 rounded-xl border">
+                <div class="bg-slate-50 p-3.5 rounded-xl border flex flex-col justify-center">
                     <p class="text-[10px] font-bold text-slate-400 uppercase">Total Marcajes</p>
-                    <p id="kpi-admin-total" class="text-xl font-black text-slate-800">0</p>
+                    <p id="kpi-admin-total" class="text-2xl font-black text-slate-800 mt-0.5">0</p>
+                    <span class="text-[10px] font-bold text-slate-400 mt-0.5">En el período filtrado</span>
                 </div>
-                <div class="bg-red-50 p-3 rounded-xl border border-red-100">
-                    <p class="text-[10px] font-bold text-red-500 uppercase">Minutos Tardanza</p>
-                    <p id="kpi-admin-minutos" class="text-xl font-black text-red-600">0 min</p>
+                <div class="bg-red-50 p-3.5 rounded-xl border border-red-200 flex flex-col justify-center">
+                    <p class="text-[10px] font-extrabold text-red-600 uppercase">Tardanza Acumulada</p>
+                    <p id="kpi-admin-minutos" class="text-xl font-black text-red-700 mt-0.5">0 min</p>
+                    <span id="kpi-admin-minutos-horas" class="bg-red-100 text-red-800 text-[11px] font-extrabold px-2 py-0.5 rounded-md mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
                 </div>
-                <div class="bg-amber-50 p-3 rounded-xl border border-amber-100">
-                    <p class="text-[10px] font-bold text-amber-600 uppercase">Exceso Refrigerio (>90m)</p>
-                    <p id="kpi-admin-refrigerio" class="text-xl font-black text-amber-700">0 min</p>
+                <div class="bg-amber-50 p-3.5 rounded-xl border border-amber-200 flex flex-col justify-center">
+                    <p class="text-[10px] font-extrabold text-amber-700 uppercase">Exceso Refrigerio (>90m)</p>
+                    <p id="kpi-admin-refrigerio" class="text-xl font-black text-amber-800 mt-0.5">0 min</p>
+                    <span id="kpi-admin-refrigerio-horas" class="bg-amber-100 text-amber-900 text-[11px] font-extrabold px-2 py-0.5 rounded-md mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
                 </div>
-                <div class="bg-purple-50 p-3 rounded-xl border border-purple-200">
-                    <p class="text-[10px] font-bold text-purple-700 uppercase">Horas Extras Caja</p>
-                    <p id="kpi-admin-extras-caja" class="text-xl font-black text-purple-800">0 min</p>
+                <div class="bg-purple-50 p-3.5 rounded-xl border border-purple-200 flex flex-col justify-center">
+                    <p class="text-[10px] font-extrabold text-purple-700 uppercase">Horas Extras Caja</p>
+                    <p id="kpi-admin-extras-caja" class="text-xl font-black text-purple-800 mt-0.5">0 min</p>
+                    <span id="kpi-admin-extras-horas" class="bg-purple-100 text-purple-900 text-[11px] font-extrabold px-2 py-0.5 rounded-md mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
                 </div>
             </div>
 
@@ -400,7 +455,7 @@
         <!-- =============================================================== -->
         <!-- PESTAÑA 3: PANEL DE GERENCIA (SOLO AUDITORÍA GLOBAL Y POR SEDE) -->
         <!-- =============================================================== -->
-        <div id="vista-gerente" class="hidden space-y-5">
+        <div id="vista-gerente" class="hidden space-y-5 animate-vista">
             <div class="glass-card p-6 space-y-5 border-t-4 border-amber-500">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b pb-4">
                     <div>
@@ -411,72 +466,124 @@
                             Auditoría General de Todas las Sedes y Filtro por Sede / Colaborador
                         </h3>
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="cargarDatosGerente()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2">
-                            <i class="fa-solid fa-rotate"></i> Sincronizar Todas las Sedes
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="aplicarRangoRapido('gerente', 'hoy')" class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold px-3 py-2 rounded-xl">Hoy</button>
+                        <button onclick="aplicarRangoRapido('gerente', 'ayer')" class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold px-3 py-2 rounded-xl">Ayer</button>
+                        <button onclick="aplicarRangoRapido('gerente', 'mes')" class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold px-3 py-2 rounded-xl">Este Mes</button>
+                        <button onclick="cargarDatosGerente()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2">
+                            <i class="fa-solid fa-rotate"></i> Sincronizar Sedes
                         </button>
-                        <button onclick="exportarTablaCSV('gerente')" class="bg-[#59B447] hover:bg-[#4a973a] text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2">
-                            <i class="fa-solid fa-file-csv"></i> Descargar Reporte CSV
+                        <button onclick="exportarTablaCSV('gerente')" class="bg-[#59B447] hover:bg-[#4a973a] text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2">
+                            <i class="fa-solid fa-file-csv"></i> Descargar CSV
                         </button>
                     </div>
                 </div>
 
-                <!-- Filtros Gerenciales -->
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-3 bg-amber-50/60 p-4 rounded-xl border border-amber-200">
-                    <div>
-                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">1. Sede / Base</label>
-                        <select id="filtro-gerente-sede" onchange="actualizarFiltrosGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-extrabold bg-white">
-                            <option value="TODAS">🌍 TODAS LAS SEDES (Vista General)</option>
-                            <option value="HUACHO">🏢 Sede: HUACHO</option>
-                            <option value="HUARAZ">🏢 Sede: HUARAZ</option>
-                            <option value="ICA">🏢 Sede: ICA</option>
-                            <option value="NUEVA OFICINA">🏢 Sede: NUEVA OFICINA</option>
-                            <option value="SEDE_EXTRA_1">📁 Hoja: SEDE_EXTRA_1</option>
-                            <option value="SEDE_EXTRA_2">📁 Hoja: SEDE_EXTRA_2</option>
-                        </select>
+                <!-- PANEL MULTIMODAL DE FILTROS GERENCIALES: FECHA ESPECÍFICA, POR MES, RANGO Y TODO -->
+                <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-200 space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-amber-200">
+                        <span class="text-[11px] font-extrabold text-amber-900 uppercase flex items-center gap-1.5">
+                            <i class="fa-solid fa-calendar-days text-amber-600"></i> Modalidad de Filtro de Fecha:
+                        </span>
+                        <div class="flex flex-wrap gap-1.5 bg-amber-200/60 p-1 rounded-xl">
+                            <button type="button" id="btn-modo-gerente-dia" onclick="cambiarModoFecha('gerente', 'dia')" class="modo-fecha-activo px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
+                                📅 Fecha Específica
+                            </button>
+                            <button type="button" id="btn-modo-gerente-mes" onclick="cambiarModoFecha('gerente', 'mes')" class="text-amber-900 hover:bg-white/60 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
+                                🗓️ Por Mes
+                            </button>
+                            <button type="button" id="btn-modo-gerente-rango" onclick="cambiarModoFecha('gerente', 'rango')" class="text-amber-900 hover:bg-white/60 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
+                                ↔️ Rango de Fechas
+                            </button>
+                            <button type="button" id="btn-modo-gerente-todo" onclick="cambiarModoFecha('gerente', 'todo')" class="text-amber-900 hover:bg-white/60 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
+                                📚 Todo
+                            </button>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">2. Colaborador de la Sede</label>
-                        <select id="filtro-gerente-asesor" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-bold bg-white">
-                            <option value="TODOS">Todos los colaboradores</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">3. Filtrar Rango / Área</label>
-                        <select id="filtro-gerente-rango" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-bold bg-white">
-                            <option value="TODOS">Todos (Admins + Asesores + Caja)</option>
-                            <option value="Administrador">👔 Solo Administradores</option>
-                            <option value="Trabajador">💼 Solo Trabajadores</option>
-                            <option value="CAJA">🏦 Solo Área de Caja</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">4. Desde Fecha</label>
-                        <input type="date" id="filtro-gerente-desde" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-bold bg-white">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">5. Hasta Fecha</label>
-                        <input type="date" id="filtro-gerente-hasta" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-bold bg-white">
+
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+                        <div>
+                            <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">1. Sede / Base</label>
+                            <select id="filtro-gerente-sede" onchange="actualizarFiltrosGerente()" class="w-full border border-amber-300 rounded-lg p-2.5 text-xs font-extrabold bg-white">
+                                <option value="TODAS">🌍 TODAS LAS SEDES (General)</option>
+                                <option value="HUACHO">🏢 Sede: HUACHO</option>
+                                <option value="HUARAZ">🏢 Sede: HUARAZ</option>
+                                <option value="ICA">🏢 Sede: ICA</option>
+                                <option value="NUEVA OFICINA">🏢 Sede: NUEVA OFICINA</option>
+                                <option value="SEDE_EXTRA_1">📁 Hoja: SEDE_EXTRA_1</option>
+                                <option value="SEDE_EXTRA_2">📁 Hoja: SEDE_EXTRA_2</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">2. Colaborador de la Sede</label>
+                            <select id="filtro-gerente-asesor" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2.5 text-xs font-bold bg-white">
+                                <option value="TODOS">Todos los colaboradores</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">3. Filtrar Rango / Área</label>
+                            <select id="filtro-gerente-rango" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2.5 text-xs font-bold bg-white">
+                                <option value="TODOS">Todos (Admins + Asesores + Caja)</option>
+                                <option value="Administrador">👔 Solo Administradores</option>
+                                <option value="Trabajador">💼 Solo Trabajadores</option>
+                                <option value="CAJA">🏦 Solo Área de Caja</option>
+                            </select>
+                        </div>
+
+                        <!-- Opción 1: Fecha Específica -->
+                        <div id="box-gerente-dia" class="md:col-span-2">
+                            <label class="block text-[10px] font-bold text-green-800 uppercase mb-1">4. 📅 Fecha Específica (Día Exacto)</label>
+                            <input type="date" id="filtro-gerente-dia" onchange="renderizarTablaGerente()" class="w-full border-2 border-[#59B447] rounded-lg p-2 text-xs font-extrabold bg-white">
+                        </div>
+
+                        <!-- Opción 2: Por Mes y Año -->
+                        <div id="box-gerente-mes" class="hidden md:col-span-2">
+                            <label class="block text-[10px] font-bold text-blue-800 uppercase mb-1">4. 🗓️ Seleccionar Mes y Año</label>
+                            <input type="month" id="filtro-gerente-mes" onchange="renderizarTablaGerente()" class="w-full border-2 border-blue-500 rounded-lg p-2 text-xs font-extrabold bg-white">
+                        </div>
+
+                        <!-- Opción 3: Rango de Fechas -->
+                        <div id="box-gerente-rango" class="hidden md:col-span-2 grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">Desde Fecha</label>
+                                <input type="date" id="filtro-gerente-desde" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-bold bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">Hasta Fecha</label>
+                                <input type="date" id="filtro-gerente-hasta" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-bold bg-white">
+                            </div>
+                        </div>
+
+                        <!-- Opción 4: Todo el Historial -->
+                        <div id="box-gerente-todo" class="hidden md:col-span-2">
+                            <div class="bg-amber-100 text-amber-900 rounded-lg p-2.5 text-xs font-bold text-center border border-amber-300">
+                                📚 Mostrando todo el historial acumulado
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- KPIs Globales / Por Sede para el Gerente -->
+                <!-- KPIs Globales / Por Sede para el Gerente (Minutos + Equivalente en Horas) -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-                    <div class="bg-slate-50 p-3 rounded-xl border">
+                    <div class="bg-slate-50 p-3.5 rounded-xl border flex flex-col justify-center">
                         <p class="text-[10px] font-bold text-slate-400 uppercase">Registros Filtrados</p>
-                        <p id="kpi-gerente-total" class="text-xl font-black text-slate-800">0</p>
+                        <p id="kpi-gerente-total" class="text-2xl font-black text-slate-800 mt-0.5">0</p>
+                        <span class="text-[10px] font-bold text-slate-400 mt-0.5">En la consulta actual</span>
                     </div>
-                    <div class="bg-red-50 p-3 rounded-xl border border-red-100">
-                        <p class="text-[10px] font-bold text-red-500 uppercase">Minutos Tardanza</p>
-                        <p id="kpi-gerente-tardanza" class="text-xl font-black text-red-600">0 min</p>
+                    <div class="bg-red-50 p-3.5 rounded-xl border border-red-200 flex flex-col justify-center">
+                        <p class="text-[10px] font-extrabold text-red-600 uppercase">Tardanza Acumulada</p>
+                        <p id="kpi-gerente-tardanza" class="text-xl font-black text-red-700 mt-0.5">0 min</p>
+                        <span id="kpi-gerente-tardanza-horas" class="bg-red-100 text-red-800 text-[11px] font-extrabold px-2 py-0.5 rounded-md mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
                     </div>
-                    <div class="bg-amber-50 p-3 rounded-xl border border-amber-100">
-                        <p class="text-[10px] font-bold text-amber-600 uppercase">Exceso Refrigerio (>90m)</p>
-                        <p id="kpi-gerente-refrigerio" class="text-xl font-black text-amber-700">0 min</p>
+                    <div class="bg-amber-50 p-3.5 rounded-xl border border-amber-200 flex flex-col justify-center">
+                        <p class="text-[10px] font-extrabold text-amber-700 uppercase">Exceso Refrigerio (>90m)</p>
+                        <p id="kpi-gerente-refrigerio" class="text-xl font-black text-amber-800 mt-0.5">0 min</p>
+                        <span id="kpi-gerente-refrigerio-horas" class="bg-amber-100 text-amber-900 text-[11px] font-extrabold px-2 py-0.5 rounded-md mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
                     </div>
-                    <div class="bg-purple-50 p-3 rounded-xl border border-purple-200">
-                        <p class="text-[10px] font-bold text-purple-700 uppercase">Horas Extras Caja</p>
-                        <p id="kpi-gerente-extras" class="text-xl font-black text-purple-800">0 min</p>
+                    <div class="bg-purple-50 p-3.5 rounded-xl border border-purple-200 flex flex-col justify-center">
+                        <p class="text-[10px] font-extrabold text-purple-700 uppercase">Horas Extras Caja</p>
+                        <p id="kpi-gerente-extras" class="text-xl font-black text-purple-800 mt-0.5">0 min</p>
+                        <span id="kpi-gerente-extras-horas" class="bg-purple-100 text-purple-900 text-[11px] font-extrabold px-2 py-0.5 rounded-md mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
                     </div>
                 </div>
 
@@ -504,7 +611,7 @@
         <!-- =============================================================== -->
         <!-- PESTAÑA 4: PANEL EXCLUSIVO DEL DESARROLLADOR (Configura Hoja 1) -->
         <!-- =============================================================== -->
-        <div id="vista-dev" class="hidden space-y-5">
+        <div id="vista-dev" class="hidden space-y-5 animate-vista">
             <div class="glass-card p-6 border-t-4 border-emerald-500 space-y-5">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b pb-4">
                     <div>
@@ -529,7 +636,7 @@
                         </h4>
                         <div class="space-y-2.5">
                             <div>
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nombre Completo</label>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nombre / Usuario</label>
                                 <input type="text" id="cfg-user-nombre" placeholder="Ej. JUAN PEREZ" class="w-full border rounded-lg p-2 text-xs font-bold uppercase bg-white">
                             </div>
                             <div class="grid grid-cols-2 gap-2">
@@ -669,7 +776,7 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-slate-800 text-white text-[10px] uppercase">
-                                    <th class="p-2.5">Nombre</th>
+                                    <th class="p-2.5">Nombre / Usuario</th>
                                     <th class="p-2.5">Clave</th>
                                     <th class="p-2.5">Rango</th>
                                     <th class="p-2.5">Área</th>
@@ -757,27 +864,26 @@
     </div>
 
     <!-- =================================================================== -->
-    <!-- LÓGICA JAVASCRIPT COMPLETA Y DEPURADA (V4 FINAL)                    -->
+    <!-- LÓGICA JAVASCRIPT COMPLETA Y DEPURADA (V7 FINAL)                    -->
     <!-- =================================================================== -->
     <script>
         // ✅ URL OFICIAL DE TU GOOGLE APPS SCRIPT:
         const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbxGhuNSyI3U5ktzD0CnaN1ijNxliLG7pXCDP8LSgxznpa9zbhIAMKzpEUxesshrhRNG/exec";
 
-        let DIRECTORIO_HOJA_1 = [
-            { nombre: "DESARROLLADOR", rango: "Desarrollador", sede: "TODAS", area: "Sistemas" },
-            { nombre: "CARLOS GERENTE", rango: "Gerente", sede: "TODAS", area: "Gerencia" },
-            { nombre: "DAVID SAENZ", rango: "Administrador", sede: "HUACHO", area: "Administración" },
-            { nombre: "ARACELLY GRADOS", rango: "Administrador", sede: "HUARAZ", area: "Administración" },
-            { nombre: "MELISSA CECILIANO", rango: "Trabajador", sede: "HUACHO", area: "Asesor de Créditos" },
-            { nombre: "CAJERO HUACHO", rango: "Trabajador", sede: "HUACHO", area: "Caja" },
-            { nombre: "MARIA GOMEZ", rango: "Trabajador", sede: "HUARAZ", area: "Caja" }
-        ];
-
+        let DIRECTORIO_HOJA_1 = [];
         let HORARIOS_SEDES_CACHE = {};
         let FERIADOS_CACHE = [];
         let usuariosDevCache = [];
 
         let usuarioActual = null;
+        let pestanaActiva = "marcar";
+        let pestanaInicialRol = "marcar";
+        let ultimoToqueAtras = 0;
+
+        // Modalidades de filtro de fecha ("dia" | "mes" | "rango" | "todo")
+        let modoFechaAdmin = "dia";
+        let modoFechaGerente = "dia";
+
         let globalLat = null, globalLng = null;
         let globalAddress = "";
         let direccionValidaParaSubir = false;
@@ -791,16 +897,112 @@
         let listaFiltradaAdminActual = [];
         let listaFiltradaGerenteActual = [];
 
-        function obtenerFechaLocalISO() {
-            const ahora = new Date();
-            const anio = ahora.getFullYear();
-            const mes = String(ahora.getMonth() + 1).padStart(2, "0");
-            const dia = String(ahora.getDate()).padStart(2, "0");
+        function obtenerFechaLocalISO(fechaRef = new Date()) {
+            const anio = fechaRef.getFullYear();
+            const mes = String(fechaRef.getMonth() + 1).padStart(2, "0");
+            const dia = String(fechaRef.getDate()).padStart(2, "0");
             return `${anio}-${mes}-${dia}`;
         }
 
+        function obtenerMesLocalISO(fechaRef = new Date()) {
+            const anio = fechaRef.getFullYear();
+            const mes = String(fechaRef.getMonth() + 1).padStart(2, "0");
+            return `${anio}-${mes}`;
+        }
+
+        /**
+         * Convierte cualquier cantidad de minutos acumulados en:
+         * 1. Texto en minutos (ej. "135 min")
+         * 2. Equivalencia exacta en Horas + Minutos y Horas Decimales (ej. "⏱️ 2h 15m (2.25 hrs)")
+         * 3. Etiqueta compacta para celdas de tabla (ej. "+75m (1h 15m)")
+         */
+        function convertirMinutosAHoras(minutosTotales) {
+            const min = Math.max(0, Math.round(Number(minutosTotales) || 0));
+            const horasEnteras = Math.floor(min / 60);
+            const minRestantes = min % 60;
+            const horasDecimales = (min / 60).toFixed(2);
+            return {
+                textoMinutos: `${min} min`,
+                textoHorasKPI: `⏱️ ${horasEnteras}h ${String(minRestantes).padStart(2, "0")}m (${horasDecimales} hrs)`,
+                textoFila: min >= 60 ? `+${min}m (${horasEnteras}h ${String(minRestantes).padStart(2, "0")}m)` : `+${min}m (${horasDecimales}h)`,
+                horasDecimalesCSV: horasDecimales
+            };
+        }
+
+        function mostrarToast(mensaje) {
+            const toast = document.getElementById("toast-notificacion");
+            document.getElementById("toast-texto").innerText = mensaje;
+            toast.classList.remove("hidden");
+            toast.classList.add("flex");
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => {
+                toast.classList.add("hidden");
+                toast.classList.remove("flex");
+            }, 2600);
+        }
+
+        function toggleVerClaveLogin() {
+            const input = document.getElementById("login-clave");
+            const icono = document.getElementById("icono-ojo-clave");
+            if (input.type === "password") {
+                input.type = "text";
+                icono.className = "fa-solid fa-eye-slash text-[#59B447]";
+            } else {
+                input.type = "password";
+                icono.className = "fa-solid fa-eye";
+            }
+        }
+
         // =====================================================================
-        // 1. INICIALIZACIÓN Y COMUNICACIÓN CON GOOGLE APPS SCRIPT
+        // 1. GESTIÓN NATIVA DEL BOTÓN "ATRÁS" DEL CELULAR (HISTORY API)
+        // =====================================================================
+        function inicializarHistorialNavegacion(tabInicial) {
+            pestanaInicialRol = tabInicial;
+            pestanaActiva = tabInicial;
+            window.history.replaceState({ baseGuard: true, tab: tabInicial, modal: null }, "", window.location.pathname);
+            window.history.pushState({ baseGuard: false, tab: tabInicial, modal: null }, "", `#${tabInicial}`);
+        }
+
+        window.addEventListener("popstate", (event) => {
+            if (!usuarioActual) return;
+
+            const modalVisor = document.getElementById("modal-visor-foto");
+            if (modalVisor && !modalVisor.classList.contains("hidden")) {
+                cerrarVisorFoto(true);
+                return;
+            }
+
+            const modalPreview = document.getElementById("pantalla-preview");
+            if (modalPreview && !modalPreview.classList.contains("hidden")) {
+                rechazarFoto(true);
+                return;
+            }
+
+            if (event.state && event.state.tab && !event.state.baseGuard) {
+                if (event.state.tab !== pestanaActiva) {
+                    cambiarPestana(event.state.tab, false);
+                    return;
+                }
+            }
+
+            if (pestanaActiva !== pestanaInicialRol) {
+                cambiarPestana(pestanaInicialRol, false);
+                window.history.pushState({ baseGuard: false, tab: pestanaInicialRol, modal: null }, "", `#${pestanaInicialRol}`);
+                return;
+            }
+
+            const ahora = Date.now();
+            if (ahora - ultimoToqueAtras < 2200) {
+                window.history.back();
+            } else {
+                ultimoToqueAtras = ahora;
+                mostrarToast("Presiona atrás nuevamente para salir de la aplicación");
+                window.history.pushState({ baseGuard: false, tab: pestanaActiva, modal: null }, "", `#${pestanaActiva}`);
+            }
+        });
+
+        // =====================================================================
+        // 2. INICIALIZACIÓN Y COMUNICACIÓN CON GOOGLE APPS SCRIPT
         // =====================================================================
         window.addEventListener("DOMContentLoaded", async () => {
             iniciarRelojVivo();
@@ -808,13 +1010,11 @@
             verificarCronometroRefrigerio();
             actualizarIndicadorOffline();
 
-            await cargarDirectorioDesdeSheet();
-
             const sesionGuardada = localStorage.getItem("crediban_asistencia_sesion");
             if (sesionGuardada) {
                 try {
                     usuarioActual = JSON.parse(sesionGuardada);
-                    // Sincronizar área y rango con el directorio actualizado de Hoja 1
+                    await cargarDirectorioDesdeSheet(false);
                     const infoFresca = DIRECTORIO_HOJA_1.find(u => u.nombre === usuarioActual.nombre);
                     if (infoFresca) {
                         usuarioActual.rango = infoFresca.rango;
@@ -851,7 +1051,7 @@
         }
 
         // =====================================================================
-        // 2. VISOR FOTOGRÁFICO MODAL (ELIMINA EL ERROR 404 DE GITHUB PAGES)
+        // 3. VISOR FOTOGRÁFICO MODAL (ANTI-ERROR 404)
         // =====================================================================
         function tieneEvidenciaFotografica(r) {
             if (r.fotoBase64 && r.fotoBase64.startsWith("data:image")) return true;
@@ -874,7 +1074,7 @@
             if (origen === "admin") reg = listaFiltradaAdminActual[idx];
             else if (origen === "gerente") reg = listaFiltradaGerenteActual[idx];
             else if (origen === "local") {
-                const locales = JSON.parse(localStorage.getItem("crediban_mis_marcajes_hoy") || "[]");
+                const locales = obtenerMarcajesLocalesDeHoyUsuario();
                 reg = locales[idx];
             }
             if (!reg) return;
@@ -936,18 +1136,25 @@
                 imgEl.classList.add("hidden");
                 boxError.classList.remove("hidden");
                 btnDescargar.classList.add("hidden");
-                txtError.innerText = "Este registro corresponde a una prueba anterior donde aún no estaba activo el respaldo fotográfico en el Google Sheet. Los nuevos marcajes mostrarán su foto aquí automáticamente.";
+                txtError.innerText = "Este registro corresponde a una prueba anterior sin foto adjunta. Los nuevos marcajes mostrarán su fotografía aquí automáticamente.";
             }
+
+            window.history.pushState({ baseGuard: false, tab: pestanaActiva, modal: "visor" }, "", `#${pestanaActiva}-foto`);
 
             modal.classList.remove("hidden");
             modal.classList.add("flex");
         }
 
-        function cerrarVisorFoto() {
+        function cerrarVisorFoto(desdePopState = false) {
             const modal = document.getElementById("modal-visor-foto");
+            if (modal.classList.contains("hidden")) return;
             modal.classList.add("hidden");
             modal.classList.remove("flex");
             document.getElementById("visor-img-element").src = "";
+
+            if (!desdePopState && window.history.state && window.history.state.modal === "visor") {
+                window.history.back();
+            }
         }
 
         function obtenerUrlMapaSegura(r) {
@@ -959,7 +1166,7 @@
         }
 
         // =====================================================================
-        // 3. VALIDACIÓN ESTRICTA DE DIRECCIÓN COMPRENSIBLE (NO SOLO DÍGITOS)
+        // 4. VALIDACIÓN ESTRICTA DE DIRECCIÓN COMPRENSIBLE (NO SOLO DÍGITOS)
         // =====================================================================
         function esDireccionComprensible(texto) {
             if (!texto || typeof texto !== "string") return false;
@@ -1005,7 +1212,7 @@
 
         async function forzarTraduccionCalle() {
             if (!globalLat || !globalLng) {
-                alert("⚠️ Aún buscando satélite GPS. Asegúrate de tener el GPS encendido en tu celular.");
+                mostrarToast("Buscando satélite GPS... Verifica que tu ubicación esté encendida.");
                 return;
             }
             const claveRedondeada = `${globalLat.toFixed(3)},${globalLng.toFixed(3)}`;
@@ -1137,6 +1344,15 @@
                 alert("⚠️ Espera un instante: El sistema solo permite abrir la cámara cuando la dirección ya está en texto comprensible (Calle/Distrito) y no en números.");
                 return;
             }
+
+            const tipoElegido = document.getElementById("tipo-marcaje").value;
+            const misHoy = obtenerMarcajesLocalesDeHoyUsuario();
+            if (misHoy.some(m => m.tipo === tipoElegido)) {
+                if (!confirm(`⚠️ Ya registraste "${tipoElegido}" el día de hoy. ¿Deseas realizar otro registro de "${tipoElegido}" de todos modos?`)) {
+                    return;
+                }
+            }
+
             const obs = document.getElementById("obs-marcaje").value.trim();
             if (!obs) {
                 const confirmarSinMotivo = confirm("¿Deseas tomar la foto sin especificar el nombre del Cliente o Motivo? (Saldrá como 'Labor en Sede / General' en la marca de agua).");
@@ -1149,86 +1365,55 @@
         }
 
         // =====================================================================
-        // 4. LECTURA DE LA HOJA 1 Y LOGIN POR RANGO
+        // 5. LOGIN BLINDADO Y DETECCIÓN AUTOMÁTICA DE SEDE / CARGO / ÁREA
         // =====================================================================
-        async function cargarDirectorioDesdeSheet() {
+        async function cargarDirectorioDesdeSheet(mostrarAviso = false) {
             try {
                 const resp = await fetch(URL_GOOGLE_SCRIPT, { redirect: "follow" });
                 const data = await resp.json();
                 if (data.estado === "exito") {
-                    if (Array.isArray(data.directorio) && data.directorio.length > 0) {
+                    if (Array.isArray(data.directorio)) {
                         DIRECTORIO_HOJA_1 = data.directorio;
-                        localStorage.setItem("crediban_directorio_cache", JSON.stringify(DIRECTORIO_HOJA_1));
                     }
                     if (data.horarios) HORARIOS_SEDES_CACHE = data.horarios;
                     if (data.feriados) FERIADOS_CACHE = data.feriados;
+                    if (mostrarAviso) mostrarToast("Parámetros sincronizados con Hoja 1");
                 }
             } catch (e) {
-                const cache = localStorage.getItem("crediban_directorio_cache");
-                if (cache) DIRECTORIO_HOJA_1 = JSON.parse(cache);
-            }
-            filtrarNombresLogin();
-        }
-
-        function actualizarSelectorSedeLogin() {
-            const rango = document.getElementById("login-rango").value;
-            const contSede = document.getElementById("contenedor-login-sede");
-            if (rango === "Gerente" || rango === "Desarrollador") {
-                contSede.classList.add("opacity-40", "pointer-events-none");
-            } else {
-                contSede.classList.remove("opacity-40", "pointer-events-none");
-            }
-            filtrarNombresLogin();
-        }
-
-        function filtrarNombresLogin() {
-            const rango = document.getElementById("login-rango").value;
-            const sede = document.getElementById("login-sede").value;
-            const selectNombre = document.getElementById("login-nombre");
-
-            const filtrados = DIRECTORIO_HOJA_1.filter(u => {
-                if (rango === "Gerente" || rango === "Desarrollador") return u.rango === rango;
-                return u.rango === rango && (u.sede === sede || u.sede === "TODAS");
-            });
-
-            selectNombre.innerHTML = "";
-            if (filtrados.length === 0) {
-                selectNombre.innerHTML = `<option value="">Sin usuarios (${rango}) en esta sede</option>`;
-            } else {
-                filtrados.forEach(u => {
-                    const etiquetaArea = u.area ? ` (${u.area})` : "";
-                    selectNombre.innerHTML += `<option value="${u.nombre}">${u.nombre}${etiquetaArea}</option>`;
-                });
+                console.warn("Modo local activo.");
             }
         }
 
         async function iniciarSesion() {
-            const nombre = document.getElementById("login-nombre").value;
-            const clave = document.getElementById("login-clave").value;
+            const inputNombre = document.getElementById("login-nombre");
+            const inputClave = document.getElementById("login-clave");
+            const nombre = inputNombre.value.trim().toUpperCase();
+            const clave = inputClave.value.trim();
             const recordar = document.getElementById("login-recordar").checked;
             const msg = document.getElementById("msg-login");
             const btn = document.getElementById("btn-login");
 
             if (!nombre || !clave) {
-                msg.innerText = "⚠️ Selecciona tu usuario e ingresa tu contraseña.";
+                msg.innerText = "⚠️ Ingresa tu usuario y tu contraseña de acceso.";
                 msg.classList.remove("hidden");
                 return;
             }
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando en Hoja 1...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando credenciales...';
             msg.classList.add("hidden");
 
             try {
                 const res = await llamarAppsScriptPOST({ action: "login", nombre, clave });
-                if (res.estado === "exito") {
+                if (res.estado === "exito" && res.usuario) {
                     usuarioActual = res.usuario;
                     if (recordar) {
                         localStorage.setItem("crediban_asistencia_sesion", JSON.stringify(usuarioActual));
                     }
+                    await cargarDirectorioDesdeSheet(false);
                     activarInterfazPorRol();
                 } else {
-                    throw new Error(res.mensaje || "Credenciales inválidas");
+                    throw new Error(res.mensaje || "❌ Usuario o contraseña incorrectos.");
                 }
             } catch (error) {
                 msg.innerText = error.message;
@@ -1272,9 +1457,17 @@
             selectorSedeDev.classList.add("hidden");
             gpsBadge.classList.remove("hidden");
 
+            // Inicializar todos los selectores de Fecha Específica, Mes y Rango con la fecha local actual
             const hoyISO = obtenerFechaLocalISO();
+            const mesActualISO = obtenerMesLocalISO();
+
+            document.getElementById("filtro-admin-dia").value = hoyISO;
+            document.getElementById("filtro-admin-mes").value = mesActualISO;
             document.getElementById("filtro-admin-desde").value = hoyISO;
             document.getElementById("filtro-admin-hasta").value = hoyISO;
+
+            document.getElementById("filtro-gerente-dia").value = hoyISO;
+            document.getElementById("filtro-gerente-mes").value = mesActualISO;
             document.getElementById("filtro-gerente-desde").value = hoyISO;
             document.getElementById("filtro-gerente-hasta").value = hoyISO;
 
@@ -1282,19 +1475,22 @@
                 btnMarcar.classList.remove("hidden");
                 btnMarcar.classList.add("flex");
                 renderizarMisMarcajesLocales();
-                cambiarPestana("marcar");
+                inicializarHistorialNavegacion("marcar");
+                cambiarPestana("marcar", false);
             } else if (usuarioActual.rango === "Administrador") {
                 btnMarcar.classList.remove("hidden");
                 btnMarcar.classList.add("flex");
                 btnAdmin.classList.remove("hidden");
                 btnAdmin.classList.add("flex");
                 renderizarMisMarcajesLocales();
-                cambiarPestana("marcar");
+                inicializarHistorialNavegacion("marcar");
+                cambiarPestana("marcar", false);
             } else if (usuarioActual.rango === "Gerente") {
                 gpsBadge.classList.add("hidden");
                 btnGerente.classList.remove("hidden");
                 btnGerente.classList.add("flex");
-                cambiarPestana("gerente");
+                inicializarHistorialNavegacion("gerente");
+                cambiarPestana("gerente", false);
             } else if (usuarioActual.rango === "Desarrollador") {
                 btnDev.classList.remove("hidden");
                 btnDev.classList.add("flex");
@@ -1303,7 +1499,9 @@
                 btnMarcar.classList.remove("hidden");
                 btnMarcar.classList.add("flex");
                 selectorSedeDev.classList.remove("hidden");
-                cambiarPestana("dev");
+                renderizarMisMarcajesLocales();
+                inicializarHistorialNavegacion("dev");
+                cambiarPestana("dev", false);
             }
         }
 
@@ -1326,12 +1524,13 @@
         }
 
         function cerrarSesion() {
+            if (!confirm("¿Deseas cerrar tu sesión en este dispositivo?")) return;
             localStorage.removeItem("crediban_asistencia_sesion");
             usuarioActual = null;
-            location.reload();
+            window.location.replace(window.location.pathname);
         }
 
-        function cambiarPestana(tab) {
+        function cambiarPestana(tab, registrarEnHistorial = true) {
             ["marcar", "admin", "gerente", "dev"].forEach(t => {
                 const vista = document.getElementById(`vista-${t}`);
                 const btn = document.getElementById(`tab-btn-${t}`);
@@ -1342,17 +1541,23 @@
             document.getElementById(`vista-${tab}`).classList.remove("hidden");
             document.getElementById(`tab-btn-${tab}`).classList.add("tab-active");
 
+            if (registrarEnHistorial && tab !== pestanaActiva) {
+                window.history.pushState({ baseGuard: false, tab: tab, modal: null }, "", `#${tab}`);
+            }
+            pestanaActiva = tab;
+
             if (tab === "admin") cargarReporteSedeAdmin();
             if (tab === "gerente") cargarDatosGerente();
             if (tab === "dev") cargarDatosDesarrollador();
         }
 
         // =====================================================================
-        // 5. PREVISUALIZACIÓN, MARCA DE AGUA Y AUTO-COMPRESIÓN PARA SHEET (<45KB)
+        // 6. PREVISUALIZACIÓN CON LIBERACIÓN DE RAM (URL.createObjectURL)
         // =====================================================================
         function generarPrevisualizacion() {
             const inputFoto = document.getElementById("inputFoto");
-            if (!inputFoto.files[0]) return;
+            const archivo = inputFoto.files[0];
+            if (!archivo) return;
 
             if (!direccionValidaParaSubir || !esDireccionComprensible(globalAddress)) {
                 alert("⚠️ No se puede procesar la foto hasta que la dirección esté en palabras comprensibles (no dígitos).");
@@ -1360,85 +1565,84 @@
                 return;
             }
 
-            const lector = new FileReader();
-            lector.onload = (evento) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.getElementById("canvas");
-                    const ctx = canvas.getContext("2d");
+            const objectUrl = URL.createObjectURL(archivo);
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.getElementById("canvas");
+                const ctx = canvas.getContext("2d");
 
-                    // Tamaño óptimo (640px) para que sea nítida y quepa siempre en una celda de Google Sheets (<45,000 chars)
-                    const maxAncho = 640;
-                    const proporcion = maxAncho / img.width;
-                    canvas.width = maxAncho;
-                    canvas.height = Math.round(img.height * proporcion);
+                const maxAncho = 640;
+                const proporcion = maxAncho / img.width;
+                canvas.width = maxAncho;
+                canvas.height = Math.round(img.height * proporcion);
 
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                URL.revokeObjectURL(objectUrl);
 
-                    const altoCaja = 155;
-                    ctx.fillStyle = "rgba(15, 23, 42, 0.82)";
-                    ctx.fillRect(0, canvas.height - altoCaja, canvas.width, altoCaja);
+                const altoCaja = 155;
+                ctx.fillStyle = "rgba(15, 23, 42, 0.82)";
+                ctx.fillRect(0, canvas.height - altoCaja, canvas.width, altoCaja);
 
-                    const sedeMarcaje = (usuarioActual.sede === "TODAS")
-                        ? document.getElementById("marcaje-sede-dev").value
-                        : usuarioActual.sede;
-                    const areaMarcaje = document.getElementById("area-marcaje").value;
-                    const tipoMarcaje = document.getElementById("tipo-marcaje").value;
-                    const modalidad = document.getElementById("modalidad-marcaje").value;
-                    const clienteOMotivo = document.getElementById("obs-marcaje").value.trim() || `Labor en ${modalidad}`;
-                    const fechaHoraStr = new Date().toLocaleString("es-PE");
+                const sedeMarcaje = (usuarioActual.sede === "TODAS")
+                    ? document.getElementById("marcaje-sede-dev").value
+                    : usuarioActual.sede;
+                const areaMarcaje = document.getElementById("area-marcaje").value;
+                const tipoMarcaje = document.getElementById("tipo-marcaje").value;
+                const modalidad = document.getElementById("modalidad-marcaje").value;
+                const clienteOMotivo = document.getElementById("obs-marcaje").value.trim() || `Labor en ${modalidad}`;
+                const fechaHoraStr = new Date().toLocaleString("es-PE");
 
-                    ctx.textAlign = "left";
-                    ctx.textBaseline = "bottom";
+                ctx.textAlign = "left";
+                ctx.textBaseline = "bottom";
 
-                    // Línea 1: Empresa, Sede, Área y Momento de Marcaje
-                    ctx.font = "bold 15px Arial";
-                    ctx.fillStyle = "#4ade80";
-                    ctx.fillText(`CREDIBAN | SEDE: ${sedeMarcaje} (${areaMarcaje.toUpperCase()}) — [${tipoMarcaje.toUpperCase()}]`, 14, canvas.height - 120);
+                ctx.font = "bold 15px Arial";
+                ctx.fillStyle = "#4ade80";
+                ctx.fillText(`CREDIBAN | SEDE: ${sedeMarcaje} (${areaMarcaje.toUpperCase()}) — [${tipoMarcaje.toUpperCase()}]`, 14, canvas.height - 120);
 
-                    // Línea 2: Rango y Nombre del Asesor/Cajero/Administrador
-                    ctx.font = "bold 14px Arial";
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillText(`${usuarioActual.rango.toUpperCase()}: ${usuarioActual.nombre} (${modalidad.toUpperCase()})`, 14, canvas.height - 93);
+                ctx.font = "bold 14px Arial";
+                ctx.fillStyle = "#ffffff";
+                ctx.fillText(`${usuarioActual.rango.toUpperCase()}: ${usuarioActual.nombre} (${modalidad.toUpperCase()})`, 14, canvas.height - 93);
 
-                    // Línea 3: Cliente o Motivo
-                    ctx.font = "bold 14px Arial";
-                    ctx.fillStyle = "#38bdf8";
-                    const motivoRecortado = clienteOMotivo.length > 58 ? clienteOMotivo.substring(0, 58) + "..." : clienteOMotivo;
-                    ctx.fillText(`CLIENTE / MOTIVO: ${motivoRecortado}`, 14, canvas.height - 67);
+                ctx.font = "bold 14px Arial";
+                ctx.fillStyle = "#38bdf8";
+                const motivoRecortado = clienteOMotivo.length > 58 ? clienteOMotivo.substring(0, 58) + "..." : clienteOMotivo;
+                ctx.fillText(`CLIENTE / MOTIVO: ${motivoRecortado}`, 14, canvas.height - 67);
 
-                    // Línea 4: Fecha y Hora
-                    ctx.font = "bold 13px Arial";
-                    ctx.fillStyle = "#facc15";
-                    ctx.fillText(`FECHA Y HORA: ${fechaHoraStr}`, 14, canvas.height - 41);
+                ctx.font = "bold 13px Arial";
+                ctx.fillStyle = "#facc15";
+                ctx.fillText(`FECHA Y HORA: ${fechaHoraStr}`, 14, canvas.height - 41);
 
-                    // Línea 5: Dirección Comprensible GPS
-                    ctx.font = "bold 12px Arial";
-                    ctx.fillStyle = "#e2e8f0";
-                    const dirRecortada = globalAddress.length > 62 ? globalAddress.substring(0, 62) + "..." : globalAddress;
-                    ctx.fillText(`DIRECCIÓN: ${dirRecortada} (${globalLat.toFixed(4)}, ${globalLng.toFixed(4)})`, 14, canvas.height - 15);
+                ctx.font = "bold 12px Arial";
+                ctx.fillStyle = "#e2e8f0";
+                const dirRecortada = globalAddress.length > 62 ? globalAddress.substring(0, 62) + "..." : globalAddress;
+                ctx.fillText(`DIRECCIÓN: ${dirRecortada} (${globalLat.toFixed(4)}, ${globalLng.toFixed(4)})`, 14, canvas.height - 15);
 
-                    // Compresión adaptativa para garantizar que siempre entre en una celda de Google Sheets (<46,000 caracteres)
-                    let calidad = 0.62;
+                let calidad = 0.62;
+                fotoProcesadaBase64 = canvas.toDataURL("image/jpeg", calidad);
+                while (fotoProcesadaBase64.length > 45000 && calidad > 0.30) {
+                    calidad -= 0.08;
                     fotoProcesadaBase64 = canvas.toDataURL("image/jpeg", calidad);
-                    while (fotoProcesadaBase64.length > 45000 && calidad > 0.30) {
-                        calidad -= 0.08;
-                        fotoProcesadaBase64 = canvas.toDataURL("image/jpeg", calidad);
-                    }
+                }
 
-                    document.getElementById("pantalla-preview").classList.remove("hidden");
-                    document.getElementById("pantalla-preview").classList.add("flex");
-                };
-                img.src = evento.target.result;
+                window.history.pushState({ baseGuard: false, tab: pestanaActiva, modal: "preview" }, "", `#${pestanaActiva}-preview`);
+
+                document.getElementById("pantalla-preview").classList.remove("hidden");
+                document.getElementById("pantalla-preview").classList.add("flex");
             };
-            lector.readAsDataURL(inputFoto.files[0]);
+            img.src = objectUrl;
         }
 
-        function rechazarFoto() {
+        function rechazarFoto(desdePopState = false) {
+            const modal = document.getElementById("pantalla-preview");
             document.getElementById("inputFoto").value = "";
             fotoProcesadaBase64 = null;
-            document.getElementById("pantalla-preview").classList.add("hidden");
-            document.getElementById("pantalla-preview").classList.remove("flex");
+            if (!modal.classList.contains("hidden")) {
+                modal.classList.add("hidden");
+                modal.classList.remove("flex");
+                if (!desdePopState && window.history.state && window.history.state.modal === "preview") {
+                    window.history.back();
+                }
+            }
         }
 
         async function enviarRegistro() {
@@ -1478,17 +1682,21 @@
                 const res = await llamarAppsScriptPOST(payload);
 
                 if (res.estado === "exito") {
+                    res.registro.usuario = usuarioActual.nombre;
                     guardarEnHistorialLocal(res.registro);
                     gestionarEstadoRefrigerio(tipo, sedeMarcaje);
                     let alertasExtra = "";
                     if (res.registro.tardanza > 0) {
-                        alertasExtra += `\n⚠️ Tardanza registrada: +${res.registro.tardanza} min.`;
+                        const convT = convertirMinutosAHoras(res.registro.tardanza);
+                        alertasExtra += `\n⚠️ Tardanza registrada: ${convT.textoMinutos} (${convT.textoHorasKPI})`;
                     }
                     if (res.registro.excesoRefrigerio > 0) {
-                        alertasExtra += `\n🍽️ Exceso de refrigerio (>90m): +${res.registro.excesoRefrigerio} min.`;
+                        const convR = convertirMinutosAHoras(res.registro.excesoRefrigerio);
+                        alertasExtra += `\n🍽️ Exceso de refrigerio (>90m): ${convR.textoMinutos} (${convR.textoHorasKPI})`;
                     }
                     if (res.registro.extrasCaja > 0) {
-                        alertasExtra += `\n⏱️ Horas Extras de Caja: +${res.registro.extrasCaja} min.`;
+                        const convE = convertirMinutosAHoras(res.registro.extrasCaja);
+                        alertasExtra += `\n⏱️ Horas Extras de Caja: ${convE.textoMinutos} (${convE.textoHorasKPI})`;
                     }
                     alert(`✅ ¡${tipo} guardada con éxito en la hoja ${sedeMarcaje}!${alertasExtra}`);
                     document.getElementById("obs-marcaje").value = "";
@@ -1503,7 +1711,7 @@
                     alert("📦 Tu celular no tiene conexión a internet en este momento. Se guardó en la cola del teléfono.");
                     rechazarFoto();
                 } else {
-                    alert("⚠️ Atención: Actualiza tu Google Apps Script con 'Nueva versión' en Gestionar Implementaciones.\nDetalle: " + error.message);
+                    alert("⚠️ Atención: Verifica tu conexión o actualiza tu Google Apps Script.\nDetalle: " + error.message);
                 }
             } finally {
                 btn.disabled = false;
@@ -1512,7 +1720,7 @@
         }
 
         // =====================================================================
-        // 6. CRONÓMETRO DE REFRIGERIO DINÁMICO DE 90 MINUTOS
+        // 7. CRONÓMETRO DE REFRIGERIO (90M) Y SECUENCIA INTELIGENTE DE HOY
         // =====================================================================
         function gestionarEstadoRefrigerio(tipo, sede) {
             if (tipo === "Salida a Refrigerio") {
@@ -1521,7 +1729,7 @@
                     : 90;
                 const fin = Date.now() + (minConfig * 60 * 1000);
                 localStorage.setItem("crediban_refrigerio_fin", fin);
-            } else if (tipo === "Retorno de Refrigerio") {
+            } else if (tipo === "Retorno de Refrigerio" || tipo === "Salida Final") {
                 localStorage.removeItem("crediban_refrigerio_fin");
                 document.getElementById("banner-refrigerio").classList.add("hidden");
             }
@@ -1552,17 +1760,48 @@
             }, 1000);
         }
 
+        function obtenerMarcajesLocalesDeHoyUsuario() {
+            const hoyISO = obtenerFechaLocalISO();
+            const todos = JSON.parse(localStorage.getItem("crediban_mis_marcajes_hoy") || "[]");
+            return todos.filter(r => r.fecha === hoyISO && (!r.usuario || !usuarioActual || r.usuario === usuarioActual.nombre));
+        }
+
         function guardarEnHistorialLocal(reg) {
-            const lista = JSON.parse(localStorage.getItem("crediban_mis_marcajes_hoy") || "[]");
-            lista.unshift(reg);
-            // Guardar máximo 6 registros recientes en caché local para no saturar localStorage
-            localStorage.setItem("crediban_mis_marcajes_hoy", JSON.stringify(lista.slice(0, 6)));
+            const hoyISO = obtenerFechaLocalISO();
+            const todos = JSON.parse(localStorage.getItem("crediban_mis_marcajes_hoy") || "[]")
+                .filter(r => r.fecha === hoyISO);
+            todos.unshift(reg);
+            localStorage.setItem("crediban_mis_marcajes_hoy", JSON.stringify(todos.slice(0, 8)));
+        }
+
+        function sugerirSiguienteMomentoMarcaje(marcajesHoy) {
+            const selTipo = document.getElementById("tipo-marcaje");
+            if (!selTipo) return;
+            const tiposHechos = marcajesHoy.map(m => m.tipo);
+            if (!tiposHechos.includes("Entrada")) {
+                selTipo.value = "Entrada";
+            } else if (!tiposHechos.includes("Salida a Refrigerio")) {
+                selTipo.value = "Salida a Refrigerio";
+            } else if (!tiposHechos.includes("Retorno de Refrigerio")) {
+                selTipo.value = "Retorno de Refrigerio";
+            } else {
+                selTipo.value = "Salida Final";
+            }
+            verificarBannerHorasExtrasCaja();
         }
 
         function renderizarMisMarcajesLocales() {
             const cont = document.getElementById("lista-mis-marcajes");
-            const lista = JSON.parse(localStorage.getItem("crediban_mis_marcajes_hoy") || "[]");
-            if (lista.length === 0) return;
+            const badgeCont = document.getElementById("contador-marcajes-hoy");
+            const lista = obtenerMarcajesLocalesDeHoyUsuario();
+
+            if (badgeCont) badgeCont.innerText = `${lista.length} / 4`;
+            sugerirSiguienteMomentoMarcaje(lista);
+
+            if (lista.length === 0) {
+                cont.innerHTML = '<p class="text-xs text-slate-400 text-center py-8">Aún no has registrado marcajes el día de hoy.</p>';
+                return;
+            }
 
             cont.innerHTML = lista.map((r, idx) => `
                 <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl flex justify-between items-center text-xs">
@@ -1574,15 +1813,15 @@
                     </div>
                     <div class="text-right space-y-1">
                         ${r.tardanza > 0
-                            ? `<span class="bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full text-[10px] block">+${r.tardanza}m tard.</span>`
+                            ? `<span class="bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full text-[10px] block">${convertirMinutosAHoras(r.tardanza).textoFila} tard.</span>`
                             : `<span class="bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full text-[10px] block">Puntual</span>`
                         }
                         ${r.excesoRefrigerio > 0
-                            ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">🍽️ +${r.excesoRefrigerio}m Refr.</span>`
+                            ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">🍽️ ${convertirMinutosAHoras(r.excesoRefrigerio).textoFila} Refr.</span>`
                             : ""
                         }
                         ${r.extrasCaja > 0
-                            ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">⏱️ +${r.extrasCaja}m Extra Caja</span>`
+                            ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">⏱️ ${convertirMinutosAHoras(r.extrasCaja).textoFila} Extra</span>`
                             : ""
                         }
                         <button type="button" onclick="abrirVisorFotoDesdeTabla('local', ${idx})" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-2.5 py-1 rounded-lg text-[10px] inline-flex items-center gap-1">
@@ -1650,7 +1889,87 @@
         }
 
         // =====================================================================
-        // 7. VISTA ADMINISTRADOR (Con Visor Modal Anti-404)
+        // 8. CONTROLADOR DE FILTROS MULTIMODALES (DÍA ESPECÍFICO / MES / RANGO / TODO)
+        // =====================================================================
+        function cambiarModoFecha(vista, modo) {
+            const modos = ["dia", "mes", "rango", "todo"];
+            if (vista === "admin") {
+                modoFechaAdmin = modo;
+            } else {
+                modoFechaGerente = modo;
+            }
+
+            modos.forEach(m => {
+                const caja = document.getElementById(`box-${vista}-${m}`);
+                const btn = document.getElementById(`btn-modo-${vista}-${m}`);
+                if (caja) {
+                    if (m === modo) caja.classList.remove("hidden");
+                    else caja.classList.add("hidden");
+                }
+                if (btn) {
+                    if (m === modo) {
+                        btn.classList.add("modo-fecha-activo");
+                    } else {
+                        btn.classList.remove("modo-fecha-activo");
+                    }
+                }
+            });
+
+            if (vista === "admin") renderizarTablaAdmin();
+            else renderizarTablaGerente();
+        }
+
+        function cumpleFiltroFechaMultimodal(fechaRegistro, vista) {
+            if (!fechaRegistro) return false;
+            const modo = (vista === "admin") ? modoFechaAdmin : modoFechaGerente;
+
+            if (modo === "todo") return true;
+
+            if (modo === "dia") {
+                const diaBuscado = document.getElementById(`filtro-${vista}-dia`).value;
+                if (!diaBuscado) return true;
+                return fechaRegistro === diaBuscado;
+            }
+
+            if (modo === "mes") {
+                const mesBuscado = document.getElementById(`filtro-${vista}-mes`).value; // YYYY-MM
+                if (!mesBuscado) return true;
+                return fechaRegistro.startsWith(mesBuscado);
+            }
+
+            if (modo === "rango") {
+                const desde = document.getElementById(`filtro-${vista}-desde`).value;
+                const hasta = document.getElementById(`filtro-${vista}-hasta`).value;
+                if (desde && fechaRegistro < desde) return false;
+                if (hasta && fechaRegistro > hasta) return false;
+                return true;
+            }
+
+            return true;
+        }
+
+        function aplicarRangoRapido(vista, periodo) {
+            const ahora = new Date();
+            const hoyISO = obtenerFechaLocalISO(ahora);
+
+            if (periodo === "hoy") {
+                document.getElementById(`filtro-${vista}-dia`).value = hoyISO;
+                cambiarModoFecha(vista, "dia");
+            } else if (periodo === "ayer") {
+                const ayer = new Date(ahora);
+                ayer.setDate(ahora.getDate() - 1);
+                document.getElementById(`filtro-${vista}-dia`).value = obtenerFechaLocalISO(ayer);
+                cambiarModoFecha(vista, "dia");
+            } else if (periodo === "mes") {
+                document.getElementById(`filtro-${vista}-mes`).value = obtenerMesLocalISO(ahora);
+                cambiarModoFecha(vista, "mes");
+            }
+
+            mostrarToast(`Filtro aplicado: ${periodo.toUpperCase()}`);
+        }
+
+        // =====================================================================
+        // 9. VISTA ADMINISTRADOR Y PANEL GERENCIAL (CON CONVERSIÓN A HORAS)
         // =====================================================================
         async function cargarReporteSedeAdmin() {
             document.getElementById("titulo-sede-admin").innerText = usuarioActual.sede;
@@ -1678,15 +1997,12 @@
 
         function renderizarTablaAdmin() {
             const asesor = document.getElementById("filtro-admin-asesor").value;
-            const desde = document.getElementById("filtro-admin-desde").value;
-            const hasta = document.getElementById("filtro-admin-hasta").value;
             const tipo = document.getElementById("filtro-admin-tipo").value;
 
             listaFiltradaAdminActual = registrosAdminCache.filter(r => {
                 if (asesor !== "TODOS" && r.nombre !== asesor) return false;
                 if (tipo !== "TODOS" && r.tipo !== tipo) return false;
-                if (desde && r.fecha < desde) return false;
-                if (hasta && r.fecha > hasta) return false;
+                if (!cumpleFiltroFechaMultimodal(r.fecha, "admin")) return false;
                 return true;
             });
 
@@ -1697,14 +2013,23 @@
                 sumaExtrasCaja += Number(r.extrasCaja || 0);
             });
 
+            const convTard = convertirMinutosAHoras(sumaMinutosTard);
+            const convRefr = convertirMinutosAHoras(sumaExcesoRefr);
+            const convExtr = convertirMinutosAHoras(sumaExtrasCaja);
+
             document.getElementById("kpi-admin-total").innerText = listaFiltradaAdminActual.length;
-            document.getElementById("kpi-admin-minutos").innerText = `${sumaMinutosTard} min`;
-            document.getElementById("kpi-admin-refrigerio").innerText = `${sumaExcesoRefr} min`;
-            document.getElementById("kpi-admin-extras-caja").innerText = `${sumaExtrasCaja} min`;
+            document.getElementById("kpi-admin-minutos").innerText = convTard.textoMinutos;
+            document.getElementById("kpi-admin-minutos-horas").innerText = convTard.textoHorasKPI;
+
+            document.getElementById("kpi-admin-refrigerio").innerText = convRefr.textoMinutos;
+            document.getElementById("kpi-admin-refrigerio-horas").innerText = convRefr.textoHorasKPI;
+
+            document.getElementById("kpi-admin-extras-caja").innerText = convExtr.textoMinutos;
+            document.getElementById("kpi-admin-extras-horas").innerText = convExtr.textoHorasKPI;
 
             const tbody = document.getElementById("tbody-admin");
             if (listaFiltradaAdminActual.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400">No hay registros en el rango seleccionado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400">No hay registros para el filtro de fecha o mes seleccionado.</td></tr>';
                 return;
             }
 
@@ -1725,15 +2050,15 @@
                     </td>
                     <td class="p-3 space-y-1">
                         ${r.tardanza > 0
-                            ? `<span class="bg-red-100 text-red-700 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] inline-block">+\${r.tardanza}m Tardanza</span>`
+                            ? `<span class="bg-red-100 text-red-700 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] inline-block">\${convertirMinutosAHoras(r.tardanza).textoFila} Tardanza</span>`
                             : `<span class="bg-green-100 text-green-700 font-bold px-2.5 py-0.5 rounded-full text-[10px] inline-block">A tiempo</span>`
                         }
                         ${r.excesoRefrigerio > 0
-                            ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">🍽️ +\${r.excesoRefrigerio}m Exceso Refr.</span>`
+                            ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">🍽️ \${convertirMinutosAHoras(r.excesoRefrigerio).textoFila} Exceso Refr.</span>`
                             : ""
                         }
                         ${r.extrasCaja > 0
-                            ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">⏱️ +\${r.extrasCaja}m Extra Caja</span>`
+                            ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">⏱️ \${convertirMinutosAHoras(r.extrasCaja).textoFila} Extra Caja</span>`
                             : ""
                         }
                     </td>
@@ -1749,9 +2074,6 @@
             `}).join("");
         }
 
-        // =====================================================================
-        // 8. PANEL GERENCIAL (Con Visor Modal Anti-404)
-        // =====================================================================
         async function cargarDatosGerente() {
             const tbody = document.getElementById("tbody-gerente");
             tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400 font-bold"><i class="fa-solid fa-spinner fa-spin"></i> Sincronizando todas las sedes para Gerencia...</td></tr>';
@@ -1787,8 +2109,6 @@
             const sede = document.getElementById("filtro-gerente-sede").value;
             const rangoFiltro = document.getElementById("filtro-gerente-rango").value;
             const asesor = document.getElementById("filtro-gerente-asesor").value;
-            const desde = document.getElementById("filtro-gerente-desde").value;
-            const hasta = document.getElementById("filtro-gerente-hasta").value;
 
             listaFiltradaGerenteActual = registrosGerenteCache.filter(r => {
                 if (sede !== "TODAS" && r.sede !== sede) return false;
@@ -1798,8 +2118,7 @@
                     return false;
                 }
                 if (asesor !== "TODOS" && r.nombre !== asesor) return false;
-                if (desde && r.fecha < desde) return false;
-                if (hasta && r.fecha > hasta) return false;
+                if (!cumpleFiltroFechaMultimodal(r.fecha, "gerente")) return false;
                 return true;
             });
 
@@ -1810,14 +2129,23 @@
                 sumaExt += Number(r.extrasCaja || 0);
             });
 
+            const convTardG = convertirMinutosAHoras(sumaTard);
+            const convRefrG = convertirMinutosAHoras(sumaRefr);
+            const convExtrG = convertirMinutosAHoras(sumaExt);
+
             document.getElementById("kpi-gerente-total").innerText = listaFiltradaGerenteActual.length;
-            document.getElementById("kpi-gerente-tardanza").innerText = `${sumaTard} min`;
-            document.getElementById("kpi-gerente-refrigerio").innerText = `${sumaRefr} min`;
-            document.getElementById("kpi-gerente-extras").innerText = `${sumaExt} min`;
+            document.getElementById("kpi-gerente-tardanza").innerText = convTardG.textoMinutos;
+            document.getElementById("kpi-gerente-tardanza-horas").innerText = convTardG.textoHorasKPI;
+
+            document.getElementById("kpi-gerente-refrigerio").innerText = convRefrG.textoMinutos;
+            document.getElementById("kpi-gerente-refrigerio-horas").innerText = convRefrG.textoHorasKPI;
+
+            document.getElementById("kpi-gerente-extras").innerText = convExtrG.textoMinutos;
+            document.getElementById("kpi-gerente-extras-horas").innerText = convExtrG.textoHorasKPI;
 
             const tbody = document.getElementById("tbody-gerente");
             if (listaFiltradaGerenteActual.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400">Sin registros para los filtros seleccionados.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400">Sin registros para el filtro de fecha, mes o sede seleccionado.</td></tr>';
                 return;
             }
 
@@ -1839,15 +2167,15 @@
                     </td>
                     <td class="p-3 space-y-1">
                         ${r.tardanza > 0
-                            ? `<span class="bg-red-100 text-red-700 font-extrabold px-2 py-0.5 rounded-full text-[10px] inline-block">+\${r.tardanza}m Tard.</span>`
+                            ? `<span class="bg-red-100 text-red-700 font-extrabold px-2 py-0.5 rounded-full text-[10px] inline-block">\${convertirMinutosAHoras(r.tardanza).textoFila} Tard.</span>`
                             : `<span class="bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full text-[10px] inline-block">Puntual</span>`
                         }
                         ${r.excesoRefrigerio > 0
-                            ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">🍽️ +\${r.excesoRefrigerio}m Refr.</span>`
+                            ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">🍽️ \${convertirMinutosAHoras(r.excesoRefrigerio).textoFila} Refr.</span>`
                             : ""
                         }
                         ${r.extrasCaja > 0
-                            ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">⏱️ +\${r.extrasCaja}m Extra Caja</span>`
+                            ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">⏱️ \${convertirMinutosAHoras(r.extrasCaja).textoFila} Extra Caja</span>`
                             : ""
                         }
                     </td>
@@ -1864,10 +2192,10 @@
         }
 
         // =====================================================================
-        // 9. PANEL EXCLUSIVO DEL DESARROLLADOR (Configuración Total de Hoja 1)
+        // 10. PANEL EXCLUSIVO DEL DESARROLLADOR (Configuración Total de Hoja 1)
         // =====================================================================
         async function cargarDatosDesarrollador() {
-            await cargarDirectorioDesdeSheet();
+            await cargarDirectorioDesdeSheet(false);
             cargarHorarioSedeEnFormulario();
 
             try {
@@ -1935,6 +2263,7 @@
             document.getElementById("cfg-user-area").value = u.area || "Asesor de Créditos";
             document.getElementById("cfg-user-sede").value = u.sede;
             document.getElementById("cfg-user-estado").value = u.estado;
+            mostrarToast(`Usuario cargado: ${u.nombre}`);
         }
 
         function renderizarListaFeriadosDev() {
@@ -1970,6 +2299,7 @@
                 if (res.estado === "exito") {
                     FERIADOS_CACHE = res.feriados;
                     renderizarListaFeriadosDev();
+                    mostrarToast("Lista de feriados actualizada");
                 } else {
                     alert(res.mensaje);
                 }
@@ -2022,7 +2352,7 @@
                     horario: { sede, horaLV, horaSab, salidaCajaLV, salidaCajaSab, tolerancia, refrigerio }
                 });
                 alert(res.mensaje);
-                await cargarDirectorioDesdeSheet();
+                await cargarDirectorioDesdeSheet(false);
             } catch (e) {
                 alert("❌ Error al actualizar horario: " + e.message);
             }
@@ -2048,9 +2378,21 @@
                 alert("No hay registros filtrados para exportar.");
                 return;
             }
-            const cabeceras = ["ID", "Fecha", "Hora", "Nombre", "Sede", "Rango", "Area", "Tipo_Marcaje", "Modalidad", "Cliente_O_Motivo", "Minutos_Tardanza", "Minutos_Exceso_Refrigerio", "Minutos_Extras_Caja", "Direccion_Comprensible", "Link_Mapa", "Estado_Foto"];
+            const cabeceras = [
+                "ID", "Fecha", "Hora", "Nombre", "Sede", "Rango", "Area",
+                "Tipo_Marcaje", "Modalidad", "Cliente_O_Motivo",
+                "Minutos_Tardanza", "Horas_Tardanza",
+                "Minutos_Exceso_Refrigerio", "Horas_Exceso_Refrigerio",
+                "Minutos_Extras_Caja", "Horas_Extras_Caja",
+                "Direccion_Comprensible", "Link_Mapa", "Estado_Foto"
+            ];
             const filas = datos.map(r => [
-                r.id, r.fecha, r.hora, `"${r.nombre}"`, r.sede, r.rango, `"${r.area || ''}"`, r.tipo, r.modalidad, `"${r.observacion || ''}"`, r.tardanza, r.excesoRefrigerio || 0, r.extrasCaja || 0, `"${r.direccion}"`, obtenerUrlMapaSegura(r), tieneEvidenciaFotografica(r) ? "Con Foto" : "Sin Foto"
+                r.id, r.fecha, r.hora, `"${r.nombre}"`, r.sede, r.rango, `"${r.area || ''}"`,
+                r.tipo, r.modalidad, `"${r.observacion || ''}"`,
+                r.tardanza || 0, convertirMinutosAHoras(r.tardanza || 0).horasDecimalesCSV,
+                r.excesoRefrigerio || 0, convertirMinutosAHoras(r.excesoRefrigerio || 0).horasDecimalesCSV,
+                r.extrasCaja || 0, convertirMinutosAHoras(r.extrasCaja || 0).horasDecimalesCSV,
+                `"${r.direccion}"`, obtenerUrlMapaSegura(r), tieneEvidenciaFotografica(r) ? "Con Foto" : "Sin Foto"
             ].join(","));
 
             const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [cabeceras.join(","), ...filas].join("\n");
