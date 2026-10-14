@@ -49,11 +49,12 @@
         <div class="space-y-4">
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">1. Rango / Nivel</label>
+                    <label class="block text-[11px] font-bold text-gray-500 uppercase mb-1">1. Rango / Rol</label>
                     <select id="login-rango" onchange="actualizarSelectorSedeLogin()" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-[#59B447] outline-none">
                         <option value="Trabajador">Trabajador</option>
                         <option value="Administrador">Administrador</option>
                         <option value="Gerente">Gerente</option>
+                        <option value="Desarrollador">🛠️ Desarrollador</option>
                     </select>
                 </div>
                 <div id="contenedor-login-sede">
@@ -106,7 +107,7 @@
     <!-- =================================================================== -->
     <!-- CONTENEDOR PRINCIPAL DE LA APP                                      -->
     <!-- =================================================================== -->
-    <div id="app-principal" class="w-full max-w-5xl hidden space-y-4">
+    <div id="app-principal" class="w-full max-w-6xl hidden space-y-4">
 
         <!-- BARRA SUPERIOR DE USUARIO, GPS Y PESTAÑAS CONDICIONALES -->
         <div class="glass-card p-4 flex flex-col md:flex-row justify-between items-center gap-4 border-l-8 border-[#59B447]">
@@ -120,24 +121,32 @@
                     <h2 id="header-nombre" class="text-lg font-extrabold text-slate-800 mt-1">NOMBRE USUARIO</h2>
                 </div>
 
-                <!-- Semáforo GPS y Dirección Comprensible -->
+                <!-- Semáforo GPS (Solo visible para quienes marcan asistencia) -->
                 <div id="gps-status" class="bg-yellow-100 text-yellow-700 text-[11px] font-bold px-3 py-1.5 rounded-full border border-yellow-300 flex items-center gap-1.5">
                     <i class="fa-solid fa-satellite-dish animate-pulse"></i> Buscando Calle...
                 </div>
             </div>
 
-            <!-- BARRA DE PESTAÑAS DINÁMICAS -->
+            <!-- BARRA DE PESTAÑAS DINÁMICAS SEGÚN JERARQUÍA -->
             <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+                <!-- Pestaña 1: Marcar Asistencia (OCULTA PARA GERENTES; visible para Trabajador, Administrador y Desarrollador) -->
                 <button id="tab-btn-marcar" onclick="cambiarPestana('marcar')" class="tab-active px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
                     <i class="fa-solid fa-camera"></i> Marcar Asistencia
                 </button>
 
+                <!-- Pestaña 2: Horarios de Mi Sede (Visible para ADMINISTRADOR) -->
                 <button id="tab-btn-admin" onclick="cambiarPestana('admin')" class="hidden bg-slate-100 text-slate-700 hover:bg-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold transition-all items-center gap-2">
                     <i class="fa-solid fa-clipboard-user"></i> Horarios de Mi Sede
                 </button>
 
+                <!-- Pestaña 3: Panel Gerencial (Visible para GERENTE y DESARROLLADOR - Solo lectura y filtros globales/sede) -->
                 <button id="tab-btn-gerente" onclick="cambiarPestana('gerente')" class="hidden bg-slate-100 text-amber-700 hover:bg-amber-100 border border-amber-300 px-4 py-2.5 rounded-xl text-xs font-bold transition-all items-center gap-2">
-                    <i class="fa-solid fa-crown text-amber-500"></i> Panel Gerencial / Bases
+                    <i class="fa-solid fa-crown text-amber-500"></i> Panel Gerencial / Sedes
+                </button>
+
+                <!-- Pestaña 4: Panel Desarrollador (OCULTA PARA TODOS; exclusiva para rol DESARROLLADOR) -->
+                <button id="tab-btn-dev" onclick="cambiarPestana('dev')" class="hidden bg-slate-900 text-emerald-400 hover:bg-slate-800 border border-emerald-500 px-4 py-2.5 rounded-xl text-xs font-bold transition-all items-center gap-2">
+                    <i class="fa-solid fa-screwdriver-wrench"></i> Panel Desarrollador
                 </button>
 
                 <button onclick="cerrarSesion()" title="Cerrar sesión o cambiar de usuario" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2.5 rounded-xl text-xs font-bold transition-all">
@@ -146,22 +155,22 @@
             </div>
         </div>
 
-        <!-- CRONÓMETRO ACTIVO DE REFRIGERIO -->
+        <!-- CRONÓMETRO DINÁMICO DE REFRIGERIO (90 MINUTOS) -->
         <div id="banner-refrigerio" class="hidden bg-amber-50 border-2 border-amber-400 rounded-2xl p-4 flex justify-between items-center shadow-sm">
             <div class="flex items-center gap-3">
                 <i class="fa-solid fa-utensils text-2xl text-amber-600 animate-bounce"></i>
                 <div>
-                    <p class="text-xs font-extrabold text-amber-900 uppercase">Refrigerio en Curso</p>
-                    <p class="text-[11px] text-amber-700">Recuerda marcar tu Retorno de Refrigerio con foto antes de que termine el tiempo.</p>
+                    <p class="text-xs font-extrabold text-amber-900 uppercase">Refrigerio Dinámico en Curso (90 Minutos)</p>
+                    <p class="text-[11px] text-amber-700">Recuerda marcar tu Retorno de Refrigerio con foto antes de que concluyan los 90 minutos.</p>
                 </div>
             </div>
             <div id="reloj-refrigerio" class="text-2xl font-black text-amber-800 font-mono bg-white px-4 py-2 rounded-xl border border-amber-200">
-                60:00
+                90:00
             </div>
         </div>
 
         <!-- =============================================================== -->
-        <!-- PESTAÑA 1: MÓDULO DE MARCAJE Y CÁMARA                           -->
+        <!-- PESTAÑA 1: MÓDULO DE MARCAJE Y CÁMARA (Trabajador / Admin)      -->
         <!-- =============================================================== -->
         <div id="vista-marcar" class="grid grid-cols-1 md:grid-cols-12 gap-4">
             <div class="md:col-span-7 glass-card p-6 space-y-4">
@@ -172,10 +181,10 @@
                     <span id="reloj-vivo" class="text-xs font-mono font-bold bg-slate-100 text-slate-700 px-3 py-1 rounded-lg">00:00:00</span>
                 </div>
 
-                <!-- Si es Gerente, puede elegir en qué sede registrar su asistencia -->
-                <div id="selector-sede-gerente-marcaje" class="hidden">
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Sede donde te encuentras hoy</label>
-                    <select id="marcaje-sede-gerente" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-700">
+                <!-- Selector de sede solo si el Desarrollador hace una prueba de marcaje -->
+                <div id="selector-sede-dev-marcaje" class="hidden">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Sede de Prueba (Modo Desarrollador)</label>
+                    <select id="marcaje-sede-dev" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-700">
                         <option value="HUACHO">HUACHO</option>
                         <option value="HUARAZ">HUARAZ</option>
                         <option value="ICA">ICA</option>
@@ -193,14 +202,13 @@
                             <option value="Asesor de Créditos">💼 Asesoría / Campo</option>
                             <option value="Caja">🏦 Área de Caja (Control Horas Extras)</option>
                             <option value="Administración">👔 Administración de Sede</option>
-                            <option value="Gerencia">👑 Gerencia</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">2. Momento de Asistencia</label>
                         <select id="tipo-marcaje" onchange="verificarBannerHorasExtrasCaja()" class="w-full border-2 border-[#59B447] rounded-xl p-3.5 text-sm font-extrabold text-slate-800 focus:ring-4 focus:ring-green-100 outline-none">
                             <option value="Entrada">📥 Hora de Entrada</option>
-                            <option value="Salida a Refrigerio">🍽️ Hora de Refrigerio (Salida)</option>
+                            <option value="Salida a Refrigerio">🍽️ Salida a Refrigerio (90 min)</option>
                             <option value="Retorno de Refrigerio">✅ Regreso de Refrigerio</option>
                             <option value="Salida Final">📤 Hora de Salida Final</option>
                         </select>
@@ -208,30 +216,30 @@
                 </div>
 
                 <!-- AVISO AUTOMÁTICO DE HORAS EXTRAS PARA EL ÁREA DE CAJA EN SALIDA -->
-                <div id="aviso-horas-extras-caja" class="hidden bg-purple-50 border-2 border-purple-300 rounded-xl p-3.5 text-xs space-y-2">
+                <div id="aviso-horas-extras-caja" class="hidden bg-purple-50 border-2 border-purple-300 rounded-xl p-3.5 text-xs space-y-1.5">
                     <div class="flex items-center justify-between">
                         <span class="font-extrabold text-purple-900 uppercase flex items-center gap-1.5">
-                            <i class="fa-solid fa-Business-time text-purple-600"></i> Control de Salida y Horas Extras — Área de Caja
+                            <i class="fa-solid fa-business-time text-purple-600"></i> Control de Salida y Horas Extras — Área de Caja
                         </span>
-                        <span class="bg-purple-200 text-purple-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full">Cálculo Automático</span>
+                        <span class="bg-purple-200 text-purple-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full">Automático</span>
                     </div>
                     <p class="text-[11px] text-purple-800">
-                        Si marcas tu salida después de la hora de cierre de Caja configurada para tu sede, el sistema registrará automáticamente tus <b>Minutos de Horas Extras</b> en el Google Sheet.
+                        Se calcularán los minutos extras si marcas después del cierre oficial de tu sede (Sábados a partir de la <b>1:00 PM / 13:00</b>).
                     </p>
                 </div>
 
-                <!-- Modalidad Oficina vs Inicio en Campo -->
-                <div class="grid grid-cols-2 gap-3">
+                <!-- Modalidad Oficina vs Campo (Ambos exigen puntualidad a la hora acordada) y Nombre de Cliente / Motivo -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">3. Ubicación Operativa</label>
                         <select id="modalidad-marcaje" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-700 outline-none">
                             <option value="Oficina">🏢 En Agencia / Sede</option>
-                            <option value="Campo">🛵 En Campo / Visita Cliente</option>
+                            <option value="Campo">🛵 En Campo (Respeta hora de ingreso)</option>
                         </select>
                     </div>
                     <div>
-                        <label id="label-obs-marcaje" class="block text-xs font-bold text-gray-500 uppercase mb-1">4. Detalle / Motivo (Opcional)</label>
-                        <input type="text" id="obs-marcaje" placeholder="Ej. Cuadre de caja / Visita cliente" class="w-full border border-gray-300 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-[#59B447]">
+                        <label id="label-obs-marcaje" class="block text-xs font-bold text-gray-500 uppercase mb-1">4. Cliente o Motivo (Sale en la foto)</label>
+                        <input type="text" id="obs-marcaje" placeholder="Ej. Cliente Sr. Pérez / Labor en agencia" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-[#59B447]">
                     </div>
                 </div>
 
@@ -254,16 +262,16 @@
                     </button>
                 </div>
 
-                <!-- AVISO OBLIGATORIO Y APERTURA DE CÁMARA (Solo se habilita con Dirección Comprensible) -->
+                <!-- AVISO OBLIGATORIO Y APERTURA DE CÁMARA -->
                 <div class="bg-blue-50 border-2 border-dashed border-blue-300 rounded-2xl p-5 text-center relative">
                     <span class="inline-block bg-blue-600 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
                         ⚠️ Requisito Obligatorio de Validación
                     </span>
                     <p class="text-xs font-bold text-blue-900">
-                        Dentro de la fotografía debe verse claramente el rostro del Asesor, Cajero o Administrador[cite: 10].
+                        Dentro de la fotografía debe verse claramente el rostro del Asesor, Cajero o Administrador.
                     </p>
                     <p class="text-[11px] text-blue-700 mt-1 mb-4">
-                        Solo se permite tomar y subir la foto cuando la <b>Dirección Comprensible (Calle y Distrito)</b> ya esté cargada en palabras (no solo dígitos)[cite: 2, 8].
+                        La marca de agua grabará: <b>Nombre, Rango, Sede, Hora, Cliente/Motivo y Dirección Comprensible GPS</b>.
                     </p>
 
                     <button type="button" id="btn-abrir-camara" onclick="intentarAbrirCamara()" class="inline-flex items-center justify-center gap-2 bg-slate-400 text-white font-extrabold py-4 px-6 rounded-xl shadow-lg transition-all w-full cursor-not-allowed">
@@ -284,7 +292,7 @@
                     </div>
                 </div>
 
-                <!-- Cola Offline con opción de Reintentar o Limpiar si un registro viejo quedó atascado -->
+                <!-- Cola Offline -->
                 <div id="caja-offline" class="hidden bg-orange-50 border border-orange-300 rounded-xl p-3 space-y-2">
                     <div class="flex justify-between items-center">
                         <span class="text-xs font-bold text-orange-800">
@@ -310,10 +318,10 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b pb-4">
                 <div>
                     <span class="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">
-                        Vista de Supervisión de Agencia
+                        Supervisión de Agencia
                     </span>
                     <h3 class="text-lg font-extrabold text-slate-800 mt-1">
-                        Control de Ingresos, Salidas y Horas Extras Caja — Sede <span id="titulo-sede-admin" class="text-[#59B447]"></span>
+                        Control de Asistencia, Refrigerios (90m) y Horas Extras — Sede <span id="titulo-sede-admin" class="text-[#59B447]"></span>
                     </h3>
                 </div>
                 <div class="flex gap-2">
@@ -329,44 +337,44 @@
             <!-- Filtros por Asesor, por Día o por Rango de Fechas -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Filtrar por Asesor / Cajero</label>
-                    <select id="filtro-admin-asesor" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold">
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Filtrar Colaborador de mi Sede</label>
+                    <select id="filtro-admin-asesor" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-white">
                         <option value="TODOS">Todos los de mi sede</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Desde Fecha (o Día Exacto)</label>
-                    <input type="date" id="filtro-admin-desde" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold">
+                    <input type="date" id="filtro-admin-desde" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-white">
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Hasta Fecha (Rango)</label>
-                    <input type="date" id="filtro-admin-hasta" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold">
+                    <input type="date" id="filtro-admin-hasta" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-white">
                 </div>
                 <div>
                     <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Momento de Marcaje</label>
-                    <select id="filtro-admin-tipo" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold">
+                    <select id="filtro-admin-tipo" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold bg-white">
                         <option value="TODOS">Todos los marcajes</option>
                         <option value="Entrada">📥 Solo Entradas</option>
                         <option value="Salida a Refrigerio">🍽️ Salida Refrigerio</option>
                         <option value="Retorno de Refrigerio">✅ Retorno Refrigerio</option>
-                        <option value="Salida Final">📤 Salida Final (Horas Extras Caja)</option>
+                        <option value="Salida Final">📤 Salida Final</option>
                     </select>
                 </div>
             </div>
 
-            <!-- KPIs de la Sede (Incluye Horas Extras de Caja) -->
+            <!-- KPIs de la Sede -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
                 <div class="bg-slate-50 p-3 rounded-xl border">
                     <p class="text-[10px] font-bold text-slate-400 uppercase">Total Marcajes</p>
                     <p id="kpi-admin-total" class="text-xl font-black text-slate-800">0</p>
                 </div>
                 <div class="bg-red-50 p-3 rounded-xl border border-red-100">
-                    <p class="text-[10px] font-bold text-red-500 uppercase">Entradas con Tardanza</p>
-                    <p id="kpi-admin-tardanzas" class="text-xl font-black text-red-600">0</p>
+                    <p class="text-[10px] font-bold text-red-500 uppercase">Minutos Tardanza</p>
+                    <p id="kpi-admin-minutos" class="text-xl font-black text-red-600">0 min</p>
                 </div>
                 <div class="bg-amber-50 p-3 rounded-xl border border-amber-100">
-                    <p class="text-[10px] font-bold text-amber-600 uppercase">Minutos Tardanza</p>
-                    <p id="kpi-admin-minutos" class="text-xl font-black text-amber-700">0 min</p>
+                    <p class="text-[10px] font-bold text-amber-600 uppercase">Exceso Refrigerio (>90m)</p>
+                    <p id="kpi-admin-refrigerio" class="text-xl font-black text-amber-700">0 min</p>
                 </div>
                 <div class="bg-purple-50 p-3 rounded-xl border border-purple-200">
                     <p class="text-[10px] font-bold text-purple-700 uppercase">Horas Extras Caja</p>
@@ -382,8 +390,8 @@
                             <th class="p-3">Fecha / Hora</th>
                             <th class="p-3">Colaborador</th>
                             <th class="p-3">Área / Rango</th>
-                            <th class="p-3">Marcaje</th>
-                            <th class="p-3">Tardanza / Extras Caja</th>
+                            <th class="p-3">Marcaje y Cliente/Motivo</th>
+                            <th class="p-3">Tardanza / Refrigerio / Extras</th>
                             <th class="p-3">Dirección Comprensible GPS</th>
                             <th class="p-3 text-center">Foto Evidencia</th>
                         </tr>
@@ -394,58 +402,57 @@
         </div>
 
         <!-- =============================================================== -->
-        <!-- PESTAÑA 3: PESTAÑA OCULTA DE GERENTE (Todas las Bases + Hoja 1) -->
+        <!-- PESTAÑA 3: PANEL DE GERENCIA (SOLO AUDITORÍA GLOBAL Y POR SEDE) -->
+        <!-- * Sin opciones de editar la hoja ni parámetros                  -->
         <!-- =============================================================== -->
         <div id="vista-gerente" class="hidden space-y-5">
-            
             <div class="glass-card p-6 space-y-5 border-t-4 border-amber-500">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b pb-4">
                     <div>
                         <span class="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase">
-                            <i class="fa-solid fa-crown"></i> Acceso Total Exclusivo de Gerencia
+                            <i class="fa-solid fa-crown"></i> Supervisión Ejecutiva de Gerencia (Solo Lectura)
                         </span>
                         <h3 class="text-lg font-extrabold text-slate-800 mt-1">
-                            Auditoría Global de Bases, Administradores, Asesores y Cajeros
+                            Auditoría General de Todas las Sedes y Filtro por Sede / Colaborador
                         </h3>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="cargarDatosGerente()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2">
-                            <i class="fa-solid fa-rotate"></i> Sincronizar Todas las Bases
+                            <i class="fa-solid fa-rotate"></i> Sincronizar Todas las Sedes
                         </button>
                         <button onclick="exportarTablaCSV('gerente')" class="bg-[#59B447] hover:bg-[#4a973a] text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2">
-                            <i class="fa-solid fa-file-csv"></i> Descargar Base CSV
+                            <i class="fa-solid fa-file-csv"></i> Descargar Reporte CSV
                         </button>
                     </div>
                 </div>
 
-                <!-- Selector de Hojas/Bases y Filtros -->
+                <!-- Filtros Gerenciales: Filtro General de Todas las Sedes o Sede Específica + Colaboradores de dicha Sede -->
                 <div class="grid grid-cols-1 md:grid-cols-5 gap-3 bg-amber-50/60 p-4 rounded-xl border border-amber-200">
                     <div>
-                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">1. Seleccionar Hoja / Base</label>
+                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">1. Sede / Base</label>
                         <select id="filtro-gerente-sede" onchange="actualizarFiltrosGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-extrabold bg-white">
-                            <option value="TODAS">🌍 TODAS LAS SEDES (Global)</option>
-                            <option value="HUACHO">📁 Hoja: HUACHO</option>
-                            <option value="HUARAZ">📁 Hoja: HUARAZ</option>
-                            <option value="ICA">📁 Hoja: ICA</option>
-                            <option value="NUEVA OFICINA">📁 Hoja: NUEVA OFICINA</option>
-                            <option value="SEDE_EXTRA_1">📁 Hoja: SEDE_EXTRA_1 (Por Definir 1)</option>
-                            <option value="SEDE_EXTRA_2">📁 Hoja: SEDE_EXTRA_2 (Por Definir 2)</option>
+                            <option value="TODAS">🌍 TODAS LAS SEDES (Vista General)</option>
+                            <option value="HUACHO">🏢 Sede: HUACHO</option>
+                            <option value="HUARAZ">🏢 Sede: HUARAZ</option>
+                            <option value="ICA">🏢 Sede: ICA</option>
+                            <option value="NUEVA OFICINA">🏢 Sede: NUEVA OFICINA</option>
+                            <option value="SEDE_EXTRA_1">📁 Hoja: SEDE_EXTRA_1</option>
+                            <option value="SEDE_EXTRA_2">📁 Hoja: SEDE_EXTRA_2</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">2. Filtrar por Rango / Área</label>
+                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">2. Colaborador de la Sede</label>
+                        <select id="filtro-gerente-asesor" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-bold bg-white">
+                            <option value="TODOS">Todos los colaboradores</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">3. Filtrar Rango / Área</label>
                         <select id="filtro-gerente-rango" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-bold bg-white">
                             <option value="TODOS">Todos (Admins + Asesores + Caja)</option>
                             <option value="Administrador">👔 Solo Administradores</option>
-                            <option value="Trabajador">💼 Solo Trabajadores (Asesores/Caja)</option>
+                            <option value="Trabajador">💼 Solo Trabajadores</option>
                             <option value="CAJA">🏦 Solo Área de Caja</option>
-                            <option value="Gerente">👑 Solo Gerentes</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">3. Colaborador</label>
-                        <select id="filtro-gerente-asesor" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2 text-xs font-bold bg-white">
-                            <option value="TODOS">Todos los colaboradores</option>
                         </select>
                     </div>
                     <div>
@@ -458,17 +465,37 @@
                     </div>
                 </div>
 
+                <!-- KPIs Globales / Por Sede para el Gerente -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                    <div class="bg-slate-50 p-3 rounded-xl border">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Registros Filtrados</p>
+                        <p id="kpi-gerente-total" class="text-xl font-black text-slate-800">0</p>
+                    </div>
+                    <div class="bg-red-50 p-3 rounded-xl border border-red-100">
+                        <p class="text-[10px] font-bold text-red-500 uppercase">Minutos Tardanza</p>
+                        <p id="kpi-gerente-tardanza" class="text-xl font-black text-red-600">0 min</p>
+                    </div>
+                    <div class="bg-amber-50 p-3 rounded-xl border border-amber-100">
+                        <p class="text-[10px] font-bold text-amber-600 uppercase">Exceso Refrigerio (>90m)</p>
+                        <p id="kpi-gerente-refrigerio" class="text-xl font-black text-amber-700">0 min</p>
+                    </div>
+                    <div class="bg-purple-50 p-3 rounded-xl border border-purple-200">
+                        <p class="text-[10px] font-bold text-purple-700 uppercase">Horas Extras Caja</p>
+                        <p id="kpi-gerente-extras" class="text-xl font-black text-purple-800">0 min</p>
+                    </div>
+                </div>
+
                 <!-- Tabla Global del Gerente -->
                 <div class="overflow-x-auto border rounded-xl">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-900 text-white text-[11px] uppercase">
                                 <th class="p-3">Fecha / Hora</th>
-                                <th class="p-3">Hoja / Sede</th>
+                                <th class="p-3">Sede</th>
                                 <th class="p-3">Colaborador</th>
                                 <th class="p-3">Rango / Área</th>
-                                <th class="p-3">Marcaje</th>
-                                <th class="p-3">Tardanza / Extras Caja</th>
+                                <th class="p-3">Marcaje y Cliente/Motivo</th>
+                                <th class="p-3">Tardanza / Refr. / Extras</th>
                                 <th class="p-3">Dirección Comprensible GPS</th>
                                 <th class="p-3 text-center">Foto</th>
                             </tr>
@@ -477,111 +504,188 @@
                     </table>
                 </div>
             </div>
+        </div>
 
-            <!-- Bloque B: Configurar Hoja 1 (Usuarios y Horarios incluyendo Salida de Caja) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
-                <!-- Añadir o Modificar Usuarios en la Hoja 1 -->
-                <div class="glass-card p-5 space-y-4">
-                    <h4 class="font-extrabold text-slate-800 text-sm uppercase border-b pb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-user-plus text-[#59B447]"></i> Añadir / Editar Usuario en Hoja 1
-                    </h4>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="col-span-2">
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nombre Completo del Usuario</label>
-                            <input type="text" id="cfg-user-nombre" placeholder="Ej. MARIA CAJERA" class="w-full border rounded-lg p-2.5 text-xs font-bold uppercase">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Contraseña / Clave</label>
-                            <input type="text" id="cfg-user-clave" placeholder="Ej. 4567" class="w-full border rounded-lg p-2.5 text-xs font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Rango de Acceso</label>
-                            <select id="cfg-user-rango" class="w-full border rounded-lg p-2.5 text-xs font-bold">
-                                <option value="Trabajador">Trabajador</option>
-                                <option value="Administrador">Administrador</option>
-                                <option value="Gerente">Gerente</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Área / Cargo Operativo</label>
-                            <select id="cfg-user-area" class="w-full border rounded-lg p-2.5 text-xs font-bold">
-                                <option value="Asesor de Créditos">💼 Asesor de Créditos</option>
-                                <option value="Caja">🏦 Área de Caja (Calcula Horas Extras)</option>
-                                <option value="Administración">👔 Administración</option>
-                                <option value="Gerencia">👑 Gerencia</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Sede Asignada</label>
-                            <select id="cfg-user-sede" class="w-full border rounded-lg p-2.5 text-xs font-bold">
-                                <option value="HUACHO">HUACHO</option>
-                                <option value="HUARAZ">HUARAZ</option>
-                                <option value="ICA">ICA</option>
-                                <option value="NUEVA OFICINA">NUEVA OFICINA</option>
-                                <option value="SEDE_EXTRA_1">SEDE_EXTRA_1</option>
-                                <option value="SEDE_EXTRA_2">SEDE_EXTRA_2</option>
-                                <option value="TODAS">TODAS (Solo Gerente)</option>
-                            </select>
-                        </div>
-                        <div class="col-span-2">
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Estado</label>
-                            <select id="cfg-user-estado" class="w-full border rounded-lg p-2.5 text-xs font-bold">
-                                <option value="ACTIVO">ACTIVO</option>
-                                <option value="INACTIVO">INACTIVO (Dar de baja)</option>
-                            </select>
-                        </div>
+        <!-- =============================================================== -->
+        <!-- PESTAÑA 4: PANEL EXCLUSIVO DEL DESARROLLADOR (Configura Hoja 1) -->
+        <!-- =============================================================== -->
+        <div id="vista-dev" class="hidden space-y-5">
+            <div class="glass-card p-6 border-t-4 border-emerald-500 space-y-5">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b pb-4">
+                    <div>
+                        <span class="bg-slate-900 text-emerald-400 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase">
+                            <i class="fa-solid fa-terminal"></i> Consola Maestra de Configuración — Rol Desarrollador
+                        </span>
+                        <h3 class="text-lg font-extrabold text-slate-800 mt-1">
+                            Administración de Usuarios, Claves, Horarios por Sede y Días Feriados (Hoja 1)
+                        </h3>
                     </div>
-                    <button onclick="guardarUsuarioEnSheet()" class="w-full bg-[#59B447] hover:bg-[#4a973a] text-white font-bold py-3 rounded-xl text-xs shadow">
-                        <i class="fa-solid fa-floppy-disk"></i> Guardar Usuario en el Google Sheet
+                    <button onclick="cargarDatosDesarrollador()" class="bg-slate-900 hover:bg-slate-800 text-emerald-400 text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2">
+                        <i class="fa-solid fa-arrows-rotate"></i> Recargar Parámetros de Hoja 1
                     </button>
                 </div>
 
-                <!-- Configurar Horarios Oficiales de Entrada y Salida de Caja por Sede -->
-                <div class="glass-card p-5 space-y-4">
-                    <h4 class="font-extrabold text-slate-800 text-sm uppercase border-b pb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-clock text-blue-600"></i> Horarios de Entrada y Cierre de Caja (Hoja 1)
-                    </h4>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="col-span-2">
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Seleccionar Sede a Configurar</label>
-                            <select id="cfg-hor-sede" class="w-full border rounded-lg p-2.5 text-xs font-bold">
-                                <option value="HUACHO">HUACHO</option>
-                                <option value="HUARAZ">HUARAZ</option>
-                                <option value="ICA">ICA</option>
-                                <option value="NUEVA OFICINA">NUEVA OFICINA</option>
-                                <option value="SEDE_EXTRA_1">SEDE_EXTRA_1</option>
-                                <option value="SEDE_EXTRA_2">SEDE_EXTRA_2</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Entrada Lunes a Viernes</label>
-                            <input type="time" id="cfg-hor-lv" value="08:30" class="w-full border rounded-lg p-2 text-xs font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Entrada Sábados</label>
-                            <input type="time" id="cfg-hor-sab" value="09:00" class="w-full border rounded-lg p-2 text-xs font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-purple-700 uppercase mb-1">🏦 Salida Caja L-V (H. Extras)</label>
-                            <input type="time" id="cfg-hor-caja-lv" value="18:00" class="w-full border border-purple-300 bg-purple-50 rounded-lg p-2 text-xs font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-purple-700 uppercase mb-1">🏦 Salida Caja Sábados</label>
-                            <input type="time" id="cfg-hor-caja-sab" value="13:30" class="w-full border border-purple-300 bg-purple-50 rounded-lg p-2 text-xs font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Minutos Tolerancia</label>
-                            <input type="number" id="cfg-hor-tol" value="10" class="w-full border rounded-lg p-2 text-xs font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tiempo Refrigerio (Min)</label>
-                            <input type="number" id="cfg-hor-ref" value="60" class="w-full border rounded-lg p-2 text-xs font-bold">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    
+                    <!-- Herramienta 1: Crear o Editar Usuarios en Hoja 1 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+                        <h4 class="font-extrabold text-slate-800 text-xs uppercase border-b pb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-users-gear text-[#59B447]"></i> 1. Añadir / Modificar Usuario (Hoja 1)
+                        </h4>
+                        <div class="space-y-2.5">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nombre Completo</label>
+                                <input type="text" id="cfg-user-nombre" placeholder="Ej. JUAN PEREZ" class="w-full border rounded-lg p-2 text-xs font-bold uppercase bg-white">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Contraseña</label>
+                                    <input type="text" id="cfg-user-clave" placeholder="Ej. 1234" class="w-full border rounded-lg p-2 text-xs font-bold bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Rango de Acceso</label>
+                                    <select id="cfg-user-rango" class="w-full border rounded-lg p-2 text-xs font-bold bg-white">
+                                        <option value="Trabajador">Trabajador</option>
+                                        <option value="Administrador">Administrador</option>
+                                        <option value="Gerente">Gerente (Solo Vista)</option>
+                                        <option value="Desarrollador">Desarrollador</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Área Operativa</label>
+                                    <select id="cfg-user-area" class="w-full border rounded-lg p-2 text-xs font-bold bg-white">
+                                        <option value="Asesor de Créditos">💼 Asesor Créditos</option>
+                                        <option value="Caja">🏦 Área de Caja</option>
+                                        <option value="Administración">👔 Administración</option>
+                                        <option value="Gerencia">👑 Gerencia</option>
+                                        <option value="Sistemas">🛠️ Sistemas / Dev</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Sede Asignada</label>
+                                    <select id="cfg-user-sede" class="w-full border rounded-lg p-2 text-xs font-bold bg-white">
+                                        <option value="HUACHO">HUACHO</option>
+                                        <option value="HUARAZ">HUARAZ</option>
+                                        <option value="ICA">ICA</option>
+                                        <option value="NUEVA OFICINA">NUEVA OFICINA</option>
+                                        <option value="SEDE_EXTRA_1">SEDE_EXTRA_1</option>
+                                        <option value="SEDE_EXTRA_2">SEDE_EXTRA_2</option>
+                                        <option value="TODAS">TODAS</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Estado</label>
+                                <select id="cfg-user-estado" class="w-full border rounded-lg p-2 text-xs font-bold bg-white">
+                                    <option value="ACTIVO">ACTIVO</option>
+                                    <option value="INACTIVO">INACTIVO (Baja)</option>
+                                </select>
+                            </div>
+                            <button onclick="guardarUsuarioEnSheet()" class="w-full bg-[#59B447] hover:bg-[#4a973a] text-white font-bold py-2.5 rounded-xl text-xs shadow">
+                                <i class="fa-solid fa-floppy-disk"></i> Guardar Usuario en Hoja 1
+                            </button>
                         </div>
                     </div>
-                    <button onclick="guardarHorarioEnSheet()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 rounded-xl text-xs shadow">
-                        <i class="fa-solid fa-sliders"></i> Actualizar Horarios y Salida de Caja
-                    </button>
+
+                    <!-- Herramienta 2: Horarios por Sede, Refrigerio 90m y Sábados 13:00 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+                        <h4 class="font-extrabold text-slate-800 text-xs uppercase border-b pb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-clock text-blue-600"></i> 2. Horarios por Sede y Salida Sábado 13:00
+                        </h4>
+                        <div class="space-y-2.5">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Seleccionar Sede</label>
+                                <select id="cfg-hor-sede" onchange="cargarHorarioSedeEnFormulario()" class="w-full border rounded-lg p-2 text-xs font-bold bg-white">
+                                    <option value="HUACHO">HUACHO</option>
+                                    <option value="HUARAZ">HUARAZ</option>
+                                    <option value="ICA">ICA</option>
+                                    <option value="NUEVA OFICINA">NUEVA OFICINA</option>
+                                    <option value="SEDE_EXTRA_1">SEDE_EXTRA_1</option>
+                                    <option value="SEDE_EXTRA_2">SEDE_EXTRA_2</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Ingreso Lunes-Viernes</label>
+                                    <input type="time" id="cfg-hor-lv" value="08:30" class="w-full border rounded-lg p-2 text-xs font-bold bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Ingreso Sábados</label>
+                                    <input type="time" id="cfg-hor-sab" value="09:00" class="w-full border rounded-lg p-2 text-xs font-bold bg-white">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-purple-700 uppercase mb-1">🏦 Salida Caja L-V</label>
+                                    <input type="time" id="cfg-hor-caja-lv" value="18:00" class="w-full border border-purple-300 bg-purple-50 rounded-lg p-2 text-xs font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-purple-700 uppercase mb-1">🏦 Salida Sábado (1 PM)</label>
+                                    <input type="time" id="cfg-hor-caja-sab" value="13:00" class="w-full border border-purple-300 bg-purple-50 rounded-lg p-2 text-xs font-bold">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tolerancia (Min)</label>
+                                    <input type="number" id="cfg-hor-tol" value="10" class="w-full border rounded-lg p-2 text-xs font-bold bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-amber-700 uppercase mb-1">Refrigerio Máx (Min)</label>
+                                    <input type="number" id="cfg-hor-ref" value="90" class="w-full border border-amber-300 bg-amber-50 rounded-lg p-2 text-xs font-bold">
+                                </div>
+                            </div>
+                            <button onclick="guardarHorarioEnSheet()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-2.5 rounded-xl text-xs shadow">
+                                <i class="fa-solid fa-sliders"></i> Guardar Horario de Sede
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Herramienta 3: Días Feriados / No Laborables -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3 flex flex-col justify-between">
+                        <div class="space-y-3">
+                            <h4 class="font-extrabold text-slate-800 text-xs uppercase border-b pb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-day text-red-600"></i> 3. Días Feriados / No Laborables
+                            </h4>
+                            <p class="text-[11px] text-slate-500">
+                                En las fechas listadas aquí, el sistema no aplicará descuentos por tardanza.
+                            </p>
+                            <div class="flex gap-2">
+                                <input type="date" id="cfg-feriado-fecha" class="flex-1 border rounded-lg p-2 text-xs font-bold bg-white">
+                                <button onclick="modificarFeriado('agregar')" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-lg text-xs">
+                                    <i class="fa-solid fa-plus"></i> Añadir
+                                </button>
+                            </div>
+                            <div id="lista-feriados-dev" class="max-h-44 overflow-y-auto space-y-1.5 border rounded-xl p-2 bg-white">
+                                <p class="text-[11px] text-slate-400 text-center py-4">Cargando feriados...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Tabla de Directorio Completo en Hoja 1 (Para que el Desarrollador seleccione y edite rápido) -->
+                <div class="space-y-2 pt-2">
+                    <h4 class="font-extrabold text-slate-700 text-xs uppercase">
+                        📋 Directorio Actual en Hoja 1 (Toca "Cargar" para editar un usuario)
+                    </h4>
+                    <div class="overflow-x-auto border rounded-xl max-h-64">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-800 text-white text-[10px] uppercase">
+                                    <th class="p-2.5">Nombre</th>
+                                    <th class="p-2.5">Clave</th>
+                                    <th class="p-2.5">Rango</th>
+                                    <th class="p-2.5">Área</th>
+                                    <th class="p-2.5">Sede</th>
+                                    <th class="p-2.5">Estado</th>
+                                    <th class="p-2.5 text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-usuarios-dev" class="text-xs divide-y divide-slate-200"></tbody>
+                        </table>
+                    </div>
                 </div>
 
             </div>
@@ -595,7 +699,7 @@
     <div id="pantalla-preview" class="fixed inset-0 bg-slate-900/95 z-50 hidden flex-col items-center justify-between p-4">
         <div class="w-full text-center py-2">
             <h2 class="text-white text-lg font-extrabold">Verifica tu Fotografía y Marca de Agua</h2>
-            <p class="text-green-400 text-xs">Confirma que tu rostro, nombre, hora y dirección comprensible sean legibles</p>
+            <p class="text-green-400 text-xs">Confirma que tu rostro, nombre, cliente/motivo, hora y dirección sean legibles</p>
         </div>
 
         <div class="flex-1 w-full max-w-md flex items-center justify-center overflow-hidden my-2">
@@ -613,13 +717,14 @@
     </div>
 
     <!-- =================================================================== -->
-    <!-- LÓGICA JAVASCRIPT COMPLETA                                          -->
+    <!-- LÓGICA JAVASCRIPT COMPLETA Y DEPURADA                               -->
     <!-- =================================================================== -->
     <script>
-        // ✅ TU URL DE GOOGLE APPS SCRIPT YA ESTÁ INTEGRADA AQUÍ:
+        // ✅ URL OFICIAL DE TU GOOGLE APPS SCRIPT:
         const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbxGhuNSyI3U5ktzD0CnaN1ijNxliLG7pXCDP8LSgxznpa9zbhIAMKzpEUxesshrhRNG/exec";
 
         let DIRECTORIO_HOJA_1 = [
+            { nombre: "DESARROLLADOR", rango: "Desarrollador", sede: "TODAS", area: "Sistemas" },
             { nombre: "CARLOS GERENTE", rango: "Gerente", sede: "TODAS", area: "Gerencia" },
             { nombre: "DAVID SAENZ", rango: "Administrador", sede: "HUACHO", area: "Administración" },
             { nombre: "ARACELLY GRADOS", rango: "Administrador", sede: "HUARAZ", area: "Administración" },
@@ -627,6 +732,9 @@
             { nombre: "CAJERO HUACHO", rango: "Trabajador", sede: "HUACHO", area: "Caja" },
             { nombre: "MARIA GOMEZ", rango: "Trabajador", sede: "HUARAZ", area: "Caja" }
         ];
+
+        let HORARIOS_SEDES_CACHE = {};
+        let FERIADOS_CACHE = [];
 
         let usuarioActual = null;
         let globalLat = null, globalLng = null;
@@ -640,8 +748,17 @@
         let registrosAdminCache = [];
         let registrosGerenteCache = [];
 
+        // Helper para obtener siempre la fecha local de Perú (YYYY-MM-DD) sin desfase UTC nocturno
+        function obtenerFechaLocalISO() {
+            const ahora = new Date();
+            const anio = ahora.getFullYear();
+            const mes = String(ahora.getMonth() + 1).padStart(2, "0");
+            const dia = String(ahora.getDate()).padStart(2, "0");
+            return `${anio}-${mes}-${dia}`;
+        }
+
         // =====================================================================
-        // 1. INICIALIZACIÓN Y PUENTE DE COMUNICACIÓN SEGURO CON APPS SCRIPT
+        // 1. INICIALIZACIÓN Y COMUNICACIÓN CON GOOGLE APPS SCRIPT
         // =====================================================================
         window.addEventListener("DOMContentLoaded", async () => {
             iniciarRelojVivo();
@@ -662,9 +779,6 @@
             }
         });
 
-        /**
-         * Puente POST optimizado para Google Apps Script (Evita errores CORS en móviles)
-         */
         async function llamarAppsScriptPOST(payloadObj) {
             const respuesta = await fetch(URL_GOOGLE_SCRIPT, {
                 method: "POST",
@@ -676,7 +790,7 @@
             try {
                 return JSON.parse(texto);
             } catch (err) {
-                throw new Error("Debes publicar una 'Nueva versión' en Gestionar Implementaciones de tu Apps Script.");
+                throw new Error("Recuerda actualizar tu Apps Script con 'Nueva versión' en Gestionar Implementaciones.");
             }
         }
 
@@ -688,7 +802,7 @@
         }
 
         // =====================================================================
-        // 2. TRIPLE MOTOR DE DIRECCIÓN COMPRENSIBLE (PROHÍBE SUBIR SOLO DÍGITOS)
+        // 2. VALIDACIÓN ESTRICTA DE DIRECCIÓN COMPRENSIBLE (NO SOLO DÍGITOS)
         // =====================================================================
         function esDireccionComprensible(texto) {
             if (!texto || typeof texto !== "string") return false;
@@ -697,7 +811,6 @@
             if (/^lat\s*:/i.test(limpio) || /^coordenadas/i.test(limpio) || /esperando/i.test(limpio) || /obteniendo/i.test(limpio)) {
                 return false;
             }
-            // Debe contener al menos 4 letras reales (nombre de calle, avenida, urbanización, distrito o ciudad)
             const cantidadLetras = (limpio.match(/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/g) || []).length;
             return cantidadLetras >= 4;
         }
@@ -712,7 +825,8 @@
                 async (pos) => {
                     globalLat = pos.coords.latitude;
                     globalLng = pos.coords.longitude;
-                    document.getElementById("subtexto-coordenadas").innerText = `Coordenadas: ${globalLat.toFixed(5)}, ${globalLng.toFixed(5)}`;
+                    const sub = document.getElementById("subtexto-coordenadas");
+                    if (sub) sub.innerText = `Coordenadas: ${globalLat.toFixed(5)}, ${globalLng.toFixed(5)}`;
 
                     const claveRedondeada = `${globalLat.toFixed(3)},${globalLng.toFixed(3)}`;
                     if (cacheDirecciones[claveRedondeada] && esDireccionComprensible(cacheDirecciones[claveRedondeada])) {
@@ -734,7 +848,7 @@
 
         async function forzarTraduccionCalle() {
             if (!globalLat || !globalLng) {
-                alert("⚠️ Aún buscando satélite GPS. Asegúrate de tener el GPS encendido en tu teléfono.");
+                alert("⚠️ Aún buscando satélite GPS. Asegúrate de tener el GPS encendido en tu celular.");
                 return;
             }
             const claveRedondeada = `${globalLat.toFixed(3)},${globalLng.toFixed(3)}`;
@@ -747,7 +861,7 @@
 
             let direccionLegible = "";
 
-            // MOTOR 1: OpenStreetMap Nominatim (Detalle de calle, número, urbanización y distrito)
+            // MOTOR 1: OpenStreetMap Nominatim
             try {
                 const ctrl1 = new AbortController();
                 const t1 = setTimeout(() => ctrl1.abort(), 3000);
@@ -775,7 +889,7 @@
                 }
             } catch (e) {}
 
-            // MOTOR 2 (Respaldo instantáneo si Nominatim demora): BigDataCloud Español
+            // MOTOR 2: BigDataCloud Español
             if (!esDireccionComprensible(direccionLegible)) {
                 try {
                     const ctrl2 = new AbortController();
@@ -791,16 +905,13 @@
                         const desc = (d2.localityInfo && d2.localityInfo.administrative && d2.localityInfo.administrative[3])
                             ? d2.localityInfo.administrative[3].name
                             : "";
-                        let partes2 = [desc, loc, city].filter(Boolean);
-                        partes2 = [...new Set(partes2)];
-                        if (partes2.length > 0) {
-                            direccionLegible = partes2.join(", ");
-                        }
+                        let partes2 = [...new Set([desc, loc, city].filter(Boolean))];
+                        if (partes2.length > 0) direccionLegible = partes2.join(", ");
                     }
                 } catch (e) {}
             }
 
-            // MOTOR 3 (Respaldo adicional): Photon Komoot OSM
+            // MOTOR 3: Photon Komoot OSM
             if (!esDireccionComprensible(direccionLegible)) {
                 try {
                     const r3 = await fetch(`https://photon.komoot.io/reverse?lon=${lng}&lat=${lat}`);
@@ -836,7 +947,7 @@
             const texto = document.getElementById("texto-direccion-gps");
             const btnCamara = document.getElementById("btn-abrir-camara");
 
-            texto.innerText = textoMostrar;
+            if (texto) texto.innerText = textoMostrar;
 
             if (esValida) {
                 badge.className = "bg-green-100 text-green-800 text-[11px] font-bold px-3 py-1.5 rounded-full border border-green-300 flex items-center gap-1.5";
@@ -869,19 +980,31 @@
                 alert("⚠️ Espera un instante: El sistema solo permite abrir la cámara cuando la dirección ya está en texto comprensible (Calle/Distrito) y no en números.");
                 return;
             }
+            const obs = document.getElementById("obs-marcaje").value.trim();
+            if (!obs) {
+                const confirmarSinMotivo = confirm("¿Deseas tomar la foto sin especificar el nombre del Cliente o Motivo? (Saldrá como 'Labor en Sede / General' en la marca de agua).");
+                if (!confirmarSinMotivo) {
+                    document.getElementById("obs-marcaje").focus();
+                    return;
+                }
+            }
             document.getElementById("inputFoto").click();
         }
 
         // =====================================================================
-        // 3. LECTURA DE LA HOJA 1 Y LOGIN CON "RECORDAR SESIÓN"
+        // 3. LECTURA DE LA HOJA 1 Y LOGIN POR RANGO (TRABAJADOR/ADMIN/GERENTE/DEV)
         // =====================================================================
         async function cargarDirectorioDesdeSheet() {
             try {
                 const resp = await fetch(URL_GOOGLE_SCRIPT, { redirect: "follow" });
                 const data = await resp.json();
-                if (data.estado === "exito" && Array.isArray(data.directorio) && data.directorio.length > 0) {
-                    DIRECTORIO_HOJA_1 = data.directorio;
-                    localStorage.setItem("crediban_directorio_cache", JSON.stringify(DIRECTORIO_HOJA_1));
+                if (data.estado === "exito") {
+                    if (Array.isArray(data.directorio) && data.directorio.length > 0) {
+                        DIRECTORIO_HOJA_1 = data.directorio;
+                        localStorage.setItem("crediban_directorio_cache", JSON.stringify(DIRECTORIO_HOJA_1));
+                    }
+                    if (data.horarios) HORARIOS_SEDES_CACHE = data.horarios;
+                    if (data.feriados) FERIADOS_CACHE = data.feriados;
                 }
             } catch (e) {
                 const cache = localStorage.getItem("crediban_directorio_cache");
@@ -893,7 +1016,7 @@
         function actualizarSelectorSedeLogin() {
             const rango = document.getElementById("login-rango").value;
             const contSede = document.getElementById("contenedor-login-sede");
-            if (rango === "Gerente") {
+            if (rango === "Gerente" || rango === "Desarrollador") {
                 contSede.classList.add("opacity-40", "pointer-events-none");
             } else {
                 contSede.classList.remove("opacity-40", "pointer-events-none");
@@ -907,13 +1030,13 @@
             const selectNombre = document.getElementById("login-nombre");
 
             const filtrados = DIRECTORIO_HOJA_1.filter(u => {
-                if (rango === "Gerente") return u.rango === "Gerente";
+                if (rango === "Gerente" || rango === "Desarrollador") return u.rango === rango;
                 return u.rango === rango && (u.sede === sede || u.sede === "TODAS");
             });
 
             selectNombre.innerHTML = "";
             if (filtrados.length === 0) {
-                selectNombre.innerHTML = '<option value="">Sin usuarios en esta sede/rango</option>';
+                selectNombre.innerHTML = `<option value="">Sin usuarios (${rango}) en esta sede</option>`;
             } else {
                 filtrados.forEach(u => {
                     const etiquetaArea = u.area ? ` (${u.area})` : "";
@@ -966,42 +1089,70 @@
             document.getElementById("header-nombre").innerText = usuarioActual.nombre;
             document.getElementById("badge-rango").innerText = usuarioActual.rango;
             document.getElementById("badge-sede").innerText = usuarioActual.sede;
-            document.getElementById("badge-area").innerText = usuarioActual.area || "Asesor de Créditos";
+            document.getElementById("badge-area").innerText = usuarioActual.area || "General";
 
-            // Seleccionar automáticamente el área del usuario
             const selArea = document.getElementById("area-marcaje");
             if (usuarioActual.area && [...selArea.options].some(o => o.value === usuarioActual.area)) {
                 selArea.value = usuarioActual.area;
             }
             verificarBannerHorasExtrasCaja();
 
+            const btnMarcar = document.getElementById("tab-btn-marcar");
             const btnAdmin = document.getElementById("tab-btn-admin");
             const btnGerente = document.getElementById("tab-btn-gerente");
-            const selectorSedeGerente = document.getElementById("selector-sede-gerente-marcaje");
+            const btnDev = document.getElementById("tab-btn-dev");
+            const gpsBadge = document.getElementById("gps-status");
+            const selectorSedeDev = document.getElementById("selector-sede-dev-marcaje");
 
+            // Resetear visibilidad de botones
+            btnMarcar.classList.add("hidden");
+            btnMarcar.classList.remove("flex");
             btnAdmin.classList.add("hidden");
+            btnAdmin.classList.remove("flex");
             btnGerente.classList.add("hidden");
-            selectorSedeGerente.classList.add("hidden");
+            btnGerente.classList.remove("flex");
+            btnDev.classList.add("hidden");
+            btnDev.classList.remove("flex");
+            selectorSedeDev.classList.add("hidden");
+            gpsBadge.classList.remove("hidden");
 
-            if (usuarioActual.rango === "Administrador") {
-                btnAdmin.classList.remove("hidden");
-                btnAdmin.classList.add("flex");
-            } else if (usuarioActual.rango === "Gerente") {
-                btnAdmin.classList.remove("hidden");
-                btnAdmin.classList.add("flex");
-                btnGerente.classList.remove("hidden");
-                btnGerente.classList.add("flex");
-                selectorSedeGerente.classList.remove("hidden");
-            }
-
-            const hoyISO = new Date().toISOString().split("T")[0];
+            const hoyISO = obtenerFechaLocalISO();
             document.getElementById("filtro-admin-desde").value = hoyISO;
             document.getElementById("filtro-admin-hasta").value = hoyISO;
             document.getElementById("filtro-gerente-desde").value = hoyISO;
             document.getElementById("filtro-gerente-hasta").value = hoyISO;
 
-            renderizarMisMarcajesLocales();
-            cambiarPestana("marcar");
+            if (usuarioActual.rango === "Trabajador") {
+                // Trabajador: Solo marca asistencia
+                btnMarcar.classList.remove("hidden");
+                btnMarcar.classList.add("flex");
+                renderizarMisMarcajesLocales();
+                cambiarPestana("marcar");
+            } else if (usuarioActual.rango === "Administrador") {
+                // Administrador: Marca su asistencia y supervisa su propia sede
+                btnMarcar.classList.remove("hidden");
+                btnMarcar.classList.add("flex");
+                btnAdmin.classList.remove("hidden");
+                btnAdmin.classList.add("flex");
+                renderizarMisMarcajesLocales();
+                cambiarPestana("marcar");
+            } else if (usuarioActual.rango === "Gerente") {
+                // GERENTE: NO marca asistencia ni edita la hoja. Entra directo a Auditoría Global/Sedes
+                gpsBadge.classList.add("hidden");
+                btnGerente.classList.remove("hidden");
+                btnGerente.classList.add("flex");
+                cambiarPestana("gerente");
+            } else if (usuarioActual.rango === "Desarrollador") {
+                // DESARROLLADOR: Tiene su propio panel de configuración + acceso a vista gerencial y cámara de pruebas
+                btnDev.classList.remove("hidden");
+                btnDev.classList.add("flex");
+                btnGerente.classList.remove("hidden");
+                btnGerente.classList.add("flex");
+                btnMarcar.classList.remove("hidden");
+                btnMarcar.classList.add("flex");
+                selectorSedeDev.classList.remove("hidden");
+                cambiarPestana("dev");
+            }
         }
 
         function verificarBannerHorasExtrasCaja() {
@@ -1013,12 +1164,12 @@
 
             if (area === "Caja" && tipo === "Salida Final") {
                 banner.classList.remove("hidden");
-                labelObs.innerText = "4. Motivo de Cierre / Horas Extras Caja";
+                labelObs.innerText = "4. Cliente o Motivo de Cierre (Sale en la foto)";
                 inputObs.placeholder = "Ej. Arqueo de bóveda y cuadre de cierre";
             } else {
                 banner.classList.add("hidden");
-                labelObs.innerText = "4. Detalle / Motivo (Opcional)";
-                inputObs.placeholder = "Ej. Inicio en cliente / Sin novedad";
+                labelObs.innerText = "4. Cliente o Motivo (Sale en la foto)";
+                inputObs.placeholder = "Ej. Cliente Sr. Pérez / Labor en agencia";
             }
         }
 
@@ -1029,7 +1180,7 @@
         }
 
         function cambiarPestana(tab) {
-            ["marcar", "admin", "gerente"].forEach(t => {
+            ["marcar", "admin", "gerente", "dev"].forEach(t => {
                 const vista = document.getElementById(`vista-${t}`);
                 const btn = document.getElementById(`tab-btn-${t}`);
                 if (vista) vista.classList.add("hidden");
@@ -1041,10 +1192,11 @@
 
             if (tab === "admin") cargarReporteSedeAdmin();
             if (tab === "gerente") cargarDatosGerente();
+            if (tab === "dev") cargarDatosDesarrollador();
         }
 
         // =====================================================================
-        // 4. PREVISUALIZACIÓN Y MARCA DE AGUA CON DIRECCIÓN COMPRENSIBLE
+        // 4. PREVISUALIZACIÓN Y MARCA DE AGUA CON CLIENTE / MOTIVO INCLUIDO
         // =====================================================================
         function generarPrevisualizacion() {
             const inputFoto = document.getElementById("inputFoto");
@@ -1070,42 +1222,51 @@
 
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                    const altoCaja = 165;
-                    ctx.fillStyle = "rgba(15, 23, 42, 0.78)";
+                    // Cintillo inferior ampliado para incluir las 5 líneas sin quitar ningún dato
+                    const altoCaja = 195;
+                    ctx.fillStyle = "rgba(15, 23, 42, 0.80)";
                     ctx.fillRect(0, canvas.height - altoCaja, canvas.width, altoCaja);
 
                     const sedeMarcaje = (usuarioActual.sede === "TODAS")
-                        ? document.getElementById("marcaje-sede-gerente").value
+                        ? document.getElementById("marcaje-sede-dev").value
                         : usuarioActual.sede;
                     const areaMarcaje = document.getElementById("area-marcaje").value;
                     const tipoMarcaje = document.getElementById("tipo-marcaje").value;
+                    const modalidad = document.getElementById("modalidad-marcaje").value;
+                    const clienteOMotivo = document.getElementById("obs-marcaje").value.trim() || `Labor en ${modalidad}`;
                     const fechaHoraStr = new Date().toLocaleString("es-PE");
 
                     ctx.textAlign = "left";
                     ctx.textBaseline = "bottom";
 
-                    // Línea 1: Empresa, Sede, Área y Momento
-                    ctx.font = "bold 20px Arial";
-                    ctx.fillStyle = "#4ade80";
-                    ctx.fillText(`CREDIBAN | SEDE: ${sedeMarcaje} (${areaMarcaje.toUpperCase()}) — [${tipoMarcaje.toUpperCase()}]`, 20, canvas.height - 122);
-
-                    // Línea 2: Nombre y Rango
+                    // Línea 1: Empresa, Sede, Área y Momento de Marcaje
                     ctx.font = "bold 19px Arial";
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillText(`${usuarioActual.rango.toUpperCase()}: ${usuarioActual.nombre}`, 20, canvas.height - 90);
+                    ctx.fillStyle = "#4ade80";
+                    ctx.fillText(`CREDIBAN | SEDE: ${sedeMarcaje} (${areaMarcaje.toUpperCase()}) — [${tipoMarcaje.toUpperCase()}]`, 20, canvas.height - 152);
 
-                    // Línea 3: Fecha y Hora
+                    // Línea 2: Rango y Nombre del Asesor/Cajero/Administrador
+                    ctx.font = "bold 18px Arial";
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillText(`${usuarioActual.rango.toUpperCase()}: ${usuarioActual.nombre} (${modalidad.toUpperCase()})`, 20, canvas.height - 118);
+
+                    // Línea 3: Cliente o Motivo (NUEVA LÍNEA SOLICITADA)
+                    ctx.font = "bold 17px Arial";
+                    ctx.fillStyle = "#38bdf8";
+                    const motivoRecortado = clienteOMotivo.length > 62 ? clienteOMotivo.substring(0, 62) + "..." : clienteOMotivo;
+                    ctx.fillText(`CLIENTE / MOTIVO: ${motivoRecortado}`, 20, canvas.height - 86);
+
+                    // Línea 4: Fecha y Hora
                     ctx.font = "bold 17px Arial";
                     ctx.fillStyle = "#facc15";
-                    ctx.fillText(`FECHA Y HORA: ${fechaHoraStr}`, 20, canvas.height - 58);
+                    ctx.fillText(`FECHA Y HORA: ${fechaHoraStr}`, 20, canvas.height - 54);
 
-                    // Línea 4: Dirección Comprensible (Calle, Distrito)
-                    ctx.font = "bold 15px Arial";
+                    // Línea 5: Dirección Comprensible GPS
+                    ctx.font = "bold 14px Arial";
                     ctx.fillStyle = "#e2e8f0";
                     const dirRecortada = globalAddress.length > 68 ? globalAddress.substring(0, 68) + "..." : globalAddress;
-                    ctx.fillText(`DIRECCIÓN: ${dirRecortada}`, 20, canvas.height - 25);
+                    ctx.fillText(`DIRECCIÓN: ${dirRecortada} (${globalLat.toFixed(4)}, ${globalLng.toFixed(4)})`, 20, canvas.height - 20);
 
-                    fotoProcesadaBase64 = canvas.toDataURL("image/jpeg", 0.72);
+                    fotoProcesadaBase64 = canvas.toDataURL("image/jpeg", 0.74);
 
                     document.getElementById("pantalla-preview").classList.remove("hidden");
                     document.getElementById("pantalla-preview").classList.add("flex");
@@ -1133,12 +1294,12 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-lg mb-1"></i> Guardando en Google Sheet...';
 
             const sedeMarcaje = (usuarioActual.sede === "TODAS")
-                ? document.getElementById("marcaje-sede-gerente").value
+                ? document.getElementById("marcaje-sede-dev").value
                 : usuarioActual.sede;
             const area = document.getElementById("area-marcaje").value;
             const tipo = document.getElementById("tipo-marcaje").value;
             const modalidad = document.getElementById("modalidad-marcaje").value;
-            const observacion = document.getElementById("obs-marcaje").value;
+            const observacion = document.getElementById("obs-marcaje").value.trim() || `Labor en ${modalidad}`;
 
             const payload = {
                 action: "registrarAsistencia",
@@ -1160,12 +1321,19 @@
 
                 if (res.estado === "exito") {
                     guardarEnHistorialLocal(res.registro);
-                    gestionarEstadoRefrigerio(tipo);
-                    let msgExtra = "";
-                    if (res.registro.extrasCaja > 0) {
-                        msgExtra = `\n⏱️ Horas Extras de Caja registradas: +${res.registro.extrasCaja} min.`;
+                    gestionarEstadoRefrigerio(tipo, sedeMarcaje);
+                    let alertasExtra = "";
+                    if (res.registro.tardanza > 0) {
+                        alertasExtra += `\n⚠️ Tardanza registrada: +${res.registro.tardanza} min.`;
                     }
-                    alert(`✅ ¡${tipo} guardada con éxito en la hoja ${sedeMarcaje}!${msgExtra}`);
+                    if (res.registro.excesoRefrigerio > 0) {
+                        alertasExtra += `\n🍽️ Exceso de refrigerio (>90m): +${res.registro.excesoRefrigerio} min.`;
+                    }
+                    if (res.registro.extrasCaja > 0) {
+                        alertasExtra += `\n⏱️ Horas Extras de Caja: +${res.registro.extrasCaja} min.`;
+                    }
+                    alert(`✅ ¡${tipo} guardada con éxito en la hoja ${sedeMarcaje}!${alertasExtra}`);
+                    document.getElementById("obs-marcaje").value = "";
                     rechazarFoto();
                     renderizarMisMarcajesLocales();
                 } else {
@@ -1177,7 +1345,7 @@
                     alert("📦 Tu celular no tiene conexión a internet en este momento. Se guardó en la cola del teléfono.");
                     rechazarFoto();
                 } else {
-                    alert("⚠️ Atención: Tienes internet, pero tu Google Apps Script requiere que publiques la 'Nueva versión' en Gestionar Implementaciones.\n\nDetalle: " + error.message);
+                    alert("⚠️ Atención: Actualiza tu Google Apps Script con 'Nueva versión' en Gestionar Implementaciones.\nDetalle: " + error.message);
                 }
             } finally {
                 btn.disabled = false;
@@ -1186,11 +1354,14 @@
         }
 
         // =====================================================================
-        // 5. CRONÓMETRO DE REFRIGERIO, HISTORIAL Y LIMPIEZA DE COLA
+        // 5. CRONÓMETRO DE REFRIGERIO DINÁMICO DE 90 MINUTOS
         // =====================================================================
-        function gestionarEstadoRefrigerio(tipo) {
+        function gestionarEstadoRefrigerio(tipo, sede) {
             if (tipo === "Salida a Refrigerio") {
-                const fin = Date.now() + (60 * 60 * 1000);
+                const minConfig = (HORARIOS_SEDES_CACHE[sede] && HORARIOS_SEDES_CACHE[sede].refrigerio)
+                    ? Number(HORARIOS_SEDES_CACHE[sede].refrigerio)
+                    : 90;
+                const fin = Date.now() + (minConfig * 60 * 1000);
                 localStorage.setItem("crediban_refrigerio_fin", fin);
             } else if (tipo === "Retorno de Refrigerio") {
                 localStorage.removeItem("crediban_refrigerio_fin");
@@ -1204,18 +1375,20 @@
                 const fin = localStorage.getItem("crediban_refrigerio_fin");
                 const banner = document.getElementById("banner-refrigerio");
                 const reloj = document.getElementById("reloj-refrigerio");
-                if (!fin) {
+                if (!fin || (usuarioActual && usuarioActual.rango === "Gerente")) {
                     banner.classList.add("hidden");
                     return;
                 }
                 banner.classList.remove("hidden");
                 const restanteMs = Number(fin) - Date.now();
                 if (restanteMs <= 0) {
-                    reloj.innerText = "TIEMPO EXCEDIDO";
+                    const excedidoMin = Math.floor(Math.abs(restanteMs) / 60000);
+                    reloj.innerText = `EXCEDIDO (+${excedidoMin}m)`;
                     reloj.classList.add("text-red-600");
                 } else {
                     const min = Math.floor(restanteMs / 60000);
                     const seg = Math.floor((restanteMs % 60000) / 1000);
+                    reloj.classList.remove("text-red-600");
                     reloj.innerText = `${String(min).padStart(2, "0")}:${String(seg).padStart(2, "0")}`;
                 }
             }, 1000);
@@ -1237,20 +1410,25 @@
                     <div>
                         <span class="font-extrabold text-slate-800 block">${r.tipo} (${r.sede})</span>
                         <span class="text-slate-500 text-[11px] block">${r.fecha} — ${r.hora}</span>
-                        <span class="text-slate-600 text-[10px] font-bold block truncate max-w-[200px]">📍 ${r.direccion || ''}</span>
+                        <span class="text-blue-700 text-[10px] font-bold block truncate max-w-[210px]">👤 ${r.observacion || ''}</span>
+                        <span class="text-slate-600 text-[10px] font-bold block truncate max-w-[210px]">📍 ${r.direccion || ''}</span>
                     </div>
                     <div class="text-right space-y-1">
                         ${r.tardanza > 0
-                            ? `<span class="bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full text-[10px] block">+\${r.tardanza} min tard.</span>`
+                            ? `<span class="bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full text-[10px] block">+${r.tardanza}m tard.</span>`
                             : `<span class="bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full text-[10px] block">Puntual</span>`
                         }
+                        ${r.excesoRefrigerio > 0
+                            ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">🍽️ +${r.excesoRefrigerio}m Refr.</span>`
+                            : ""
+                        }
                         ${r.extrasCaja > 0
-                            ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">⏱️ +\${r.extrasCaja}m Extra Caja</span>`
+                            ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">⏱️ +${r.extrasCaja}m Extra Caja</span>`
                             : ""
                         }
                         ${r.urlFoto && r.urlFoto.startsWith("http")
-                            ? `<a href="\${r.urlFoto}" target="_blank" class="block text-blue-600 font-bold text-[10px] hover:underline"><i class="fa-solid fa-image"></i> Ver Foto</a>`
-                            : ""
+                            ? `<a href="${r.urlFoto}" target="_blank" class="block text-blue-600 font-bold text-[10px] hover:underline"><i class="fa-solid fa-image"></i> Ver Foto</a>`
+                            : `<span class="text-[9px] text-amber-700 block max-w-[110px] leading-tight">${r.urlFoto || ''}</span>`
                         }
                     </div>
                 </div>
@@ -1309,12 +1487,12 @@
             if (restantes.length === 0) {
                 alert("✅ Todos los registros pendientes se sincronizaron con el Google Sheet.");
             } else {
-                alert(`⚠️ No se pudo subir ${restantes.length} registro(s).\nMotivo: ${ultimoError}\n\nSi es un registro viejo con una contraseña antigua, puedes borrarlo con el botón del basurero rojo.`);
+                alert(`⚠️ No se pudo subir ${restantes.length} registro(s).\nMotivo: ${ultimoError}`);
             }
         }
 
         // =====================================================================
-        // 6. REPORTES DE ADMINISTRADOR Y GERENTE (CON HORAS EXTRAS DE CAJA)
+        // 6. VISTA ADMINISTRADOR (Supervisa su Sede)
         // =====================================================================
         async function cargarReporteSedeAdmin() {
             document.getElementById("titulo-sede-admin").innerText = usuarioActual.sede;
@@ -1330,7 +1508,7 @@
                 });
                 if (res.estado === "exito") {
                     registrosAdminCache = res.registros;
-                    poblarSelectorAsesores("filtro-admin-asesor", registrosAdminCache);
+                    poblarSelectorColaboradoresPorSede("filtro-admin-asesor", registrosAdminCache, usuarioActual.sede);
                     renderizarTablaAdmin();
                 } else {
                     throw new Error(res.mensaje);
@@ -1354,25 +1532,21 @@
                 return true;
             });
 
-            let totalTardanzas = 0, sumaMinutos = 0, sumaExtrasCaja = 0;
+            let sumaMinutosTard = 0, sumaExcesoRefr = 0, sumaExtrasCaja = 0;
             filtrados.forEach(r => {
-                if (r.tardanza > 0) {
-                    totalTardanzas++;
-                    sumaMinutos += Number(r.tardanza);
-                }
-                if (r.extrasCaja > 0) {
-                    sumaExtrasCaja += Number(r.extrasCaja);
-                }
+                sumaMinutosTard += Number(r.tardanza || 0);
+                sumaExcesoRefr += Number(r.excesoRefrigerio || 0);
+                sumaExtrasCaja += Number(r.extrasCaja || 0);
             });
 
             document.getElementById("kpi-admin-total").innerText = filtrados.length;
-            document.getElementById("kpi-admin-tardanzas").innerText = totalTardanzas;
-            document.getElementById("kpi-admin-minutos").innerText = `${sumaMinutos} min`;
+            document.getElementById("kpi-admin-minutos").innerText = `${sumaMinutosTard} min`;
+            document.getElementById("kpi-admin-refrigerio").innerText = `${sumaExcesoRefr} min`;
             document.getElementById("kpi-admin-extras-caja").innerText = `${sumaExtrasCaja} min`;
 
             const tbody = document.getElementById("tbody-admin");
             if (filtrados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400">No hay registros en el rango de fechas seleccionado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400">No hay registros en el rango seleccionado.</td></tr>';
                 return;
             }
 
@@ -1384,14 +1558,21 @@
                         <span class="bg-slate-100 px-2 py-0.5 rounded text-[10px] font-bold block">${r.rango}</span>
                         <span class="text-[10px] font-extrabold text-purple-700">${r.area || ''}</span>
                     </td>
-                    <td class="p-3 font-bold">${r.tipo} <span class="block text-[10px] text-slate-400">${r.modalidad} ${r.observacion ? '- ' + r.observacion : ''}</span></td>
+                    <td class="p-3">
+                        <span class="font-extrabold text-slate-800 block">${r.tipo} (${r.modalidad})</span>
+                        <span class="text-[11px] font-bold text-blue-700 block">👤 ${r.observacion || 'Sin detalle'}</span>
+                    </td>
                     <td class="p-3 space-y-1">
                         ${r.tardanza > 0
-                            ? `<span class="bg-red-100 text-red-700 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] inline-block">+\${r.tardanza}m Tardanza</span>`
+                            ? `<span class="bg-red-100 text-red-700 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] inline-block">+${r.tardanza}m Tardanza</span>`
                             : `<span class="bg-green-100 text-green-700 font-bold px-2.5 py-0.5 rounded-full text-[10px] inline-block">A tiempo</span>`
                         }
+                        ${r.excesoRefrigerio > 0
+                            ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">🍽️ +${r.excesoRefrigerio}m Exceso Refr.</span>`
+                            : ""
+                        }
                         ${r.extrasCaja > 0
-                            ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">⏱️ +\${r.extrasCaja}m Extra Caja</span>`
+                            ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">⏱️ +${r.extrasCaja}m Extra Caja</span>`
                             : ""
                         }
                     </td>
@@ -1400,17 +1581,20 @@
                     </td>
                     <td class="p-3 text-center">
                         ${r.linkFoto && r.linkFoto.startsWith("http")
-                            ? `<a href="\${r.linkFoto}" target="_blank" class="inline-flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-1.5 rounded-lg text-[11px]"><i class="fa-solid fa-camera"></i> Ver Foto</a>`
-                            : `<span class="text-slate-400 text-[10px]">\${r.linkFoto || 'Sin foto'}</span>`
+                            ? `<a href="${r.linkFoto}" target="_blank" class="inline-flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-1.5 rounded-lg text-[11px]"><i class="fa-solid fa-camera"></i> Ver Foto</a>`
+                            : `<span class="text-amber-700 font-bold text-[10px] block max-w-[140px] mx-auto">${r.linkFoto || 'Sin foto'}</span>`
                         }
                     </td>
                 </tr>
             `).join("");
         }
 
+        // =====================================================================
+        // 7. PANEL GERENCIAL (Filtro General de Todas las Sedes y por Sede/Colaborador)
+        // =====================================================================
         async function cargarDatosGerente() {
             const tbody = document.getElementById("tbody-gerente");
-            tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400 font-bold"><i class="fa-solid fa-spinner fa-spin"></i> Descargando todas las bases para Gerencia...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400 font-bold"><i class="fa-solid fa-spinner fa-spin"></i> Sincronizando todas las sedes para Gerencia...</td></tr>';
 
             try {
                 const res = await llamarAppsScriptPOST({
@@ -1430,12 +1614,16 @@
             }
         }
 
+        /**
+         * Cuando el Gerente cambia entre "TODAS LAS SEDES" o una Sede específica,
+         * actualiza automáticamente la lista de colaboradores de esa sede.
+         */
         function actualizarFiltrosGerente() {
             const sedeElegida = document.getElementById("filtro-gerente-sede").value;
             const sublista = (sedeElegida === "TODAS")
                 ? registrosGerenteCache
                 : registrosGerenteCache.filter(r => r.sede === sedeElegida);
-            poblarSelectorAsesores("filtro-gerente-asesor", sublista);
+            poblarSelectorColaboradoresPorSede("filtro-gerente-asesor", sublista, sedeElegida);
             renderizarTablaGerente();
         }
 
@@ -1459,6 +1647,18 @@
                 return true;
             });
 
+            let sumaTard = 0, sumaRefr = 0, sumaExt = 0;
+            filtrados.forEach(r => {
+                sumaTard += Number(r.tardanza || 0);
+                sumaRefr += Number(r.excesoRefrigerio || 0);
+                sumaExt += Number(r.extrasCaja || 0);
+            });
+
+            document.getElementById("kpi-gerente-total").innerText = filtrados.length;
+            document.getElementById("kpi-gerente-tardanza").innerText = `${sumaTard} min`;
+            document.getElementById("kpi-gerente-refrigerio").innerText = `${sumaRefr} min`;
+            document.getElementById("kpi-gerente-extras").innerText = `${sumaExt} min`;
+
             const tbody = document.getElementById("tbody-gerente");
             if (filtrados.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400">Sin registros para los filtros seleccionados.</td></tr>';
@@ -1474,11 +1674,18 @@
                         <span class="${r.rango === 'Administrador' ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-700'} font-bold px-2 py-0.5 rounded text-[10px] block">${r.rango}</span>
                         <span class="text-[10px] font-bold text-slate-500">${r.area || ''}</span>
                     </td>
-                    <td class="p-3 font-bold">${r.tipo} <span class="block text-[10px] text-slate-400">${r.observacion || ''}</span></td>
+                    <td class="p-3">
+                        <span class="font-bold text-slate-800 block">${r.tipo} (${r.modalidad})</span>
+                        <span class="text-[11px] font-bold text-blue-700 block">👤 ${r.observacion || ''}</span>
+                    </td>
                     <td class="p-3 space-y-1">
                         ${r.tardanza > 0
                             ? `<span class="bg-red-100 text-red-700 font-extrabold px-2 py-0.5 rounded-full text-[10px] inline-block">+\${r.tardanza}m Tard.</span>`
                             : `<span class="bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full text-[10px] inline-block">Puntual</span>`
+                        }
+                        ${r.excesoRefrigerio > 0
+                            ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">🍽️ +\${r.excesoRefrigerio}m Refr.</span>`
+                            : ""
                         }
                         ${r.extrasCaja > 0
                             ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">⏱️ +\${r.extrasCaja}m Extra Caja</span>`
@@ -1491,11 +1698,123 @@
                     <td class="p-3 text-center">
                         ${r.linkFoto && r.linkFoto.startsWith("http")
                             ? `<a href="\${r.linkFoto}" target="_blank" class="bg-[#59B447] text-white font-bold px-3 py-1.5 rounded-lg text-[11px] inline-flex items-center gap-1"><i class="fa-solid fa-eye"></i> Foto</a>`
-                            : `-`
+                            : `<span class="text-[10px] text-amber-700 font-bold block max-w-[120px] mx-auto">\${r.linkFoto || '-'}</span>`
                         }
                     </td>
                 </tr>
             `).join("");
+        }
+
+        // =====================================================================
+        // 8. PANEL EXCLUSIVO DEL DESARROLLADOR (Configuración Total de Hoja 1)
+        // =====================================================================
+        async function cargarDatosDesarrollador() {
+            await cargarDirectorioDesdeSheet();
+            cargarHorarioSedeEnFormulario();
+
+            try {
+                const res = await llamarAppsScriptPOST({
+                    action: "obtenerReportes",
+                    nombre: usuarioActual.nombre,
+                    clave: usuarioActual.clave,
+                    baseFiltro: "TODAS"
+                });
+                if (res.estado === "exito") {
+                    if (res.feriadosHoja1) {
+                        FERIADOS_CACHE = res.feriadosHoja1;
+                        renderizarListaFeriadosDev();
+                    }
+                    if (res.usuariosHoja1) {
+                        renderizarTablaUsuariosDev(res.usuariosHoja1);
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function cargarHorarioSedeEnFormulario() {
+            const sede = document.getElementById("cfg-hor-sede").value;
+            const h = HORARIOS_SEDES_CACHE[sede] || {
+                horaLV: "08:30", horaSab: "09:00", tolerancia: 10, refrigerio: 90, salidaCajaLV: "18:00", salidaCajaSab: "13:00"
+            };
+            document.getElementById("cfg-hor-lv").value = h.horaLV;
+            document.getElementById("cfg-hor-sab").value = h.horaSab;
+            document.getElementById("cfg-hor-tol").value = h.tolerancia;
+            document.getElementById("cfg-hor-ref").value = h.refrigerio;
+            document.getElementById("cfg-hor-caja-lv").value = h.salidaCajaLV;
+            document.getElementById("cfg-hor-caja-sab").value = h.salidaCajaSab;
+        }
+
+        function renderizarTablaUsuariosDev(listaUsuarios) {
+            const tbody = document.getElementById("tbody-usuarios-dev");
+            tbody.innerHTML = listaUsuarios.map(u => `
+                <tr class="hover:bg-slate-100">
+                    <td class="p-2.5 font-extrabold text-slate-800">${u.nombre}</td>
+                    <td class="p-2.5 font-mono text-slate-600">${u.clave}</td>
+                    <td class="p-2.5 font-bold">${u.rango}</td>
+                    <td class="p-2.5 text-purple-700 font-bold">${u.area}</td>
+                    <td class="p-2.5 font-bold text-blue-700">${u.sede}</td>
+                    <td class="p-2.5">
+                        <span class="${u.estado === 'ACTIVO' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-700'} px-2 py-0.5 rounded-full text-[10px] font-extrabold">${u.estado}</span>
+                    </td>
+                    <td class="p-2.5 text-center">
+                        <button onclick='cargarUsuarioEnFormularioDev(${JSON.stringify(u)})' class="bg-slate-800 text-white px-2.5 py-1 rounded text-[10px] font-bold hover:bg-slate-700">
+                            <i class="fa-solid fa-pen"></i> Cargar
+                        </button>
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        function cargarUsuarioEnFormularioDev(u) {
+            document.getElementById("cfg-user-nombre").value = u.nombre;
+            document.getElementById("cfg-user-clave").value = u.clave;
+            document.getElementById("cfg-user-rango").value = u.rango;
+            document.getElementById("cfg-user-area").value = u.area || "Asesor de Créditos";
+            document.getElementById("cfg-user-sede").value = u.sede;
+            document.getElementById("cfg-user-estado").value = u.estado;
+        }
+
+        function renderizarListaFeriadosDev() {
+            const cont = document.getElementById("lista-feriados-dev");
+            if (!FERIADOS_CACHE || FERIADOS_CACHE.length === 0) {
+                cont.innerHTML = '<p class="text-[11px] text-slate-400 text-center py-3">Sin días feriados registrados.</p>';
+                return;
+            }
+            cont.innerHTML = FERIADOS_CACHE.map(f => `
+                <div class="flex justify-between items-center bg-slate-50 border px-3 py-1.5 rounded-lg text-xs">
+                    <span class="font-mono font-bold text-slate-700"><i class="fa-regular fa-calendar-check text-red-500 mr-1"></i> ${f}</span>
+                    <button onclick="modificarFeriado('eliminar', '${f}')" class="text-red-500 hover:text-red-700 font-bold text-[11px]">
+                        <i class="fa-solid fa-trash"></i> Quitar
+                    </button>
+                </div>
+            `).join("");
+        }
+
+        async function modificarFeriado(modo, fechaEspecifica) {
+            const fecha = fechaEspecifica || document.getElementById("cfg-feriado-fecha").value;
+            if (!fecha) {
+                alert("⚠️ Selecciona una fecha para añadir a los días feriados.");
+                return;
+            }
+            try {
+                const res = await llamarAppsScriptPOST({
+                    action: "gestionarFeriado",
+                    nombreAdmin: usuarioActual.nombre,
+                    claveAdmin: usuarioActual.clave,
+                    modo: modo,
+                    fecha: fecha
+                });
+                if (res.estado === "exito") {
+                    FERIADOS_CACHE = res.feriados;
+                    renderizarListaFeriadosDev();
+                } else {
+                    alert(res.mensaje);
+                }
+            } catch (e) {
+                alert("❌ Error al actualizar feriado: " + e.message);
+            }
         }
 
         async function guardarUsuarioEnSheet() {
@@ -1519,7 +1838,7 @@
                     usuario: { nombre, clave, rango, area, sede, estado }
                 });
                 alert(res.mensaje);
-                await cargarDirectorioDesdeSheet();
+                await cargarDatosDesarrollador();
             } catch (e) {
                 alert("❌ Error al guardar usuario: " + e.message);
             }
@@ -1542,14 +1861,24 @@
                     horario: { sede, horaLV, horaSab, salidaCajaLV, salidaCajaSab, tolerancia, refrigerio }
                 });
                 alert(res.mensaje);
+                await cargarDirectorioDesdeSheet();
             } catch (e) {
                 alert("❌ Error al actualizar horario: " + e.message);
             }
         }
 
-        function poblarSelectorAsesores(idSelect, lista) {
+        /**
+         * Combina los colaboradores que están registrados en la Hoja 1 para esa sede
+         * y los que tienen marcajes históricos en esa sede, excluyendo Gerentes y Desarrolladores.
+         */
+        function poblarSelectorColaboradoresPorSede(idSelect, listaRegistros, sedeFiltro) {
             const sel = document.getElementById(idSelect);
-            const nombresUnicos = [...new Set(lista.map(r => r.nombre))].sort();
+            const nombresDeRegistros = listaRegistros.map(r => r.nombre);
+            const nombresDeDirectorio = DIRECTORIO_HOJA_1
+                .filter(u => u.rango !== "Gerente" && u.rango !== "Desarrollador" && (sedeFiltro === "TODAS" || u.sede === sedeFiltro))
+                .map(u => u.nombre);
+
+            const nombresUnicos = [...new Set([...nombresDeDirectorio, ...nombresDeRegistros])].filter(Boolean).sort();
             sel.innerHTML = '<option value="TODOS">Todos los colaboradores</option>';
             nombresUnicos.forEach(n => {
                 sel.innerHTML += `<option value="${n}">${n}</option>`;
@@ -1562,15 +1891,15 @@
                 alert("No hay registros cargados para exportar.");
                 return;
             }
-            const cabeceras = ["ID", "Fecha", "Hora", "Nombre", "Sede", "Rango", "Area", "Tipo_Marcaje", "Modalidad", "Minutos_Tardanza", "Minutos_Extras_Caja", "Direccion_Comprensible", "Link_Mapa", "Link_Foto"];
+            const cabeceras = ["ID", "Fecha", "Hora", "Nombre", "Sede", "Rango", "Area", "Tipo_Marcaje", "Modalidad", "Cliente_O_Motivo", "Minutos_Tardanza", "Minutos_Exceso_Refrigerio", "Minutos_Extras_Caja", "Direccion_Comprensible", "Link_Mapa", "Link_Foto"];
             const filas = datos.map(r => [
-                r.id, r.fecha, r.hora, `"${r.nombre}"`, r.sede, r.rango, `"${r.area || ''}"`, r.tipo, r.modalidad, r.tardanza, r.extrasCaja || 0, `"${r.direccion}"`, r.linkMapa, r.linkFoto
+                r.id, r.fecha, r.hora, `"${r.nombre}"`, r.sede, r.rango, `"${r.area || ''}"`, r.tipo, r.modalidad, `"${r.observacion || ''}"`, r.tardanza, r.excesoRefrigerio || 0, r.extrasCaja || 0, `"${r.direccion}"`, r.linkMapa, r.linkFoto
             ].join(","));
 
             const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [cabeceras.join(","), ...filas].join("\n");
             const link = document.createElement("a");
             link.setAttribute("href", encodeURI(csvContent));
-            link.setAttribute("download", `Reporte_Asistencia_CREDIBAN_${modo}_${new Date().toISOString().split("T")[0]}.csv`);
+            link.setAttribute("download", `Reporte_Asistencia_CREDIBAN_${modo}_${obtenerFechaLocalISO()}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
