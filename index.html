@@ -129,22 +129,18 @@
 
             <!-- BARRA DE PESTAÑAS DINÁMICAS SEGÚN JERARQUÍA -->
             <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
-                <!-- Pestaña 1: Marcar Asistencia (OCULTA PARA GERENTES; visible para Trabajador, Administrador y Desarrollador) -->
                 <button id="tab-btn-marcar" onclick="cambiarPestana('marcar')" class="tab-active px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
                     <i class="fa-solid fa-camera"></i> Marcar Asistencia
                 </button>
 
-                <!-- Pestaña 2: Horarios de Mi Sede (Visible para ADMINISTRADOR) -->
                 <button id="tab-btn-admin" onclick="cambiarPestana('admin')" class="hidden bg-slate-100 text-slate-700 hover:bg-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold transition-all items-center gap-2">
                     <i class="fa-solid fa-clipboard-user"></i> Horarios de Mi Sede
                 </button>
 
-                <!-- Pestaña 3: Panel Gerencial (Visible para GERENTE y DESARROLLADOR - Solo lectura y filtros globales/sede) -->
                 <button id="tab-btn-gerente" onclick="cambiarPestana('gerente')" class="hidden bg-slate-100 text-amber-700 hover:bg-amber-100 border border-amber-300 px-4 py-2.5 rounded-xl text-xs font-bold transition-all items-center gap-2">
                     <i class="fa-solid fa-crown text-amber-500"></i> Panel Gerencial / Sedes
                 </button>
 
-                <!-- Pestaña 4: Panel Desarrollador (OCULTA PARA TODOS; exclusiva para rol DESARROLLADOR) -->
                 <button id="tab-btn-dev" onclick="cambiarPestana('dev')" class="hidden bg-slate-900 text-emerald-400 hover:bg-slate-800 border border-emerald-500 px-4 py-2.5 rounded-xl text-xs font-bold transition-all items-center gap-2">
                     <i class="fa-solid fa-screwdriver-wrench"></i> Panel Desarrollador
                 </button>
@@ -228,7 +224,7 @@
                     </p>
                 </div>
 
-                <!-- Modalidad Oficina vs Campo (Ambos exigen puntualidad a la hora acordada) y Nombre de Cliente / Motivo -->
+                <!-- Modalidad Oficina vs Campo y Nombre de Cliente / Motivo -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">3. Ubicación Operativa</label>
@@ -393,7 +389,7 @@
                             <th class="p-3">Marcaje y Cliente/Motivo</th>
                             <th class="p-3">Tardanza / Refrigerio / Extras</th>
                             <th class="p-3">Dirección Comprensible GPS</th>
-                            <th class="p-3 text-center">Foto Evidencia</th>
+                            <th class="p-3 text-center">Evidencia Fotográfica</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-admin" class="text-xs divide-y divide-slate-200"></tbody>
@@ -403,7 +399,6 @@
 
         <!-- =============================================================== -->
         <!-- PESTAÑA 3: PANEL DE GERENCIA (SOLO AUDITORÍA GLOBAL Y POR SEDE) -->
-        <!-- * Sin opciones de editar la hoja ni parámetros                  -->
         <!-- =============================================================== -->
         <div id="vista-gerente" class="hidden space-y-5">
             <div class="glass-card p-6 space-y-5 border-t-4 border-amber-500">
@@ -426,7 +421,7 @@
                     </div>
                 </div>
 
-                <!-- Filtros Gerenciales: Filtro General de Todas las Sedes o Sede Específica + Colaboradores de dicha Sede -->
+                <!-- Filtros Gerenciales -->
                 <div class="grid grid-cols-1 md:grid-cols-5 gap-3 bg-amber-50/60 p-4 rounded-xl border border-amber-200">
                     <div>
                         <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">1. Sede / Base</label>
@@ -497,7 +492,7 @@
                                 <th class="p-3">Marcaje y Cliente/Motivo</th>
                                 <th class="p-3">Tardanza / Refr. / Extras</th>
                                 <th class="p-3">Dirección Comprensible GPS</th>
-                                <th class="p-3 text-center">Foto</th>
+                                <th class="p-3 text-center">Evidencia Fotográfica</th>
                             </tr>
                         </thead>
                         <tbody id="tbody-gerente" class="text-xs divide-y divide-slate-200"></tbody>
@@ -665,7 +660,7 @@
 
                 </div>
 
-                <!-- Tabla de Directorio Completo en Hoja 1 (Para que el Desarrollador seleccione y edite rápido) -->
+                <!-- Tabla de Directorio Completo en Hoja 1 -->
                 <div class="space-y-2 pt-2">
                     <h4 class="font-extrabold text-slate-700 text-xs uppercase">
                         📋 Directorio Actual en Hoja 1 (Toca "Cargar" para editar un usuario)
@@ -694,7 +689,7 @@
     </div>
 
     <!-- =================================================================== -->
-    <!-- PANTALLA MODAL: PREVISUALIZACIÓN DE FOTO Y MARCA DE AGUA            -->
+    <!-- PANTALLA MODAL: PREVISUALIZACIÓN DE CÁMARA ANTES DE GUARDAR         -->
     <!-- =================================================================== -->
     <div id="pantalla-preview" class="fixed inset-0 bg-slate-900/95 z-50 hidden flex-col items-center justify-between p-4">
         <div class="w-full text-center py-2">
@@ -717,7 +712,52 @@
     </div>
 
     <!-- =================================================================== -->
-    <!-- LÓGICA JAVASCRIPT COMPLETA Y DEPURADA                               -->
+    <!-- VISOR FOTOGRÁFICO INTEGRADO (LIGHTBOX ANTI-ERROR 404 PARA GERENCIA) -->
+    <!-- =================================================================== -->
+    <div id="modal-visor-foto" class="fixed inset-0 bg-slate-950/90 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[92vh]">
+            <div class="bg-slate-900 text-white px-5 py-3.5 flex justify-between items-center">
+                <div>
+                    <span id="visor-badge-sede" class="bg-[#59B447] text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase">SEDE</span>
+                    <h4 id="visor-titulo-nombre" class="font-extrabold text-sm mt-1">Evidencia Fotográfica</h4>
+                </div>
+                <button onclick="cerrarVisorFoto()" class="bg-slate-800 hover:bg-red-600 text-white w-9 h-9 rounded-full flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-4 bg-slate-900 flex-1 flex items-center justify-center overflow-auto min-h-[280px]">
+                <img id="visor-img-element" src="" alt="Evidencia Fotográfica" class="max-h-[60vh] w-auto object-contain rounded-xl shadow-lg border border-slate-700" />
+                <div id="visor-mensaje-error" class="hidden text-center text-slate-300 p-6 space-y-2">
+                    <i class="fa-solid fa-circle-info text-3xl text-amber-400"></i>
+                    <p id="visor-texto-error" class="text-xs font-bold"></p>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 border-t space-y-2 text-xs">
+                <div class="flex justify-between items-center text-slate-700 font-bold">
+                    <span id="visor-detalle-fecha">Fecha y Hora</span>
+                    <span id="visor-detalle-tipo" class="text-[#59B447] font-extrabold">Tipo</span>
+                </div>
+                <p id="visor-detalle-motivo" class="text-blue-800 font-bold text-[11px]"></p>
+                <p id="visor-detalle-direccion" class="text-slate-500 text-[11px] truncate"></p>
+                <div class="pt-2 flex gap-2">
+                    <a id="visor-btn-descargar" href="#" download="Evidencia_CREDIBAN.jpg" class="flex-1 bg-[#59B447] hover:bg-[#4a973a] text-white font-extrabold py-2.5 rounded-xl text-center flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download"></i> Descargar Foto
+                    </a>
+                    <a id="visor-btn-drive" href="#" target="_blank" rel="noopener noreferrer" class="hidden flex-1 bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-2.5 rounded-xl text-center items-center justify-center gap-2">
+                        <i class="fa-brands fa-google-drive"></i> Abrir en Drive
+                    </a>
+                    <button onclick="cerrarVisorFoto()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-5 py-2.5 rounded-xl">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- LÓGICA JAVASCRIPT COMPLETA Y DEPURADA (V4 FINAL)                    -->
     <!-- =================================================================== -->
     <script>
         // ✅ URL OFICIAL DE TU GOOGLE APPS SCRIPT:
@@ -735,6 +775,7 @@
 
         let HORARIOS_SEDES_CACHE = {};
         let FERIADOS_CACHE = [];
+        let usuariosDevCache = [];
 
         let usuarioActual = null;
         let globalLat = null, globalLng = null;
@@ -747,8 +788,9 @@
         let fotoProcesadaBase64 = null;
         let registrosAdminCache = [];
         let registrosGerenteCache = [];
+        let listaFiltradaAdminActual = [];
+        let listaFiltradaGerenteActual = [];
 
-        // Helper para obtener siempre la fecha local de Perú (YYYY-MM-DD) sin desfase UTC nocturno
         function obtenerFechaLocalISO() {
             const ahora = new Date();
             const anio = ahora.getFullYear();
@@ -772,6 +814,13 @@
             if (sesionGuardada) {
                 try {
                     usuarioActual = JSON.parse(sesionGuardada);
+                    // Sincronizar área y rango con el directorio actualizado de Hoja 1
+                    const infoFresca = DIRECTORIO_HOJA_1.find(u => u.nombre === usuarioActual.nombre);
+                    if (infoFresca) {
+                        usuarioActual.rango = infoFresca.rango;
+                        usuarioActual.sede = infoFresca.sede;
+                        usuarioActual.area = infoFresca.area || usuarioActual.area;
+                    }
                     activarInterfazPorRol();
                 } catch (e) {
                     localStorage.removeItem("crediban_asistencia_sesion");
@@ -790,7 +839,7 @@
             try {
                 return JSON.parse(texto);
             } catch (err) {
-                throw new Error("Recuerda actualizar tu Apps Script con 'Nueva versión' en Gestionar Implementaciones.");
+                throw new Error("Publica una 'Nueva versión' en Gestionar Implementaciones de tu Apps Script.");
             }
         }
 
@@ -802,7 +851,115 @@
         }
 
         // =====================================================================
-        // 2. VALIDACIÓN ESTRICTA DE DIRECCIÓN COMPRENSIBLE (NO SOLO DÍGITOS)
+        // 2. VISOR FOTOGRÁFICO MODAL (ELIMINA EL ERROR 404 DE GITHUB PAGES)
+        // =====================================================================
+        function tieneEvidenciaFotografica(r) {
+            if (r.fotoBase64 && r.fotoBase64.startsWith("data:image")) return true;
+            if (r.linkFoto && (r.linkFoto.startsWith("data:image") || r.linkFoto.startsWith("http://") || r.linkFoto.startsWith("https://"))) return true;
+            if (r.urlFoto && (r.urlFoto.startsWith("data:image") || r.urlFoto.startsWith("http://") || r.urlFoto.startsWith("https://"))) return true;
+            return false;
+        }
+
+        function extraerIdGoogleDrive(url) {
+            if (!url) return null;
+            const m1 = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (m1 && m1[1]) return m1[1];
+            const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            if (m2 && m2[1]) return m2[1];
+            return null;
+        }
+
+        function abrirVisorFotoDesdeTabla(origen, idx) {
+            let reg = null;
+            if (origen === "admin") reg = listaFiltradaAdminActual[idx];
+            else if (origen === "gerente") reg = listaFiltradaGerenteActual[idx];
+            else if (origen === "local") {
+                const locales = JSON.parse(localStorage.getItem("crediban_mis_marcajes_hoy") || "[]");
+                reg = locales[idx];
+            }
+            if (!reg) return;
+            mostrarModalFoto(reg);
+        }
+
+        function mostrarModalFoto(reg) {
+            const modal = document.getElementById("modal-visor-foto");
+            const imgEl = document.getElementById("visor-img-element");
+            const boxError = document.getElementById("visor-mensaje-error");
+            const txtError = document.getElementById("visor-texto-error");
+            const btnDescargar = document.getElementById("visor-btn-descargar");
+            const btnDrive = document.getElementById("visor-btn-drive");
+
+            document.getElementById("visor-badge-sede").innerText = `${reg.sede || 'SEDE'} — ${reg.area || reg.rango || ''}`;
+            document.getElementById("visor-titulo-nombre").innerText = reg.nombre || usuarioActual.nombre;
+            document.getElementById("visor-detalle-fecha").innerText = `📅 ${reg.fecha || ''}  ⏰ ${reg.hora || ''}`;
+            document.getElementById("visor-detalle-tipo").innerText = reg.tipo || "";
+            document.getElementById("visor-detalle-motivo").innerText = `👤 Cliente / Motivo: ${reg.observacion || 'Labor en agencia'}`;
+            document.getElementById("visor-detalle-direccion").innerText = `📍 ${reg.direccion || 'Ubicación registrada'}`;
+
+            const fuenteBase64 = (reg.fotoBase64 && reg.fotoBase64.startsWith("data:image"))
+                ? reg.fotoBase64
+                : ((reg.linkFoto && reg.linkFoto.startsWith("data:image")) ? reg.linkFoto : ((reg.urlFoto && reg.urlFoto.startsWith("data:image")) ? reg.urlFoto : ""));
+
+            const linkExterno = (reg.linkFoto && reg.linkFoto.startsWith("http"))
+                ? reg.linkFoto
+                : ((reg.urlFoto && reg.urlFoto.startsWith("http")) ? reg.urlFoto : "");
+
+            imgEl.classList.remove("hidden");
+            boxError.classList.add("hidden");
+            btnDrive.classList.add("hidden");
+            btnDrive.classList.remove("flex");
+
+            if (fuenteBase64) {
+                imgEl.src = fuenteBase64;
+                btnDescargar.href = fuenteBase64;
+                btnDescargar.download = `Asistencia_${(reg.nombre || 'CREDIBAN').replace(/\s+/g, '_')}_${reg.fecha || ''}.jpg`;
+                btnDescargar.classList.remove("hidden");
+                if (linkExterno) {
+                    btnDrive.href = linkExterno;
+                    btnDrive.classList.remove("hidden");
+                    btnDrive.classList.add("flex");
+                }
+            } else if (linkExterno) {
+                const driveId = extraerIdGoogleDrive(linkExterno);
+                const thumbUrl = driveId ? `https://drive.google.com/thumbnail?id=${driveId}&sz=w1000` : linkExterno;
+                imgEl.src = thumbUrl;
+                imgEl.onerror = () => {
+                    imgEl.classList.add("hidden");
+                    boxError.classList.remove("hidden");
+                    txtError.innerText = "La imagen está alojada en Google Drive. Pulsa el botón azul 'Abrir en Drive' aquí abajo para visualizarla.";
+                };
+                btnDescargar.classList.add("hidden");
+                btnDrive.href = linkExterno;
+                btnDrive.classList.remove("hidden");
+                btnDrive.classList.add("flex");
+            } else {
+                imgEl.classList.add("hidden");
+                boxError.classList.remove("hidden");
+                btnDescargar.classList.add("hidden");
+                txtError.innerText = "Este registro corresponde a una prueba anterior donde aún no estaba activo el respaldo fotográfico en el Google Sheet. Los nuevos marcajes mostrarán su foto aquí automáticamente.";
+            }
+
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+        }
+
+        function cerrarVisorFoto() {
+            const modal = document.getElementById("modal-visor-foto");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+            document.getElementById("visor-img-element").src = "";
+        }
+
+        function obtenerUrlMapaSegura(r) {
+            if (r.linkMapa && (r.linkMapa.startsWith("https://") || r.linkMapa.startsWith("http://"))) {
+                return r.linkMapa;
+            }
+            const busqueda = r.direccion || r.sede || "Peru";
+            return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(busqueda)}`;
+        }
+
+        // =====================================================================
+        // 3. VALIDACIÓN ESTRICTA DE DIRECCIÓN COMPRENSIBLE (NO SOLO DÍGITOS)
         // =====================================================================
         function esDireccionComprensible(texto) {
             if (!texto || typeof texto !== "string") return false;
@@ -992,7 +1149,7 @@
         }
 
         // =====================================================================
-        // 3. LECTURA DE LA HOJA 1 Y LOGIN POR RANGO (TRABAJADOR/ADMIN/GERENTE/DEV)
+        // 4. LECTURA DE LA HOJA 1 Y LOGIN POR RANGO
         // =====================================================================
         async function cargarDirectorioDesdeSheet() {
             try {
@@ -1104,7 +1261,6 @@
             const gpsBadge = document.getElementById("gps-status");
             const selectorSedeDev = document.getElementById("selector-sede-dev-marcaje");
 
-            // Resetear visibilidad de botones
             btnMarcar.classList.add("hidden");
             btnMarcar.classList.remove("flex");
             btnAdmin.classList.add("hidden");
@@ -1123,13 +1279,11 @@
             document.getElementById("filtro-gerente-hasta").value = hoyISO;
 
             if (usuarioActual.rango === "Trabajador") {
-                // Trabajador: Solo marca asistencia
                 btnMarcar.classList.remove("hidden");
                 btnMarcar.classList.add("flex");
                 renderizarMisMarcajesLocales();
                 cambiarPestana("marcar");
             } else if (usuarioActual.rango === "Administrador") {
-                // Administrador: Marca su asistencia y supervisa su propia sede
                 btnMarcar.classList.remove("hidden");
                 btnMarcar.classList.add("flex");
                 btnAdmin.classList.remove("hidden");
@@ -1137,13 +1291,11 @@
                 renderizarMisMarcajesLocales();
                 cambiarPestana("marcar");
             } else if (usuarioActual.rango === "Gerente") {
-                // GERENTE: NO marca asistencia ni edita la hoja. Entra directo a Auditoría Global/Sedes
                 gpsBadge.classList.add("hidden");
                 btnGerente.classList.remove("hidden");
                 btnGerente.classList.add("flex");
                 cambiarPestana("gerente");
             } else if (usuarioActual.rango === "Desarrollador") {
-                // DESARROLLADOR: Tiene su propio panel de configuración + acceso a vista gerencial y cámara de pruebas
                 btnDev.classList.remove("hidden");
                 btnDev.classList.add("flex");
                 btnGerente.classList.remove("hidden");
@@ -1196,7 +1348,7 @@
         }
 
         // =====================================================================
-        // 4. PREVISUALIZACIÓN Y MARCA DE AGUA CON CLIENTE / MOTIVO INCLUIDO
+        // 5. PREVISUALIZACIÓN, MARCA DE AGUA Y AUTO-COMPRESIÓN PARA SHEET (<45KB)
         // =====================================================================
         function generarPrevisualizacion() {
             const inputFoto = document.getElementById("inputFoto");
@@ -1215,16 +1367,16 @@
                     const canvas = document.getElementById("canvas");
                     const ctx = canvas.getContext("2d");
 
-                    const maxAncho = 850;
+                    // Tamaño óptimo (640px) para que sea nítida y quepa siempre en una celda de Google Sheets (<45,000 chars)
+                    const maxAncho = 640;
                     const proporcion = maxAncho / img.width;
                     canvas.width = maxAncho;
-                    canvas.height = img.height * proporcion;
+                    canvas.height = Math.round(img.height * proporcion);
 
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                    // Cintillo inferior ampliado para incluir las 5 líneas sin quitar ningún dato
-                    const altoCaja = 195;
-                    ctx.fillStyle = "rgba(15, 23, 42, 0.80)";
+                    const altoCaja = 155;
+                    ctx.fillStyle = "rgba(15, 23, 42, 0.82)";
                     ctx.fillRect(0, canvas.height - altoCaja, canvas.width, altoCaja);
 
                     const sedeMarcaje = (usuarioActual.sede === "TODAS")
@@ -1240,33 +1392,39 @@
                     ctx.textBaseline = "bottom";
 
                     // Línea 1: Empresa, Sede, Área y Momento de Marcaje
-                    ctx.font = "bold 19px Arial";
+                    ctx.font = "bold 15px Arial";
                     ctx.fillStyle = "#4ade80";
-                    ctx.fillText(`CREDIBAN | SEDE: ${sedeMarcaje} (${areaMarcaje.toUpperCase()}) — [${tipoMarcaje.toUpperCase()}]`, 20, canvas.height - 152);
+                    ctx.fillText(`CREDIBAN | SEDE: ${sedeMarcaje} (${areaMarcaje.toUpperCase()}) — [${tipoMarcaje.toUpperCase()}]`, 14, canvas.height - 120);
 
                     // Línea 2: Rango y Nombre del Asesor/Cajero/Administrador
-                    ctx.font = "bold 18px Arial";
+                    ctx.font = "bold 14px Arial";
                     ctx.fillStyle = "#ffffff";
-                    ctx.fillText(`${usuarioActual.rango.toUpperCase()}: ${usuarioActual.nombre} (${modalidad.toUpperCase()})`, 20, canvas.height - 118);
+                    ctx.fillText(`${usuarioActual.rango.toUpperCase()}: ${usuarioActual.nombre} (${modalidad.toUpperCase()})`, 14, canvas.height - 93);
 
-                    // Línea 3: Cliente o Motivo (NUEVA LÍNEA SOLICITADA)
-                    ctx.font = "bold 17px Arial";
+                    // Línea 3: Cliente o Motivo
+                    ctx.font = "bold 14px Arial";
                     ctx.fillStyle = "#38bdf8";
-                    const motivoRecortado = clienteOMotivo.length > 62 ? clienteOMotivo.substring(0, 62) + "..." : clienteOMotivo;
-                    ctx.fillText(`CLIENTE / MOTIVO: ${motivoRecortado}`, 20, canvas.height - 86);
+                    const motivoRecortado = clienteOMotivo.length > 58 ? clienteOMotivo.substring(0, 58) + "..." : clienteOMotivo;
+                    ctx.fillText(`CLIENTE / MOTIVO: ${motivoRecortado}`, 14, canvas.height - 67);
 
                     // Línea 4: Fecha y Hora
-                    ctx.font = "bold 17px Arial";
+                    ctx.font = "bold 13px Arial";
                     ctx.fillStyle = "#facc15";
-                    ctx.fillText(`FECHA Y HORA: ${fechaHoraStr}`, 20, canvas.height - 54);
+                    ctx.fillText(`FECHA Y HORA: ${fechaHoraStr}`, 14, canvas.height - 41);
 
                     // Línea 5: Dirección Comprensible GPS
-                    ctx.font = "bold 14px Arial";
+                    ctx.font = "bold 12px Arial";
                     ctx.fillStyle = "#e2e8f0";
-                    const dirRecortada = globalAddress.length > 68 ? globalAddress.substring(0, 68) + "..." : globalAddress;
-                    ctx.fillText(`DIRECCIÓN: ${dirRecortada} (${globalLat.toFixed(4)}, ${globalLng.toFixed(4)})`, 20, canvas.height - 20);
+                    const dirRecortada = globalAddress.length > 62 ? globalAddress.substring(0, 62) + "..." : globalAddress;
+                    ctx.fillText(`DIRECCIÓN: ${dirRecortada} (${globalLat.toFixed(4)}, ${globalLng.toFixed(4)})`, 14, canvas.height - 15);
 
-                    fotoProcesadaBase64 = canvas.toDataURL("image/jpeg", 0.74);
+                    // Compresión adaptativa para garantizar que siempre entre en una celda de Google Sheets (<46,000 caracteres)
+                    let calidad = 0.62;
+                    fotoProcesadaBase64 = canvas.toDataURL("image/jpeg", calidad);
+                    while (fotoProcesadaBase64.length > 45000 && calidad > 0.30) {
+                        calidad -= 0.08;
+                        fotoProcesadaBase64 = canvas.toDataURL("image/jpeg", calidad);
+                    }
 
                     document.getElementById("pantalla-preview").classList.remove("hidden");
                     document.getElementById("pantalla-preview").classList.add("flex");
@@ -1354,7 +1512,7 @@
         }
 
         // =====================================================================
-        // 5. CRONÓMETRO DE REFRIGERIO DINÁMICO DE 90 MINUTOS
+        // 6. CRONÓMETRO DE REFRIGERIO DINÁMICO DE 90 MINUTOS
         // =====================================================================
         function gestionarEstadoRefrigerio(tipo, sede) {
             if (tipo === "Salida a Refrigerio") {
@@ -1397,7 +1555,8 @@
         function guardarEnHistorialLocal(reg) {
             const lista = JSON.parse(localStorage.getItem("crediban_mis_marcajes_hoy") || "[]");
             lista.unshift(reg);
-            localStorage.setItem("crediban_mis_marcajes_hoy", JSON.stringify(lista.slice(0, 10)));
+            // Guardar máximo 6 registros recientes en caché local para no saturar localStorage
+            localStorage.setItem("crediban_mis_marcajes_hoy", JSON.stringify(lista.slice(0, 6)));
         }
 
         function renderizarMisMarcajesLocales() {
@@ -1405,7 +1564,7 @@
             const lista = JSON.parse(localStorage.getItem("crediban_mis_marcajes_hoy") || "[]");
             if (lista.length === 0) return;
 
-            cont.innerHTML = lista.map(r => `
+            cont.innerHTML = lista.map((r, idx) => `
                 <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl flex justify-between items-center text-xs">
                     <div>
                         <span class="font-extrabold text-slate-800 block">${r.tipo} (${r.sede})</span>
@@ -1426,10 +1585,9 @@
                             ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">⏱️ +${r.extrasCaja}m Extra Caja</span>`
                             : ""
                         }
-                        ${r.urlFoto && r.urlFoto.startsWith("http")
-                            ? `<a href="${r.urlFoto}" target="_blank" class="block text-blue-600 font-bold text-[10px] hover:underline"><i class="fa-solid fa-image"></i> Ver Foto</a>`
-                            : `<span class="text-[9px] text-amber-700 block max-w-[110px] leading-tight">${r.urlFoto || ''}</span>`
-                        }
+                        <button type="button" onclick="abrirVisorFotoDesdeTabla('local', ${idx})" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-2.5 py-1 rounded-lg text-[10px] inline-flex items-center gap-1">
+                            <i class="fa-solid fa-eye"></i> Ver Foto
+                        </button>
                     </div>
                 </div>
             `).join("");
@@ -1492,7 +1650,7 @@
         }
 
         // =====================================================================
-        // 6. VISTA ADMINISTRADOR (Supervisa su Sede)
+        // 7. VISTA ADMINISTRADOR (Con Visor Modal Anti-404)
         // =====================================================================
         async function cargarReporteSedeAdmin() {
             document.getElementById("titulo-sede-admin").innerText = usuarioActual.sede;
@@ -1524,7 +1682,7 @@
             const hasta = document.getElementById("filtro-admin-hasta").value;
             const tipo = document.getElementById("filtro-admin-tipo").value;
 
-            const filtrados = registrosAdminCache.filter(r => {
+            listaFiltradaAdminActual = registrosAdminCache.filter(r => {
                 if (asesor !== "TODOS" && r.nombre !== asesor) return false;
                 if (tipo !== "TODOS" && r.tipo !== tipo) return false;
                 if (desde && r.fecha < desde) return false;
@@ -1533,24 +1691,27 @@
             });
 
             let sumaMinutosTard = 0, sumaExcesoRefr = 0, sumaExtrasCaja = 0;
-            filtrados.forEach(r => {
+            listaFiltradaAdminActual.forEach(r => {
                 sumaMinutosTard += Number(r.tardanza || 0);
                 sumaExcesoRefr += Number(r.excesoRefrigerio || 0);
                 sumaExtrasCaja += Number(r.extrasCaja || 0);
             });
 
-            document.getElementById("kpi-admin-total").innerText = filtrados.length;
+            document.getElementById("kpi-admin-total").innerText = listaFiltradaAdminActual.length;
             document.getElementById("kpi-admin-minutos").innerText = `${sumaMinutosTard} min`;
             document.getElementById("kpi-admin-refrigerio").innerText = `${sumaExcesoRefr} min`;
             document.getElementById("kpi-admin-extras-caja").innerText = `${sumaExtrasCaja} min`;
 
             const tbody = document.getElementById("tbody-admin");
-            if (filtrados.length === 0) {
+            if (listaFiltradaAdminActual.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400">No hay registros en el rango seleccionado.</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = filtrados.map(r => `
+            tbody.innerHTML = listaFiltradaAdminActual.map((r, idx) => {
+                const urlMapa = obtenerUrlMapaSegura(r);
+                const hayFoto = tieneEvidenciaFotografica(r);
+                return `
                 <tr class="hover:bg-slate-50">
                     <td class="p-3 font-mono font-bold text-slate-700">${r.fecha}<br><span class="text-[#59B447]">${r.hora}</span></td>
                     <td class="p-3 font-extrabold text-slate-800">${r.nombre}</td>
@@ -1564,33 +1725,32 @@
                     </td>
                     <td class="p-3 space-y-1">
                         ${r.tardanza > 0
-                            ? `<span class="bg-red-100 text-red-700 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] inline-block">+${r.tardanza}m Tardanza</span>`
+                            ? `<span class="bg-red-100 text-red-700 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] inline-block">+\${r.tardanza}m Tardanza</span>`
                             : `<span class="bg-green-100 text-green-700 font-bold px-2.5 py-0.5 rounded-full text-[10px] inline-block">A tiempo</span>`
                         }
                         ${r.excesoRefrigerio > 0
-                            ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">🍽️ +${r.excesoRefrigerio}m Exceso Refr.</span>`
+                            ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">🍽️ +\${r.excesoRefrigerio}m Exceso Refr.</span>`
                             : ""
                         }
                         ${r.extrasCaja > 0
-                            ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">⏱️ +${r.extrasCaja}m Extra Caja</span>`
+                            ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">⏱️ +\${r.extrasCaja}m Extra Caja</span>`
                             : ""
                         }
                     </td>
                     <td class="p-3 max-w-xs">
-                        <a href="${r.linkMapa}" target="_blank" class="text-blue-600 hover:underline font-bold block"><i class="fa-solid fa-map-location-dot"></i> ${r.direccion || 'Ver Mapa'}</a>
+                        <a href="${urlMapa}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-bold block"><i class="fa-solid fa-map-location-dot"></i> ${r.direccion || 'Ver Mapa'}</a>
                     </td>
                     <td class="p-3 text-center">
-                        ${r.linkFoto && r.linkFoto.startsWith("http")
-                            ? `<a href="${r.linkFoto}" target="_blank" class="inline-flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-1.5 rounded-lg text-[11px]"><i class="fa-solid fa-camera"></i> Ver Foto</a>`
-                            : `<span class="text-amber-700 font-bold text-[10px] block max-w-[140px] mx-auto">${r.linkFoto || 'Sin foto'}</span>`
-                        }
+                        <button type="button" onclick="abrirVisorFotoDesdeTabla('admin', ${idx})" class="${hayFoto ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'} inline-flex items-center gap-1.5 font-extrabold px-3.5 py-2 rounded-xl text-[11px] shadow-sm transition-all active:scale-95">
+                            <i class="fa-solid ${hayFoto ? 'fa-camera' : 'fa-circle-info'}"></i> ${hayFoto ? 'Ver Foto' : 'Sin Foto'}
+                        </button>
                     </td>
                 </tr>
-            `).join("");
+            `}).join("");
         }
 
         // =====================================================================
-        // 7. PANEL GERENCIAL (Filtro General de Todas las Sedes y por Sede/Colaborador)
+        // 8. PANEL GERENCIAL (Con Visor Modal Anti-404)
         // =====================================================================
         async function cargarDatosGerente() {
             const tbody = document.getElementById("tbody-gerente");
@@ -1614,10 +1774,6 @@
             }
         }
 
-        /**
-         * Cuando el Gerente cambia entre "TODAS LAS SEDES" o una Sede específica,
-         * actualiza automáticamente la lista de colaboradores de esa sede.
-         */
         function actualizarFiltrosGerente() {
             const sedeElegida = document.getElementById("filtro-gerente-sede").value;
             const sublista = (sedeElegida === "TODAS")
@@ -1634,7 +1790,7 @@
             const desde = document.getElementById("filtro-gerente-desde").value;
             const hasta = document.getElementById("filtro-gerente-hasta").value;
 
-            const filtrados = registrosGerenteCache.filter(r => {
+            listaFiltradaGerenteActual = registrosGerenteCache.filter(r => {
                 if (sede !== "TODAS" && r.sede !== sede) return false;
                 if (rangoFiltro === "CAJA") {
                     if (String(r.area || "").toUpperCase().indexOf("CAJA") === -1) return false;
@@ -1648,24 +1804,27 @@
             });
 
             let sumaTard = 0, sumaRefr = 0, sumaExt = 0;
-            filtrados.forEach(r => {
+            listaFiltradaGerenteActual.forEach(r => {
                 sumaTard += Number(r.tardanza || 0);
                 sumaRefr += Number(r.excesoRefrigerio || 0);
                 sumaExt += Number(r.extrasCaja || 0);
             });
 
-            document.getElementById("kpi-gerente-total").innerText = filtrados.length;
+            document.getElementById("kpi-gerente-total").innerText = listaFiltradaGerenteActual.length;
             document.getElementById("kpi-gerente-tardanza").innerText = `${sumaTard} min`;
             document.getElementById("kpi-gerente-refrigerio").innerText = `${sumaRefr} min`;
             document.getElementById("kpi-gerente-extras").innerText = `${sumaExt} min`;
 
             const tbody = document.getElementById("tbody-gerente");
-            if (filtrados.length === 0) {
+            if (listaFiltradaGerenteActual.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400">Sin registros para los filtros seleccionados.</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = filtrados.map(r => `
+            tbody.innerHTML = listaFiltradaGerenteActual.map((r, idx) => {
+                const urlMapa = obtenerUrlMapaSegura(r);
+                const hayFoto = tieneEvidenciaFotografica(r);
+                return `
                 <tr class="hover:bg-amber-50/30">
                     <td class="p-3 font-mono font-bold">${r.fecha}<br><span class="text-[#59B447]">${r.hora}</span></td>
                     <td class="p-3"><span class="bg-blue-100 text-blue-800 font-extrabold px-2 py-0.5 rounded text-[10px]">${r.sede}</span></td>
@@ -1693,20 +1852,19 @@
                         }
                     </td>
                     <td class="p-3 max-w-xs">
-                        <a href="${r.linkMapa}" target="_blank" class="text-blue-600 hover:underline font-bold block"><i class="fa-solid fa-location-dot"></i> ${r.direccion || 'Mapa'}</a>
+                        <a href="${urlMapa}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-bold block"><i class="fa-solid fa-location-dot"></i> ${r.direccion || 'Mapa'}</a>
                     </td>
                     <td class="p-3 text-center">
-                        ${r.linkFoto && r.linkFoto.startsWith("http")
-                            ? `<a href="\${r.linkFoto}" target="_blank" class="bg-[#59B447] text-white font-bold px-3 py-1.5 rounded-lg text-[11px] inline-flex items-center gap-1"><i class="fa-solid fa-eye"></i> Foto</a>`
-                            : `<span class="text-[10px] text-amber-700 font-bold block max-w-[120px] mx-auto">\${r.linkFoto || '-'}</span>`
-                        }
+                        <button type="button" onclick="abrirVisorFotoDesdeTabla('gerente', ${idx})" class="${hayFoto ? 'bg-[#59B447] hover:bg-[#4a973a] text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'} font-extrabold px-3.5 py-2 rounded-xl text-[11px] inline-flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
+                            <i class="fa-solid ${hayFoto ? 'fa-eye' : 'fa-circle-info'}"></i> ${hayFoto ? 'Ver Foto' : 'Sin Foto'}
+                        </button>
                     </td>
                 </tr>
-            `).join("");
+            `}).join("");
         }
 
         // =====================================================================
-        // 8. PANEL EXCLUSIVO DEL DESARROLLADOR (Configuración Total de Hoja 1)
+        // 9. PANEL EXCLUSIVO DEL DESARROLLADOR (Configuración Total de Hoja 1)
         // =====================================================================
         async function cargarDatosDesarrollador() {
             await cargarDirectorioDesdeSheet();
@@ -1725,7 +1883,8 @@
                         renderizarListaFeriadosDev();
                     }
                     if (res.usuariosHoja1) {
-                        renderizarTablaUsuariosDev(res.usuariosHoja1);
+                        usuariosDevCache = res.usuariosHoja1;
+                        renderizarTablaUsuariosDev(usuariosDevCache);
                     }
                 }
             } catch (e) {
@@ -1748,7 +1907,7 @@
 
         function renderizarTablaUsuariosDev(listaUsuarios) {
             const tbody = document.getElementById("tbody-usuarios-dev");
-            tbody.innerHTML = listaUsuarios.map(u => `
+            tbody.innerHTML = listaUsuarios.map((u, idx) => `
                 <tr class="hover:bg-slate-100">
                     <td class="p-2.5 font-extrabold text-slate-800">${u.nombre}</td>
                     <td class="p-2.5 font-mono text-slate-600">${u.clave}</td>
@@ -1759,7 +1918,7 @@
                         <span class="${u.estado === 'ACTIVO' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-700'} px-2 py-0.5 rounded-full text-[10px] font-extrabold">${u.estado}</span>
                     </td>
                     <td class="p-2.5 text-center">
-                        <button onclick='cargarUsuarioEnFormularioDev(${JSON.stringify(u)})' class="bg-slate-800 text-white px-2.5 py-1 rounded text-[10px] font-bold hover:bg-slate-700">
+                        <button type="button" onclick="cargarUsuarioEnFormularioDev(${idx})" class="bg-slate-800 text-white px-2.5 py-1 rounded text-[10px] font-bold hover:bg-slate-700">
                             <i class="fa-solid fa-pen"></i> Cargar
                         </button>
                     </td>
@@ -1767,7 +1926,9 @@
             `).join("");
         }
 
-        function cargarUsuarioEnFormularioDev(u) {
+        function cargarUsuarioEnFormularioDev(idx) {
+            const u = usuariosDevCache[idx];
+            if (!u) return;
             document.getElementById("cfg-user-nombre").value = u.nombre;
             document.getElementById("cfg-user-clave").value = u.clave;
             document.getElementById("cfg-user-rango").value = u.rango;
@@ -1785,7 +1946,7 @@
             cont.innerHTML = FERIADOS_CACHE.map(f => `
                 <div class="flex justify-between items-center bg-slate-50 border px-3 py-1.5 rounded-lg text-xs">
                     <span class="font-mono font-bold text-slate-700"><i class="fa-regular fa-calendar-check text-red-500 mr-1"></i> ${f}</span>
-                    <button onclick="modificarFeriado('eliminar', '${f}')" class="text-red-500 hover:text-red-700 font-bold text-[11px]">
+                    <button type="button" onclick="modificarFeriado('eliminar', '${f}')" class="text-red-500 hover:text-red-700 font-bold text-[11px]">
                         <i class="fa-solid fa-trash"></i> Quitar
                     </button>
                 </div>
@@ -1867,10 +2028,6 @@
             }
         }
 
-        /**
-         * Combina los colaboradores que están registrados en la Hoja 1 para esa sede
-         * y los que tienen marcajes históricos en esa sede, excluyendo Gerentes y Desarrolladores.
-         */
         function poblarSelectorColaboradoresPorSede(idSelect, listaRegistros, sedeFiltro) {
             const sel = document.getElementById(idSelect);
             const nombresDeRegistros = listaRegistros.map(r => r.nombre);
@@ -1886,14 +2043,14 @@
         }
 
         function exportarTablaCSV(modo) {
-            const datos = (modo === "gerente") ? registrosGerenteCache : registrosAdminCache;
+            const datos = (modo === "gerente") ? listaFiltradaGerenteActual : listaFiltradaAdminActual;
             if (!datos || datos.length === 0) {
-                alert("No hay registros cargados para exportar.");
+                alert("No hay registros filtrados para exportar.");
                 return;
             }
-            const cabeceras = ["ID", "Fecha", "Hora", "Nombre", "Sede", "Rango", "Area", "Tipo_Marcaje", "Modalidad", "Cliente_O_Motivo", "Minutos_Tardanza", "Minutos_Exceso_Refrigerio", "Minutos_Extras_Caja", "Direccion_Comprensible", "Link_Mapa", "Link_Foto"];
+            const cabeceras = ["ID", "Fecha", "Hora", "Nombre", "Sede", "Rango", "Area", "Tipo_Marcaje", "Modalidad", "Cliente_O_Motivo", "Minutos_Tardanza", "Minutos_Exceso_Refrigerio", "Minutos_Extras_Caja", "Direccion_Comprensible", "Link_Mapa", "Estado_Foto"];
             const filas = datos.map(r => [
-                r.id, r.fecha, r.hora, `"${r.nombre}"`, r.sede, r.rango, `"${r.area || ''}"`, r.tipo, r.modalidad, `"${r.observacion || ''}"`, r.tardanza, r.excesoRefrigerio || 0, r.extrasCaja || 0, `"${r.direccion}"`, r.linkMapa, r.linkFoto
+                r.id, r.fecha, r.hora, `"${r.nombre}"`, r.sede, r.rango, `"${r.area || ''}"`, r.tipo, r.modalidad, `"${r.observacion || ''}"`, r.tardanza, r.excesoRefrigerio || 0, r.extrasCaja || 0, `"${r.direccion}"`, obtenerUrlMapaSegura(r), tieneEvidenciaFotografica(r) ? "Con Foto" : "Sin Foto"
             ].join(","));
 
             const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [cabeceras.join(","), ...filas].join("\n");
