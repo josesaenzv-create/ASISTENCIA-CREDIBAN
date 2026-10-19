@@ -10,22 +10,21 @@
         body { font-family: 'Arial', sans-serif; background-color: #f1f5f9; overscroll-behavior-y: contain; }
         .glass-card { background: white; border-radius: 20px; box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08); }
         .tab-active { background-color: #59B447; color: white; box-shadow: 0 4px 12px rgba(89, 180, 71, 0.35); }
-        .modo-fecha-activo { background-color: #59B447; color: white; box-shadow: 0 2px 8px rgba(89, 180, 71, 0.3); }
-        .subvista-activa { background-color: #1e293b; color: white; }
+        .modo-fecha-activo { background-color: white; color: #59B447; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         .animate-vista { animation: fadeIn 0.22s ease-out forwards; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center p-3 md:p-6">
 
-    <!-- NOTIFICACIÓN FLOTANTE (TOAST) -->
+    <!-- NOTIFICACIÓN FLOTANTE (TOAST PARA BOTÓN ATRÁS Y AVISOS RÁPIDOS) -->
     <div id="toast-notificacion" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white text-xs font-bold px-5 py-3 rounded-2xl shadow-2xl z-[70] hidden items-center gap-2.5 border border-slate-700 transition-all">
         <i class="fa-solid fa-circle-info text-[#59B447]"></i>
         <span id="toast-texto">Aviso del sistema</span>
     </div>
 
     <!-- =================================================================== -->
-    <!-- PANTALLA 1: LOGIN BLINDADO (Cero exposición de Sedes o Cargos)      -->
+    <!-- PANTALLA 1: LOGIN BLINDADO (Oculta Sedes, Cargos y Directorio)      -->
     <!-- =================================================================== -->
     <div id="pantalla-login" class="glass-card w-full max-w-md p-7 my-auto border-t-8 border-[#59B447] animate-vista">
         
@@ -52,7 +51,7 @@
 
         <div class="text-center mb-6">
             <span class="bg-slate-100 text-slate-600 text-[11px] font-bold px-3.5 py-1 rounded-full uppercase tracking-wider">
-                <i class="fa-solid fa-shield-halved text-[#59B447] mr-1"></i> Portal de Asistencia Segura
+                <i class="fa-solid fa-shield-halved text-[#59B447] mr-1"></i> Acceso Privado al Sistema
             </span>
         </div>
 
@@ -100,7 +99,7 @@
                 <input type="checkbox" id="login-recordar" checked class="w-4 h-4 accent-[#59B447] rounded">
                 <div class="text-xs">
                     <span class="font-bold text-green-900 block">🔒 Recordar mi sesión en este dispositivo</span>
-                    <span class="text-green-700 text-[11px]">Ingresa directo a tu sede y perfil al abrir la app</span>
+                    <span class="text-green-700 text-[11px]">Detectar mi usuario, sede y cargo automáticamente al abrir</span>
                 </div>
             </label>
 
@@ -117,7 +116,7 @@
     <!-- =================================================================== -->
     <div id="app-principal" class="w-full max-w-6xl hidden space-y-4">
 
-        <!-- BARRA SUPERIOR DE USUARIO, NOTIFICACIONES, GPS Y PESTAÑAS -->
+        <!-- BARRA SUPERIOR DE USUARIO, GPS Y PESTAÑAS CONDICIONALES -->
         <div class="glass-card p-4 flex flex-col md:flex-row justify-between items-center gap-4 border-l-8 border-[#59B447]">
             <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
                 <div>
@@ -129,31 +128,23 @@
                     <h2 id="header-nombre" class="text-lg font-extrabold text-slate-800 mt-1">NOMBRE USUARIO</h2>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <!-- Botón de Notificaciones del Sistema -->
-                    <button id="btn-notificaciones" onclick="activarNotificacionesWeb()" title="Activar recordatorios automáticos de horario" class="bg-slate-100 hover:bg-green-50 text-slate-600 border border-slate-300 text-[11px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-all">
-                        <i class="fa-solid fa-bell"></i> <span class="hidden sm:inline">Alertas</span>
-                    </button>
-
-                    <!-- Semáforo GPS -->
-                    <div id="gps-status" class="bg-yellow-100 text-yellow-700 text-[11px] font-bold px-3 py-1.5 rounded-full border border-yellow-300 flex items-center gap-1.5">
-                        <i class="fa-solid fa-satellite-dish animate-pulse"></i> Buscando Calle...
-                    </div>
+                <div id="gps-status" class="bg-yellow-100 text-yellow-700 text-[11px] font-bold px-3 py-1.5 rounded-full border border-yellow-300 flex items-center gap-1.5">
+                    <i class="fa-solid fa-satellite-dish animate-pulse"></i> Buscando Calle...
                 </div>
             </div>
 
-            <!-- BARRA DE PESTAÑAS DINÁMICAS SEGÚN JERARQUÍA -->
+            <!-- BARRA DE PESTAÑAS DINÁMICAS SEGÚN JERARQUÍA DETECTADA -->
             <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
                 <button id="tab-btn-marcar" onclick="cambiarPestana('marcar')" class="tab-active px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
                     <i class="fa-solid fa-camera"></i> Marcar Asistencia
                 </button>
 
                 <button id="tab-btn-admin" onclick="cambiarPestana('admin')" class="hidden bg-slate-100 text-slate-700 hover:bg-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold transition-all items-center gap-2">
-                    <i class="fa-solid fa-clipboard-user"></i> Supervisión de Sede
+                    <i class="fa-solid fa-clipboard-user"></i> Horarios de Mi Sede
                 </button>
 
                 <button id="tab-btn-gerente" onclick="cambiarPestana('gerente')" class="hidden bg-slate-100 text-amber-700 hover:bg-amber-100 border border-amber-300 px-4 py-2.5 rounded-xl text-xs font-bold transition-all items-center gap-2">
-                    <i class="fa-solid fa-crown text-amber-500"></i> Panel Gerencial
+                    <i class="fa-solid fa-crown text-amber-500"></i> Panel Gerencial / Sedes
                 </button>
 
                 <button id="tab-btn-dev" onclick="cambiarPestana('dev')" class="hidden bg-slate-900 text-emerald-400 hover:bg-slate-800 border border-emerald-500 px-4 py-2.5 rounded-xl text-xs font-bold transition-all items-center gap-2">
@@ -164,20 +155,6 @@
                     <i class="fa-solid fa-power-off"></i> Salir
                 </button>
             </div>
-        </div>
-
-        <!-- BANNER DE RECORDATORIO OBLIGATORIO DE ASISTENCIA (Salta según la hora del Sheet) -->
-        <div id="banner-alerta-obligatoria" class="hidden bg-red-600 text-white rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-3 shadow-lg animate-pulse">
-            <div class="flex items-center gap-3">
-                <i class="fa-solid fa-bell text-2xl text-yellow-300"></i>
-                <div>
-                    <p id="titulo-alerta-obligatoria" class="text-xs font-black uppercase tracking-wider">¡RECORDATORIO OBLIGATORIO DE ASISTENCIA!</p>
-                    <p id="texto-alerta-obligatoria" class="text-xs text-red-100 font-bold">Es hora de registrar tu asistencia en el sistema con fotografía.</p>
-                </div>
-            </div>
-            <button onclick="document.getElementById('banner-alerta-obligatoria').classList.add('hidden')" class="bg-white text-red-700 font-extrabold text-xs px-4 py-2 rounded-xl shadow flex-shrink-0">
-                Entendido
-            </button>
         </div>
 
         <!-- CRONÓMETRO DINÁMICO DE REFRIGERIO (90 MINUTOS) -->
@@ -195,101 +172,75 @@
         </div>
 
         <!-- =============================================================== -->
-        <!-- PESTAÑA 1: MÓDULO DE MARCAJE SIMPLIFICADO Y RÁPIDO              -->
+        <!-- PESTAÑA 1: MÓDULO DE MARCAJE Y CÁMARA (Trabajador / Admin)      -->
         <!-- =============================================================== -->
         <div id="vista-marcar" class="grid grid-cols-1 md:grid-cols-12 gap-4 animate-vista">
             <div class="md:col-span-7 glass-card p-6 space-y-4">
-                
-                <!-- Encabezado y Reloj -->
                 <div class="flex justify-between items-center border-b pb-3">
-                    <div>
-                        <h3 class="font-extrabold text-slate-800 text-base flex items-center gap-2">
-                            <i class="fa-solid fa-fingerprint text-[#59B447]"></i> Registro de Asistencia
-                        </h3>
-                        <p id="subtitulo-horario-sede" class="text-[11px] text-slate-500 font-bold mt-0.5">
-                            Horario oficial cargado desde Google Sheets
-                        </p>
-                    </div>
-                    <span id="reloj-vivo" class="text-sm font-mono font-black bg-slate-900 text-emerald-400 px-3.5 py-1.5 rounded-xl">00:00:00</span>
+                    <h3 class="font-extrabold text-slate-800 text-base flex items-center gap-2">
+                        <i class="fa-solid fa-fingerprint text-[#59B447]"></i> Registro de Asistencia con Foto
+                    </h3>
+                    <span id="reloj-vivo" class="text-xs font-mono font-bold bg-slate-100 text-slate-700 px-3 py-1 rounded-lg">00:00:00</span>
                 </div>
 
-                <!-- CHECKLIST VISUAL DE LOS 4 PASOS DEL DÍA -->
-                <div class="grid grid-cols-4 gap-2 text-center bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
-                    <div id="step-chk-1" class="p-2 rounded-xl border bg-white text-[10px] font-extrabold text-slate-400">
-                        <i class="fa-solid fa-circle-dot block text-sm mb-0.5"></i> 1. Entrada
-                    </div>
-                    <div id="step-chk-2" class="p-2 rounded-xl border bg-white text-[10px] font-extrabold text-slate-400">
-                        <i class="fa-solid fa-circle-dot block text-sm mb-0.5"></i> 2. Refrigerio
-                    </div>
-                    <div id="step-chk-3" class="p-2 rounded-xl border bg-white text-[10px] font-extrabold text-slate-400">
-                        <i class="fa-solid fa-circle-dot block text-sm mb-0.5"></i> 3. Retorno
-                    </div>
-                    <div id="step-chk-4" class="p-2 rounded-xl border bg-white text-[10px] font-extrabold text-slate-400">
-                        <i class="fa-solid fa-circle-dot block text-sm mb-0.5"></i> 4. Salida
-                    </div>
+                <div id="selector-sede-dev-marcaje" class="hidden">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Sede de Prueba (Modo Desarrollador)</label>
+                    <select id="marcaje-sede-dev" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-700">
+                        <option value="HUACHO">HUACHO</option>
+                        <option value="HUARAZ">HUARAZ</option>
+                        <option value="ICA">ICA</option>
+                        <option value="NUEVA OFICINA">NUEVA OFICINA</option>
+                        <option value="SEDE_EXTRA_1">SEDE_EXTRA_1</option>
+                        <option value="SEDE_EXTRA_2">SEDE_EXTRA_2</option>
+                    </select>
                 </div>
 
-                <!-- Selector de sede solo si el Desarrollador hace una prueba -->
-                <div id="selector-sede-dev-marcaje" class="hidden grid grid-cols-2 gap-3 bg-slate-100 p-3 rounded-xl">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Sede Prueba (Dev)</label>
-                        <select id="marcaje-sede-dev" class="w-full border rounded-lg p-2 text-xs font-bold bg-white">
-                            <option value="HUACHO">HUACHO</option>
-                            <option value="HUARAZ">HUARAZ</option>
-                            <option value="ICA">ICA</option>
-                            <option value="NUEVA OFICINA">NUEVA OFICINA</option>
-                            <option value="SEDE_EXTRA_1">SEDE_EXTRA_1</option>
-                            <option value="SEDE_EXTRA_2">SEDE_EXTRA_2</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Área Prueba (Dev)</label>
-                        <select id="area-marcaje" onchange="verificarBannerHorasExtrasCaja()" class="w-full border rounded-lg p-2 text-xs font-bold bg-white">
-                            <option value="Asesor de Créditos">Asesor de Créditos</option>
-                            <option value="Caja">Caja (Horas Extras)</option>
-                            <option value="Administración">Administración</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- 1. Momento de Asistencia y 2. Ubicación Operativa -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">1. Momento de Asistencia</label>
-                        <select id="tipo-marcaje" onchange="verificarBannerHorasExtrasCaja()" class="w-full border-2 border-[#59B447] rounded-xl p-3 text-sm font-extrabold text-slate-800 focus:ring-4 focus:ring-green-100 outline-none bg-white">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">1. Área Operativa</label>
+                        <select id="area-marcaje" onchange="verificarBannerHorasExtrasCaja()" class="w-full border border-gray-300 rounded-xl p-3.5 text-sm font-extrabold text-slate-700 outline-none focus:ring-2 focus:ring-[#59B447]">
+                            <option value="Asesor de Créditos">💼 Asesoría / Campo</option>
+                            <option value="Caja">🏦 Área de Caja (Control Horas Extras)</option>
+                            <option value="Administración">👔 Administración de Sede</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">2. Momento de Asistencia</label>
+                        <select id="tipo-marcaje" onchange="verificarBannerHorasExtrasCaja()" class="w-full border-2 border-[#59B447] rounded-xl p-3.5 text-sm font-extrabold text-slate-800 focus:ring-4 focus:ring-green-100 outline-none">
                             <option value="Entrada">📥 Hora de Entrada</option>
                             <option value="Salida a Refrigerio">🍽️ Salida a Refrigerio (90 min)</option>
                             <option value="Retorno de Refrigerio">✅ Regreso de Refrigerio</option>
                             <option value="Salida Final">📤 Hora de Salida Final</option>
                         </select>
                     </div>
+                </div>
+
+                <div id="aviso-horas-extras-caja" class="hidden bg-purple-50 border-2 border-purple-300 rounded-xl p-3.5 text-xs space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="font-extrabold text-purple-900 uppercase flex items-center gap-1.5">
+                            <i class="fa-solid fa-business-time text-purple-600"></i> Control de Salida y Horas Extras — Área de Caja
+                        </span>
+                        <span class="bg-purple-200 text-purple-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full">Automático</span>
+                    </div>
+                    <p class="text-[11px] text-purple-800">
+                        Se calcularán los minutos y horas extras si marcas después del cierre oficial de tu sede (Sábados a partir de la <b>1:00 PM / 13:00</b>).
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">2. Modalidad</label>
-                        <select id="modalidad-marcaje" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-700 outline-none bg-white">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">3. Ubicación Operativa</label>
+                        <select id="modalidad-marcaje" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-700 outline-none">
                             <option value="Oficina">🏢 En Agencia / Sede</option>
-                            <option value="Campo">🛵 En Campo (Respeta hora ingreso)</option>
+                            <option value="Campo">🛵 En Campo (Respeta hora de ingreso)</option>
                         </select>
                     </div>
-                </div>
-
-                <!-- AVISO AUTOMÁTICO DE HORAS EXTRAS PARA EL ÁREA DE CAJA EN SALIDA -->
-                <div id="aviso-horas-extras-caja" class="hidden bg-purple-50 border-2 border-purple-300 rounded-xl p-3 text-xs flex items-center justify-between">
-                    <div class="flex items-center gap-2.5">
-                        <i class="fa-solid fa-clock-rotate-left text-lg text-purple-600"></i>
-                        <div>
-                            <span class="font-extrabold text-purple-900 block uppercase">Área de Caja — Cálculo Automático de Horas Extras</span>
-                            <span class="text-[11px] text-purple-700">Si marcas después del cierre oficial de tu sede (Sábados 13:00), se registrarán tus minutos y horas extras.</span>
-                        </div>
+                    <div>
+                        <label id="label-obs-marcaje" class="block text-xs font-bold text-gray-500 uppercase mb-1">4. Cliente o Motivo (Sale en la foto)</label>
+                        <input type="text" id="obs-marcaje" placeholder="Ej. Cliente Sr. Pérez / Labor en agencia" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-[#59B447]">
                     </div>
                 </div>
 
-                <!-- 3. Cliente o Motivo (Sin ventanas emergentes molestas) -->
-                <div>
-                    <label id="label-obs-marcaje" class="block text-xs font-bold text-gray-500 uppercase mb-1">3. Cliente o Motivo (Se estampará en la marca de agua)</label>
-                    <input type="text" id="obs-marcaje" placeholder="Opcional: Ej. Cliente Sr. Pérez / Arqueo de Caja (Si lo dejas vacío dirá Labor en Agencia)" class="w-full border border-gray-300 rounded-xl p-3 text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-[#59B447]">
-                </div>
-
-                <!-- BLOQUE DE VALIDACIÓN DE DIRECCIÓN COMPRENSIBLE (NO SOLO DÍGITOS) -->
                 <div id="caja-direccion-validacion" class="bg-amber-50 border-2 border-amber-300 rounded-xl p-3.5 text-xs flex items-start justify-between gap-2.5 transition-all">
                     <div class="flex items-start gap-2.5">
                         <i id="icono-direccion" class="fa-solid fa-spinner fa-spin text-amber-600 text-base mt-0.5"></i>
@@ -304,15 +255,21 @@
                         </div>
                     </div>
                     <button type="button" onclick="forzarTraduccionCalle()" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold px-2.5 py-1.5 rounded-lg text-[11px] flex-shrink-0 shadow-sm">
-                        <i class="fa-solid fa-rotate"></i> Reintentar
+                        <i class="fa-solid fa-rotate"></i> Reintentar Calle
                     </button>
                 </div>
 
-                <!-- BOTÓN DE CÁMARA OBLIGATORIA -->
-                <div class="bg-blue-50 border-2 border-dashed border-blue-300 rounded-2xl p-4 text-center">
-                    <p class="text-xs font-extrabold text-blue-900 mb-3">
-                        <i class="fa-solid fa-user-check text-blue-600 mr-1"></i> En la fotografía debe verse claramente el rostro del colaborador.
+                <div class="bg-blue-50 border-2 border-dashed border-blue-300 rounded-2xl p-5 text-center relative">
+                    <span class="inline-block bg-blue-600 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
+                        ⚠️ Requisito Obligatorio de Validación
+                    </span>
+                    <p class="text-xs font-bold text-blue-900">
+                        Dentro de la fotografía debe verse claramente el rostro del Asesor, Cajero o Administrador.
                     </p>
+                    <p class="text-[11px] text-blue-700 mt-1 mb-4">
+                        La marca de agua grabará: <b>Nombre, Rango, Sede, Hora, Cliente/Motivo y Dirección Comprensible GPS</b>.
+                    </p>
+
                     <button type="button" id="btn-abrir-camara" onclick="intentarAbrirCamara()" class="inline-flex items-center justify-center gap-2 bg-slate-400 text-white font-extrabold py-4 px-6 rounded-xl shadow-lg transition-all w-full cursor-not-allowed">
                         <i class="fa-solid fa-lock"></i> Esperando Dirección en Texto Comprensible...
                     </button>
@@ -325,16 +282,15 @@
                 <div>
                     <div class="flex justify-between items-center border-b pb-3">
                         <h3 class="font-extrabold text-slate-800 text-sm uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-list-check text-[#59B447]"></i> Mis Marcajes de Hoy
+                            <i class="fa-solid fa-clock-rotate-left text-[#59B447]"></i> Mis Marcajes de Hoy
                         </h3>
-                        <span id="contador-marcajes-hoy" class="bg-green-100 text-green-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">0 / 4 completados</span>
+                        <span id="contador-marcajes-hoy" class="bg-green-100 text-green-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">0 / 4</span>
                     </div>
                     <div id="lista-mis-marcajes" class="space-y-2.5 mt-3 max-h-80 overflow-y-auto">
                         <p class="text-xs text-slate-400 text-center py-8">Aún no has registrado marcajes el día de hoy.</p>
                     </div>
                 </div>
 
-                <!-- Cola Offline -->
                 <div id="caja-offline" class="hidden bg-orange-50 border border-orange-300 rounded-xl p-3 space-y-2">
                     <div class="flex justify-between items-center">
                         <span class="text-xs font-bold text-orange-800">
@@ -354,7 +310,7 @@
         </div>
 
         <!-- =============================================================== -->
-        <!-- PESTAÑA 2: VISTA DE ADMINISTRADOR (Tardanzas, Faltas y Horas)   -->
+        <!-- PESTAÑA 2: VISTA EXCLUSIVA DE ADMINISTRADOR ("Horarios Mi Sede") -->
         <!-- =============================================================== -->
         <div id="vista-admin" class="hidden glass-card p-6 space-y-5 animate-vista">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b pb-4">
@@ -363,48 +319,39 @@
                         Supervisión de Agencia
                     </span>
                     <h3 class="text-lg font-extrabold text-slate-800 mt-1">
-                        Control de Asistencia, Faltas y Horas — Sede <span id="titulo-sede-admin" class="text-[#59B447]"></span>
+                        Control de Asistencia, Refrigerios (90m) y Horas Extras — Sede <span id="titulo-sede-admin" class="text-[#59B447]"></span>
                     </h3>
                 </div>
                 <div class="flex flex-wrap gap-2">
+                    <button onclick="aplicarRangoRapido('admin', 'hoy')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl">Hoy</button>
+                    <button onclick="aplicarRangoRapido('admin', 'ayer')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl">Ayer</button>
+                    <button onclick="aplicarRangoRapido('admin', 'mes')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-2 rounded-xl">Este Mes</button>
                     <button onclick="cargarReporteSedeAdmin()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2">
                         <i class="fa-solid fa-rotate"></i> Actualizar
                     </button>
                     <button onclick="exportarTablaCSV('admin')" class="bg-[#59B447] hover:bg-[#4a973a] text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2">
-                        <i class="fa-solid fa-file-csv"></i> Exportar Marcajes
-                    </button>
-                    <button onclick="exportarConsolidadoFaltasCSV('admin')" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2">
-                        <i class="fa-solid fa-file-excel"></i> Exportar Planilla / Faltas
+                        <i class="fa-solid fa-file-csv"></i> Exportar CSV
                     </button>
                 </div>
             </div>
 
-            <!-- MONITOR EN VIVO: ¿QUIÉNES FALTAN MARCAR ENTRADA HOY EN LA SEDE? -->
-            <div id="monitor-pendientes-admin" class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 text-xs"></div>
-
-            <!-- BARRA UNIFICADA DE FILTROS (SIN DUPLICADOS) -->
+            <!-- PANEL MULTIMODAL DE FILTROS: FECHA ESPECÍFICA, POR MES, RANGO DE FECHAS Y TODO -->
             <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
-                <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-200">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200">
                     <span class="text-[11px] font-extrabold text-slate-600 uppercase flex items-center gap-1.5">
-                        <i class="fa-solid fa-filter text-[#59B447]"></i> Período de Consulta:
+                        <i class="fa-solid fa-calendar-check text-[#59B447]"></i> Modalidad de Filtro de Fecha:
                     </span>
-                    <div class="flex flex-wrap gap-1.5">
-                        <button type="button" id="btn-modo-admin-hoy" onclick="seleccionarFiltroUnificado('admin', 'hoy')" class="modo-fecha-activo px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all border border-slate-300">
-                            ⚡ Hoy
-                        </button>
-                        <button type="button" id="btn-modo-admin-ayer" onclick="seleccionarFiltroUnificado('admin', 'ayer')" class="bg-white text-slate-700 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all border border-slate-300">
-                            ⏮️ Ayer
-                        </button>
-                        <button type="button" id="btn-modo-admin-dia" onclick="seleccionarFiltroUnificado('admin', 'dia')" class="bg-white text-slate-700 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all border border-slate-300">
+                    <div class="flex flex-wrap gap-1.5 bg-slate-200/80 p-1 rounded-xl">
+                        <button type="button" id="btn-modo-admin-dia" onclick="cambiarModoFecha('admin', 'dia')" class="modo-fecha-activo px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
                             📅 Fecha Específica
                         </button>
-                        <button type="button" id="btn-modo-admin-mes" onclick="seleccionarFiltroUnificado('admin', 'mes')" class="bg-white text-slate-700 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all border border-slate-300">
+                        <button type="button" id="btn-modo-admin-mes" onclick="cambiarModoFecha('admin', 'mes')" class="text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
                             🗓️ Por Mes
                         </button>
-                        <button type="button" id="btn-modo-admin-rango" onclick="seleccionarFiltroUnificado('admin', 'rango')" class="bg-white text-slate-700 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all border border-slate-300">
-                            ↔️ Rango
+                        <button type="button" id="btn-modo-admin-rango" onclick="cambiarModoFecha('admin', 'rango')" class="text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
+                            ↔️ Rango de Fechas
                         </button>
-                        <button type="button" id="btn-modo-admin-todo" onclick="seleccionarFiltroUnificado('admin', 'todo')" class="bg-white text-slate-700 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all border border-slate-300">
+                        <button type="button" id="btn-modo-admin-todo" onclick="cambiarModoFecha('admin', 'todo')" class="text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
                             📚 Todo
                         </button>
                     </div>
@@ -412,22 +359,25 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Colaborador de mi Sede</label>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Filtrar Colaborador de mi Sede</label>
                         <select id="filtro-admin-asesor" onchange="renderizarTablaAdmin()" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold bg-white">
                             <option value="TODOS">Todos los de mi sede</option>
                         </select>
                     </div>
 
+                    <!-- Opción 1: Fecha Específica -->
                     <div id="box-admin-dia" class="md:col-span-2">
-                        <label class="block text-[10px] font-bold text-green-700 uppercase mb-1">📅 Fecha Específica (Día Exacto)</label>
+                        <label class="block text-[10px] font-bold text-green-700 uppercase mb-1">📅 Seleccionar Fecha Específica (Día Exacto)</label>
                         <input type="date" id="filtro-admin-dia" onchange="renderizarTablaAdmin()" class="w-full border-2 border-[#59B447] rounded-lg p-2 text-xs font-extrabold bg-white">
                     </div>
 
+                    <!-- Opción 2: Por Mes y Año -->
                     <div id="box-admin-mes" class="hidden md:col-span-2">
                         <label class="block text-[10px] font-bold text-blue-700 uppercase mb-1">🗓️ Seleccionar Mes y Año</label>
                         <input type="month" id="filtro-admin-mes" onchange="renderizarTablaAdmin()" class="w-full border-2 border-blue-500 rounded-lg p-2 text-xs font-extrabold bg-white">
                     </div>
 
+                    <!-- Opción 3: Rango de Fechas (Desde / Hasta) -->
                     <div id="box-admin-rango" class="hidden md:col-span-2 grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Desde Fecha</label>
@@ -439,6 +389,7 @@
                         </div>
                     </div>
 
+                    <!-- Opción 4: Todo el Historial -->
                     <div id="box-admin-todo" class="hidden md:col-span-2">
                         <div class="bg-slate-200/70 text-slate-700 rounded-lg p-2.5 text-xs font-bold text-center">
                             📚 Mostrando todos los registros históricos de la sede
@@ -458,46 +409,32 @@
                 </div>
             </div>
 
-            <!-- 5 KPIs DE LA SEDE (INCLUYE FALTAS ACUMULADAS + MINUTOS Y HORAS) -->
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
-                <div class="bg-slate-50 p-3 rounded-xl border flex flex-col justify-center">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase">Marcajes Filtrados</p>
+            <!-- KPIs de la Sede (Muestra Minutos + Equivalente en Horas) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                <div class="bg-slate-50 p-3.5 rounded-xl border flex flex-col justify-center">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">Total Marcajes</p>
                     <p id="kpi-admin-total" class="text-2xl font-black text-slate-800 mt-0.5">0</p>
+                    <span class="text-[10px] font-bold text-slate-400 mt-0.5">En el período filtrado</span>
                 </div>
-                <div onclick="cambiarSubvistaReporte('admin', 'faltas')" class="cursor-pointer bg-rose-50 hover:bg-rose-100 p-3 rounded-xl border-2 border-rose-300 flex flex-col justify-center transition-all">
-                    <p class="text-[10px] font-extrabold text-rose-700 uppercase">🚨 Faltas Detectadas</p>
-                    <p id="kpi-admin-faltas" class="text-xl font-black text-rose-700 mt-0.5">0 faltas</p>
-                    <span class="text-[10px] font-bold text-rose-600 underline mt-0.5">Ver fechas qué días faltó</span>
-                </div>
-                <div class="bg-red-50 p-3 rounded-xl border border-red-200 flex flex-col justify-center">
+                <div class="bg-red-50 p-3.5 rounded-xl border border-red-200 flex flex-col justify-center">
                     <p class="text-[10px] font-extrabold text-red-600 uppercase">Tardanza Acumulada</p>
-                    <p id="kpi-admin-minutos" class="text-lg font-black text-red-700 mt-0.5">0 min</p>
-                    <span id="kpi-admin-minutos-horas" class="bg-red-100 text-red-800 text-[10px] font-extrabold px-2 py-0.5 rounded mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
+                    <p id="kpi-admin-minutos" class="text-xl font-black text-red-700 mt-0.5">0 min</p>
+                    <span id="kpi-admin-minutos-horas" class="bg-red-100 text-red-800 text-[11px] font-extrabold px-2 py-0.5 rounded-md mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
                 </div>
-                <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 flex flex-col justify-center">
-                    <p class="text-[10px] font-extrabold text-amber-700 uppercase">Exceso Refr. (>90m)</p>
-                    <p id="kpi-admin-refrigerio" class="text-lg font-black text-amber-800 mt-0.5">0 min</p>
-                    <span id="kpi-admin-refrigerio-horas" class="bg-amber-100 text-amber-900 text-[10px] font-extrabold px-2 py-0.5 rounded mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
+                <div class="bg-amber-50 p-3.5 rounded-xl border border-amber-200 flex flex-col justify-center">
+                    <p class="text-[10px] font-extrabold text-amber-700 uppercase">Exceso Refrigerio (>90m)</p>
+                    <p id="kpi-admin-refrigerio" class="text-xl font-black text-amber-800 mt-0.5">0 min</p>
+                    <span id="kpi-admin-refrigerio-horas" class="bg-amber-100 text-amber-900 text-[11px] font-extrabold px-2 py-0.5 rounded-md mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
                 </div>
-                <div class="bg-purple-50 p-3 rounded-xl border border-purple-200 flex flex-col justify-center col-span-2 md:col-span-1">
+                <div class="bg-purple-50 p-3.5 rounded-xl border border-purple-200 flex flex-col justify-center">
                     <p class="text-[10px] font-extrabold text-purple-700 uppercase">Horas Extras Caja</p>
-                    <p id="kpi-admin-extras-caja" class="text-lg font-black text-purple-800 mt-0.5">0 min</p>
-                    <span id="kpi-admin-extras-horas" class="bg-purple-100 text-purple-900 text-[10px] font-extrabold px-2 py-0.5 rounded mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
+                    <p id="kpi-admin-extras-caja" class="text-xl font-black text-purple-800 mt-0.5">0 min</p>
+                    <span id="kpi-admin-extras-horas" class="bg-purple-100 text-purple-900 text-[11px] font-extrabold px-2 py-0.5 rounded-md mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
                 </div>
             </div>
 
-            <!-- SELECTOR DE VISTA: DETALLE DE MARCAJES VS. CONSOLIDADO DE FALTAS Y HORAS -->
-            <div class="flex gap-2 border-b pb-3">
-                <button type="button" id="btn-subvista-admin-marcajes" onclick="cambiarSubvistaReporte('admin', 'marcajes')" class="subvista-activa px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-camera"></i> 1. Historial Fotográfico de Marcajes
-                </button>
-                <button type="button" id="btn-subvista-admin-faltas" onclick="cambiarSubvistaReporte('admin', 'faltas')" class="bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-user-xmark"></i> 2. Consolidado de Faltas, Fechas de Inasistencia y Horas
-                </button>
-            </div>
-
-            <!-- Sub-vista 1: Tabla Fotográfica de Marcajes -->
-            <div id="contenedor-tabla-admin-marcajes" class="overflow-x-auto border rounded-xl">
+            <!-- Tabla de resultados de la Sede -->
+            <div class="overflow-x-auto border rounded-xl">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-800 text-white text-[11px] uppercase">
@@ -513,39 +450,10 @@
                     <tbody id="tbody-admin" class="text-xs divide-y divide-slate-200"></tbody>
                 </table>
             </div>
-
-            <!-- Sub-vista 2: Tabla de Faltas Acumuladas, Qué Días Faltó y Horas Totales -->
-            <div id="contenedor-tabla-admin-faltas" class="hidden space-y-3">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-rose-50/70 p-3 rounded-xl border border-rose-200 text-xs">
-                    <span class="font-bold text-rose-900">
-                        <i class="fa-solid fa-calendar-xmark mr-1"></i> Evalúa de Lunes a Sábado (excluye Domingos y Feriados de la Hoja 1).
-                    </span>
-                    <label class="flex items-center gap-2 font-extrabold text-slate-700 cursor-pointer">
-                        <input type="checkbox" id="chk-admin-faltas-mes-completo" onchange="renderizarTablaAdmin()" class="accent-rose-600 w-4 h-4">
-                        Contar desde el 1.° día del período (incluso antes de su 1.° registro)
-                    </label>
-                </div>
-                <div class="overflow-x-auto border rounded-xl">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-rose-900 text-white text-[11px] uppercase">
-                                <th class="p-3">Colaborador</th>
-                                <th class="p-3">Área / Rango</th>
-                                <th class="p-3 text-center">Días Asistidos</th>
-                                <th class="p-3 text-center">Faltas Acumuladas</th>
-                                <th class="p-3">Fechas Exactas en que Faltó (Días sin Entrada)</th>
-                                <th class="p-3">Tardanza Total (Min / Horas)</th>
-                                <th class="p-3">Exceso Refr. / Extras Caja</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-admin-faltas" class="text-xs divide-y divide-slate-200"></tbody>
-                    </table>
-                </div>
-            </div>
         </div>
 
         <!-- =============================================================== -->
-        <!-- PESTAÑA 3: PANEL DE GERENCIA (AUDITORÍA GLOBAL, FALTAS Y HORAS) -->
+        <!-- PESTAÑA 3: PANEL DE GERENCIA (SOLO AUDITORÍA GLOBAL Y POR SEDE) -->
         <!-- =============================================================== -->
         <div id="vista-gerente" class="hidden space-y-5 animate-vista">
             <div class="glass-card p-6 space-y-5 border-t-4 border-amber-500">
@@ -555,48 +463,39 @@
                             <i class="fa-solid fa-crown"></i> Supervisión Ejecutiva de Gerencia (Solo Lectura)
                         </span>
                         <h3 class="text-lg font-extrabold text-slate-800 mt-1">
-                            Auditoría General de Todas las Sedes, Control de Faltas y Horas Acumuladas
+                            Auditoría General de Todas las Sedes y Filtro por Sede / Colaborador
                         </h3>
                     </div>
                     <div class="flex flex-wrap gap-2">
+                        <button onclick="aplicarRangoRapido('gerente', 'hoy')" class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold px-3 py-2 rounded-xl">Hoy</button>
+                        <button onclick="aplicarRangoRapido('gerente', 'ayer')" class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold px-3 py-2 rounded-xl">Ayer</button>
+                        <button onclick="aplicarRangoRapido('gerente', 'mes')" class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold px-3 py-2 rounded-xl">Este Mes</button>
                         <button onclick="cargarDatosGerente()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2">
                             <i class="fa-solid fa-rotate"></i> Sincronizar Sedes
                         </button>
                         <button onclick="exportarTablaCSV('gerente')" class="bg-[#59B447] hover:bg-[#4a973a] text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2">
-                            <i class="fa-solid fa-file-csv"></i> Exportar Marcajes
-                        </button>
-                        <button onclick="exportarConsolidadoFaltasCSV('gerente')" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2">
-                            <i class="fa-solid fa-file-excel"></i> Descargar Planilla / Faltas
+                            <i class="fa-solid fa-file-csv"></i> Descargar CSV
                         </button>
                     </div>
                 </div>
 
-                <!-- MONITOR EN VIVO PARA GERENCIA: ¿QUIÉNES FALTAN MARCAR HOY? -->
-                <div id="monitor-pendientes-gerente" class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 text-xs"></div>
-
-                <!-- BARRA UNIFICADA DE FILTROS GERENCIALES -->
+                <!-- PANEL MULTIMODAL DE FILTROS GERENCIALES: FECHA ESPECÍFICA, POR MES, RANGO Y TODO -->
                 <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-200 space-y-3">
-                    <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-amber-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-amber-200">
                         <span class="text-[11px] font-extrabold text-amber-900 uppercase flex items-center gap-1.5">
-                            <i class="fa-solid fa-calendar-days text-amber-600"></i> Período de Consulta:
+                            <i class="fa-solid fa-calendar-days text-amber-600"></i> Modalidad de Filtro de Fecha:
                         </span>
-                        <div class="flex flex-wrap gap-1.5">
-                            <button type="button" id="btn-modo-gerente-hoy" onclick="seleccionarFiltroUnificado('gerente', 'hoy')" class="modo-fecha-activo px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all border border-amber-300">
-                                ⚡ Hoy
-                            </button>
-                            <button type="button" id="btn-modo-gerente-ayer" onclick="seleccionarFiltroUnificado('gerente', 'ayer')" class="bg-white text-amber-900 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all border border-amber-300">
-                                ⏮️ Ayer
-                            </button>
-                            <button type="button" id="btn-modo-gerente-dia" onclick="seleccionarFiltroUnificado('gerente', 'dia')" class="bg-white text-amber-900 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all border border-amber-300">
+                        <div class="flex flex-wrap gap-1.5 bg-amber-200/60 p-1 rounded-xl">
+                            <button type="button" id="btn-modo-gerente-dia" onclick="cambiarModoFecha('gerente', 'dia')" class="modo-fecha-activo px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
                                 📅 Fecha Específica
                             </button>
-                            <button type="button" id="btn-modo-gerente-mes" onclick="seleccionarFiltroUnificado('gerente', 'mes')" class="bg-white text-amber-900 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all border border-amber-300">
+                            <button type="button" id="btn-modo-gerente-mes" onclick="cambiarModoFecha('gerente', 'mes')" class="text-amber-900 hover:bg-white/60 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
                                 🗓️ Por Mes
                             </button>
-                            <button type="button" id="btn-modo-gerente-rango" onclick="seleccionarFiltroUnificado('gerente', 'rango')" class="bg-white text-amber-900 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all border border-amber-300">
-                                ↔️ Rango
+                            <button type="button" id="btn-modo-gerente-rango" onclick="cambiarModoFecha('gerente', 'rango')" class="text-amber-900 hover:bg-white/60 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
+                                ↔️ Rango de Fechas
                             </button>
-                            <button type="button" id="btn-modo-gerente-todo" onclick="seleccionarFiltroUnificado('gerente', 'todo')" class="bg-white text-amber-900 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all border border-amber-300">
+                            <button type="button" id="btn-modo-gerente-todo" onclick="cambiarModoFecha('gerente', 'todo')" class="text-amber-900 hover:bg-white/60 px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all">
                                 📚 Todo
                             </button>
                         </div>
@@ -622,7 +521,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">3. Rango / Área</label>
+                            <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">3. Filtrar Rango / Área</label>
                             <select id="filtro-gerente-rango" onchange="renderizarTablaGerente()" class="w-full border border-amber-300 rounded-lg p-2.5 text-xs font-bold bg-white">
                                 <option value="TODOS">Todos (Admins + Asesores + Caja)</option>
                                 <option value="Administrador">👔 Solo Administradores</option>
@@ -631,16 +530,19 @@
                             </select>
                         </div>
 
+                        <!-- Opción 1: Fecha Específica -->
                         <div id="box-gerente-dia" class="md:col-span-2">
                             <label class="block text-[10px] font-bold text-green-800 uppercase mb-1">4. 📅 Fecha Específica (Día Exacto)</label>
                             <input type="date" id="filtro-gerente-dia" onchange="renderizarTablaGerente()" class="w-full border-2 border-[#59B447] rounded-lg p-2 text-xs font-extrabold bg-white">
                         </div>
 
+                        <!-- Opción 2: Por Mes y Año -->
                         <div id="box-gerente-mes" class="hidden md:col-span-2">
                             <label class="block text-[10px] font-bold text-blue-800 uppercase mb-1">4. 🗓️ Seleccionar Mes y Año</label>
                             <input type="month" id="filtro-gerente-mes" onchange="renderizarTablaGerente()" class="w-full border-2 border-blue-500 rounded-lg p-2 text-xs font-extrabold bg-white">
                         </div>
 
+                        <!-- Opción 3: Rango de Fechas -->
                         <div id="box-gerente-rango" class="hidden md:col-span-2 grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-[10px] font-bold text-amber-900 uppercase mb-1">Desde Fecha</label>
@@ -652,6 +554,7 @@
                             </div>
                         </div>
 
+                        <!-- Opción 4: Todo el Historial -->
                         <div id="box-gerente-todo" class="hidden md:col-span-2">
                             <div class="bg-amber-100 text-amber-900 rounded-lg p-2.5 text-xs font-bold text-center border border-amber-300">
                                 📚 Mostrando todo el historial acumulado
@@ -660,46 +563,32 @@
                     </div>
                 </div>
 
-                <!-- 5 KPIs GERENCIALES (CON FALTAS ACUMULADAS + MINUTOS Y HORAS) -->
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
-                    <div class="bg-slate-50 p-3 rounded-xl border flex flex-col justify-center">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Marcajes Filtrados</p>
+                <!-- KPIs Globales / Por Sede para el Gerente (Minutos + Equivalente en Horas) -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                    <div class="bg-slate-50 p-3.5 rounded-xl border flex flex-col justify-center">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Registros Filtrados</p>
                         <p id="kpi-gerente-total" class="text-2xl font-black text-slate-800 mt-0.5">0</p>
+                        <span class="text-[10px] font-bold text-slate-400 mt-0.5">En la consulta actual</span>
                     </div>
-                    <div onclick="cambiarSubvistaReporte('gerente', 'faltas')" class="cursor-pointer bg-rose-50 hover:bg-rose-100 p-3 rounded-xl border-2 border-rose-300 flex flex-col justify-center transition-all">
-                        <p class="text-[10px] font-extrabold text-rose-700 uppercase">🚨 Faltas Detectadas</p>
-                        <p id="kpi-gerente-faltas" class="text-xl font-black text-rose-700 mt-0.5">0 faltas</p>
-                        <span class="text-[10px] font-bold text-rose-600 underline mt-0.5">Ver fechas qué días faltó</span>
-                    </div>
-                    <div class="bg-red-50 p-3 rounded-xl border border-red-200 flex flex-col justify-center">
+                    <div class="bg-red-50 p-3.5 rounded-xl border border-red-200 flex flex-col justify-center">
                         <p class="text-[10px] font-extrabold text-red-600 uppercase">Tardanza Acumulada</p>
-                        <p id="kpi-gerente-tardanza" class="text-lg font-black text-red-700 mt-0.5">0 min</p>
-                        <span id="kpi-gerente-tardanza-horas" class="bg-red-100 text-red-800 text-[10px] font-extrabold px-2 py-0.5 rounded mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
+                        <p id="kpi-gerente-tardanza" class="text-xl font-black text-red-700 mt-0.5">0 min</p>
+                        <span id="kpi-gerente-tardanza-horas" class="bg-red-100 text-red-800 text-[11px] font-extrabold px-2 py-0.5 rounded-md mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
                     </div>
-                    <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 flex flex-col justify-center">
-                        <p class="text-[10px] font-extrabold text-amber-700 uppercase">Exceso Refr. (>90m)</p>
-                        <p id="kpi-gerente-refrigerio" class="text-lg font-black text-amber-800 mt-0.5">0 min</p>
-                        <span id="kpi-gerente-refrigerio-horas" class="bg-amber-100 text-amber-900 text-[10px] font-extrabold px-2 py-0.5 rounded mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
+                    <div class="bg-amber-50 p-3.5 rounded-xl border border-amber-200 flex flex-col justify-center">
+                        <p class="text-[10px] font-extrabold text-amber-700 uppercase">Exceso Refrigerio (>90m)</p>
+                        <p id="kpi-gerente-refrigerio" class="text-xl font-black text-amber-800 mt-0.5">0 min</p>
+                        <span id="kpi-gerente-refrigerio-horas" class="bg-amber-100 text-amber-900 text-[11px] font-extrabold px-2 py-0.5 rounded-md mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
                     </div>
-                    <div class="bg-purple-50 p-3 rounded-xl border border-purple-200 flex flex-col justify-center col-span-2 md:col-span-1">
+                    <div class="bg-purple-50 p-3.5 rounded-xl border border-purple-200 flex flex-col justify-center">
                         <p class="text-[10px] font-extrabold text-purple-700 uppercase">Horas Extras Caja</p>
-                        <p id="kpi-gerente-extras" class="text-lg font-black text-purple-800 mt-0.5">0 min</p>
-                        <span id="kpi-gerente-extras-horas" class="bg-purple-100 text-purple-900 text-[10px] font-extrabold px-2 py-0.5 rounded mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
+                        <p id="kpi-gerente-extras" class="text-xl font-black text-purple-800 mt-0.5">0 min</p>
+                        <span id="kpi-gerente-extras-horas" class="bg-purple-100 text-purple-900 text-[11px] font-extrabold px-2 py-0.5 rounded-md mt-1 inline-block mx-auto">⏱️ 0h 00m (0.00 hrs)</span>
                     </div>
                 </div>
 
-                <!-- SELECTOR DE VISTA GERENCIAL: HISTORIAL FOTOGRÁFICO VS. CONSOLIDADO DE FALTAS -->
-                <div class="flex gap-2 border-b pb-3">
-                    <button type="button" id="btn-subvista-gerente-marcajes" onclick="cambiarSubvistaReporte('gerente', 'marcajes')" class="subvista-activa px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2">
-                        <i class="fa-solid fa-camera"></i> 1. Historial Fotográfico de Marcajes
-                    </button>
-                    <button type="button" id="btn-subvista-gerente-faltas" onclick="cambiarSubvistaReporte('gerente', 'faltas')" class="bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2">
-                        <i class="fa-solid fa-user-xmark"></i> 2. Consolidado de Faltas, Fechas de Inasistencia y Horas
-                    </button>
-                </div>
-
-                <!-- Sub-vista 1 Gerente: Tabla de Marcajes -->
-                <div id="contenedor-tabla-gerente-marcajes" class="overflow-x-auto border rounded-xl">
+                <!-- Tabla Global del Gerente -->
+                <div class="overflow-x-auto border rounded-xl">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-900 text-white text-[11px] uppercase">
@@ -715,36 +604,6 @@
                         </thead>
                         <tbody id="tbody-gerente" class="text-xs divide-y divide-slate-200"></tbody>
                     </table>
-                </div>
-
-                <!-- Sub-vista 2 Gerente: Tabla de Faltas Acumuladas y Fechas Exactas -->
-                <div id="contenedor-tabla-gerente-faltas" class="hidden space-y-3">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-rose-50/70 p-3 rounded-xl border border-rose-200 text-xs">
-                        <span class="font-bold text-rose-900">
-                            <i class="fa-solid fa-calendar-xmark mr-1"></i> Evalúa días hábiles de Lunes a Sábado (excluye Domingos y Feriados de la Hoja 1).
-                        </span>
-                        <label class="flex items-center gap-2 font-extrabold text-slate-700 cursor-pointer">
-                            <input type="checkbox" id="chk-gerente-faltas-mes-completo" onchange="renderizarTablaGerente()" class="accent-rose-600 w-4 h-4">
-                            Contar desde el 1.° día del período (incluso antes de su 1.° registro)
-                        </label>
-                    </div>
-                    <div class="overflow-x-auto border rounded-xl">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-rose-900 text-white text-[11px] uppercase">
-                                    <th class="p-3">Colaborador</th>
-                                    <th class="p-3">Sede</th>
-                                    <th class="p-3">Área / Rango</th>
-                                    <th class="p-3 text-center">Días Asistidos</th>
-                                    <th class="p-3 text-center">Faltas Acumuladas</th>
-                                    <th class="p-3">Fechas Exactas en que Faltó (Días sin Entrada)</th>
-                                    <th class="p-3">Tardanza Total (Min / Horas)</th>
-                                    <th class="p-3">Exceso Refr. / Extras Caja</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-gerente-faltas" class="text-xs divide-y divide-slate-200"></tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </div>
@@ -778,7 +637,7 @@
                         <div class="space-y-2.5">
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Nombre / Usuario</label>
-                                <input type="text" id="cfg-user-nombre" placeholder="Ej. JOSE.SAENZV" class="w-full border rounded-lg p-2 text-xs font-bold uppercase bg-white">
+                                <input type="text" id="cfg-user-nombre" placeholder="Ej. JUAN PEREZ" class="w-full border rounded-lg p-2 text-xs font-bold uppercase bg-white">
                             </div>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
@@ -892,7 +751,7 @@
                                 <i class="fa-solid fa-calendar-day text-red-600"></i> 3. Días Feriados / No Laborables
                             </h4>
                             <p class="text-[11px] text-slate-500">
-                                En las fechas listadas aquí, el sistema no contará faltas ni tardanzas.
+                                En las fechas listadas aquí, el sistema no aplicará descuentos por tardanza.
                             </p>
                             <div class="flex gap-2">
                                 <input type="date" id="cfg-feriado-fecha" class="flex-1 border rounded-lg p-2 text-xs font-bold bg-white">
@@ -960,7 +819,7 @@
     </div>
 
     <!-- =================================================================== -->
-    <!-- VISOR FOTOGRÁFICO INTEGRADO (LIGHTBOX ANTI-ERROR 404)               -->
+    <!-- VISOR FOTOGRÁFICO INTEGRADO (LIGHTBOX ANTI-ERROR 404 PARA GERENCIA) -->
     <!-- =================================================================== -->
     <div id="modal-visor-foto" class="fixed inset-0 bg-slate-950/90 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[92vh]">
@@ -1005,7 +864,7 @@
     </div>
 
     <!-- =================================================================== -->
-    <!-- MOTOR JAVASCRIPT COMPLETO V8 (FALTAS + NOTIFICACIONES + HORAS)      -->
+    <!-- LÓGICA JAVASCRIPT COMPLETA Y DEPURADA (V7 FINAL)                    -->
     <!-- =================================================================== -->
     <script>
         // ✅ URL OFICIAL DE TU GOOGLE APPS SCRIPT:
@@ -1021,6 +880,7 @@
         let pestanaInicialRol = "marcar";
         let ultimoToqueAtras = 0;
 
+        // Modalidades de filtro de fecha ("dia" | "mes" | "rango" | "todo")
         let modoFechaAdmin = "dia";
         let modoFechaGerente = "dia";
 
@@ -1036,8 +896,6 @@
         let registrosGerenteCache = [];
         let listaFiltradaAdminActual = [];
         let listaFiltradaGerenteActual = [];
-        let consolidadoFaltasAdminActual = [];
-        let consolidadoFaltasGerenteActual = [];
 
         function obtenerFechaLocalISO(fechaRef = new Date()) {
             const anio = fechaRef.getFullYear();
@@ -1052,25 +910,12 @@
             return `${anio}-${mes}`;
         }
 
-        function formatearFechaCortaPE(fechaISO) {
-            if (!fechaISO || fechaISO.length < 10) return fechaISO;
-            const p = fechaISO.split("-");
-            return `${p[2]}/${p[1]}/${p[0]}`;
-        }
-
         /**
-         * Normaliza el área operativa para que si en el Excel dice "cajero", "CAJERO" o "Gestor de Caja",
-         * el sistema lo reconozca automáticamente como "Caja" y calcule sus horas extras.
+         * Convierte cualquier cantidad de minutos acumulados en:
+         * 1. Texto en minutos (ej. "135 min")
+         * 2. Equivalencia exacta en Horas + Minutos y Horas Decimales (ej. "⏱️ 2h 15m (2.25 hrs)")
+         * 3. Etiqueta compacta para celdas de tabla (ej. "+75m (1h 15m)")
          */
-        function normalizarAreaOperativa(areaRaw, rangoRaw) {
-            const str = String(areaRaw || "").trim().toUpperCase();
-            if (str.includes("CAJA") || str.includes("CAJERO") || str.includes("BOVEDA")) return "Caja";
-            if (str.includes("ADMIN") || rangoRaw === "Administrador") return "Administración";
-            if (str.includes("GEREN") || rangoRaw === "Gerente") return "Gerencia";
-            if (str.includes("SIST") || str.includes("DEV") || rangoRaw === "Desarrollador") return "Sistemas";
-            return "Asesor de Créditos";
-        }
-
         function convertirMinutosAHoras(minutosTotales) {
             const min = Math.max(0, Math.round(Number(minutosTotales) || 0));
             const horasEnteras = Math.floor(min / 60);
@@ -1093,7 +938,7 @@
             window._toastTimer = setTimeout(() => {
                 toast.classList.add("hidden");
                 toast.classList.remove("flex");
-            }, 2800);
+            }, 2600);
         }
 
         function toggleVerClaveLogin() {
@@ -1157,15 +1002,13 @@
         });
 
         // =====================================================================
-        // 2. INICIALIZACIÓN, GPS TEMPRANO Y RECORDATORIOS WEB DE HORARIO
+        // 2. INICIALIZACIÓN Y COMUNICACIÓN CON GOOGLE APPS SCRIPT
         // =====================================================================
         window.addEventListener("DOMContentLoaded", async () => {
             iniciarRelojVivo();
-            iniciarMonitorGPS(); // Inicia traducción de calle desde el primer segundo
+            iniciarMonitorGPS();
             verificarCronometroRefrigerio();
-            iniciarMotorRecordatoriosHorario();
             actualizarIndicadorOffline();
-            actualizarBotonNotificacionesUI();
 
             const sesionGuardada = localStorage.getItem("crediban_asistencia_sesion");
             if (sesionGuardada) {
@@ -1176,9 +1019,7 @@
                     if (infoFresca) {
                         usuarioActual.rango = infoFresca.rango;
                         usuarioActual.sede = infoFresca.sede;
-                        usuarioActual.area = normalizarAreaOperativa(infoFresca.area, infoFresca.rango);
-                    } else {
-                        usuarioActual.area = normalizarAreaOperativa(usuarioActual.area, usuarioActual.rango);
+                        usuarioActual.area = infoFresca.area || usuarioActual.area;
                     }
                     activarInterfazPorRol();
                 } catch (e) {
@@ -1210,129 +1051,7 @@
         }
 
         // =====================================================================
-        // 3. MOTOR DE NOTIFICACIONES WEB Y ALERTA SONORA SEGÚN HORARIO DEL SHEET
-        // =====================================================================
-        function actualizarBotonNotificacionesUI() {
-            const btn = document.getElementById("btn-notificaciones");
-            if (!btn || !("Notification" in window)) return;
-            if (Notification.permission === "granted") {
-                btn.className = "bg-green-100 text-green-800 border border-green-300 text-[11px] font-extrabold px-3 py-1.5 rounded-full flex items-center gap-1.5";
-                btn.innerHTML = '<i class="fa-solid fa-bell text-green-600"></i> <span class="hidden sm:inline">Alertas Activas</span>';
-            }
-        }
-
-        async function activarNotificacionesWeb() {
-            if (!("Notification" in window)) {
-                alert("Tu navegador móvil no soporta notificaciones emergentes, pero recibirás alertas visuales y sonoras en pantalla.");
-                return;
-            }
-            const permiso = await Notification.requestPermission();
-            actualizarBotonNotificacionesUI();
-            if (permiso === "granted") {
-                mostrarToast("🔔 Notificaciones de horario activadas");
-                dispararNotificacionNativa("CREDIBAN PERÚ — Alertas Activas", "El sistema te recordará marcar tu Entrada, Refrigerio y Salida según el horario de tu sede.");
-            } else {
-                mostrarToast("⚠️ Permiso de notificación no concedido en el navegador");
-            }
-        }
-
-        function emitirPitidoAlerta() {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = "sine";
-                osc.frequency.setValueAtTime(880, ctx.currentTime);
-                gain.gain.setValueAtTime(0.15, ctx.currentTime);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.35);
-            } catch (e) {}
-        }
-
-        function dispararNotificacionNativa(titulo, cuerpo) {
-            emitirPitidoAlerta();
-            const banner = document.getElementById("banner-alerta-obligatoria");
-            if (banner) {
-                document.getElementById("titulo-alerta-obligatoria").innerText = titulo;
-                document.getElementById("texto-alerta-obligatoria").innerText = cuerpo;
-                banner.classList.remove("hidden");
-            }
-            if ("Notification" in window && Notification.permission === "granted") {
-                try {
-                    new Notification(titulo, { body: cuerpo, tag: "crediban-alerta-horario" });
-                } catch (e) {}
-            }
-        }
-
-        function iniciarMotorRecordatoriosHorario() {
-            setInterval(() => {
-                if (!usuarioActual || usuarioActual.rango === "Gerente" || usuarioActual.rango === "Desarrollador") return;
-                const ahora = new Date();
-                const diaSem = ahora.getDay(); // 0=Dom, 1=Lun...6=Sab
-                if (diaSem === 0) return; // Domingo no laborable
-
-                const hoyISO = obtenerFechaLocalISO(ahora);
-                if (FERIADOS_CACHE.includes(hoyISO)) return; // Feriado oficial
-
-                const sede = usuarioActual.sede;
-                const cfg = HORARIOS_SEDES_CACHE[sede] || { horaLV: "08:30", horaSab: "09:00", tolerancia: 10, refrigerio: 90, salidaCajaLV: "18:00", salidaCajaSab: "13:00" };
-                const horaIngresoStr = (diaSem === 6) ? cfg.horaSab : cfg.horaLV;
-                const partesIng = horaIngresoStr.split(":");
-                const minIngresoOficial = (parseInt(partesIng[0]) * 60) + parseInt(partesIng[1]);
-
-                const minActual = (ahora.getHours() * 60) + ahora.getMinutes();
-                const misHoy = obtenerMarcajesLocalesDeHoyUsuario();
-                const tiposHoy = misHoy.map(m => m.tipo);
-
-                // 1. Recordatorio de ENTRADA (Desde 10 min antes de la hora oficial hasta cumplirse la hora + tolerancia)
-                if (!tiposHoy.includes("Entrada")) {
-                    const claveAvisoEntrada = `aviso_ent_${hoyISO}_${usuarioActual.nombre}`;
-                    if (minActual >= (minIngresoOficial - 10) && minActual <= (minIngresoOficial + 45)) {
-                        if (!sessionStorage.getItem(claveAvisoEntrada)) {
-                            sessionStorage.setItem(claveAvisoEntrada, "1");
-                            dispararNotificacionNativa(
-                                `⏰ HORA DE MARCAR ENTRADA (${sede})`,
-                                `Hola ${usuarioActual.nombre}, tu horario de ingreso en ${sede} es a las ${horaIngresoStr}. Registra tu asistencia con foto ahora.`
-                            );
-                        }
-                    }
-                }
-
-                // 2. Recordatorio de RETORNO DE REFRIGERIO (Cuando faltan <= 10 min para vencer los 90 min)
-                const finRefr = localStorage.getItem("crediban_refrigerio_fin");
-                if (finRefr && !tiposHoy.includes("Retorno de Refrigerio")) {
-                    const restMin = Math.floor((Number(finRefr) - Date.now()) / 60000);
-                    const claveAvisoRefr = `aviso_ref_${hoyISO}_${usuarioActual.nombre}`;
-                    if (restMin <= 10 && restMin >= -5 && !sessionStorage.getItem(claveAvisoRefr)) {
-                        sessionStorage.setItem(claveAvisoRefr, "1");
-                        dispararNotificacionNativa(
-                            "🍽️ FIN DE REFRIGERIO PRÓXIMO",
-                            `Te quedan ${Math.max(0, restMin)} minutos para completar tus 90 min de refrigerio. Toma tu foto de Retorno.`
-                        );
-                    }
-                }
-
-                // 3. Recordatorio de SALIDA FINAL
-                if (tiposHoy.includes("Entrada") && !tiposHoy.includes("Salida Final")) {
-                    const horaSalidaStr = (diaSem === 6) ? (cfg.salidaCajaSab || "13:00") : (cfg.salidaCajaLV || "18:00");
-                    const pSal = horaSalidaStr.split(":");
-                    const minSalidaOficial = (parseInt(pSal[0]) * 60) + parseInt(pSal[1]);
-                    const claveAvisoSalida = `aviso_sal_${hoyISO}_${usuarioActual.nombre}`;
-                    if (minActual >= minSalidaOficial && minActual <= (minSalidaOficial + 30) && !sessionStorage.getItem(claveAvisoSalida)) {
-                        sessionStorage.setItem(claveAvisoSalida, "1");
-                        dispararNotificacionNativa(
-                            "📤 RECORDATORIO DE SALIDA FINAL",
-                            `Ya son las ${horaSalidaStr}. No olvides registrar tu Salida Final con foto antes de retirarte.`
-                        );
-                    }
-                }
-            }, 25000);
-        }
-
-        // =====================================================================
-        // 4. VISOR FOTOGRÁFICO MODAL (ANTI-ERROR 404)
+        // 3. VISOR FOTOGRÁFICO MODAL (ANTI-ERROR 404)
         // =====================================================================
         function tieneEvidenciaFotografica(r) {
             if (r.fotoBase64 && r.fotoBase64.startsWith("data:image")) return true;
@@ -1447,7 +1166,7 @@
         }
 
         // =====================================================================
-        // 5. VALIDACIÓN ESTRICTA DE DIRECCIÓN COMPRENSIBLE (NO SOLO DÍGITOS)
+        // 4. VALIDACIÓN ESTRICTA DE DIRECCIÓN COMPRENSIBLE (NO SOLO DÍGITOS)
         // =====================================================================
         function esDireccionComprensible(texto) {
             if (!texto || typeof texto !== "string") return false;
@@ -1506,6 +1225,7 @@
 
             let direccionLegible = "";
 
+            // MOTOR 1: OpenStreetMap Nominatim
             try {
                 const ctrl1 = new AbortController();
                 const t1 = setTimeout(() => ctrl1.abort(), 3000);
@@ -1533,6 +1253,7 @@
                 }
             } catch (e) {}
 
+            // MOTOR 2: BigDataCloud Español
             if (!esDireccionComprensible(direccionLegible)) {
                 try {
                     const ctrl2 = new AbortController();
@@ -1554,6 +1275,7 @@
                 } catch (e) {}
             }
 
+            // MOTOR 3: Photon Komoot OSM
             if (!esDireccionComprensible(direccionLegible)) {
                 try {
                     const r3 = await fetch(`https://photon.komoot.io/reverse?lon=${lng}&lat=${lat}`);
@@ -1576,7 +1298,7 @@
                 ultimaCoordTraducida = claveCache;
                 actualizarEstadoUI_GPS(true, direccionLegible);
             } else {
-                actualizarEstadoUI_GPS(false, "Aún sin nombre de calle legible. Toca 'Reintentar'.");
+                actualizarEstadoUI_GPS(false, "Aún sin nombre de calle legible. Toca 'Reintentar Calle'.");
             }
         }
 
@@ -1593,7 +1315,7 @@
 
             if (esValida) {
                 badge.className = "bg-green-100 text-green-800 text-[11px] font-bold px-3 py-1.5 rounded-full border border-green-300 flex items-center gap-1.5";
-                badge.innerHTML = '<i class="fa-solid fa-circle-check text-green-600"></i> Calle Lista';
+                badge.innerHTML = '<i class="fa-solid fa-circle-check text-green-600"></i> Dirección Lista';
 
                 caja.className = "bg-green-50 border-2 border-green-300 rounded-xl p-3.5 text-xs flex items-start justify-between gap-2.5";
                 icono.className = "fa-solid fa-map-location-dot text-green-600 text-base mt-0.5";
@@ -1631,12 +1353,19 @@
                 }
             }
 
-            // Abrir cámara directamente sin popups innecesarios
+            const obs = document.getElementById("obs-marcaje").value.trim();
+            if (!obs) {
+                const confirmarSinMotivo = confirm("¿Deseas tomar la foto sin especificar el nombre del Cliente o Motivo? (Saldrá como 'Labor en Sede / General' en la marca de agua).");
+                if (!confirmarSinMotivo) {
+                    document.getElementById("obs-marcaje").focus();
+                    return;
+                }
+            }
             document.getElementById("inputFoto").click();
         }
 
         // =====================================================================
-        // 6. LOGIN BLINDADO Y DETECCIÓN AUTOMÁTICA DE SEDE / CARGO / ÁREA
+        // 5. LOGIN BLINDADO Y DETECCIÓN AUTOMÁTICA DE SEDE / CARGO / ÁREA
         // =====================================================================
         async function cargarDirectorioDesdeSheet(mostrarAviso = false) {
             try {
@@ -1644,10 +1373,7 @@
                 const data = await resp.json();
                 if (data.estado === "exito") {
                     if (Array.isArray(data.directorio)) {
-                        DIRECTORIO_HOJA_1 = data.directorio.map(u => ({
-                            ...u,
-                            area: normalizarAreaOperativa(u.area, u.rango)
-                        }));
+                        DIRECTORIO_HOJA_1 = data.directorio;
                     }
                     if (data.horarios) HORARIOS_SEDES_CACHE = data.horarios;
                     if (data.feriados) FERIADOS_CACHE = data.feriados;
@@ -1681,7 +1407,6 @@
                 const res = await llamarAppsScriptPOST({ action: "login", nombre, clave });
                 if (res.estado === "exito" && res.usuario) {
                     usuarioActual = res.usuario;
-                    usuarioActual.area = normalizarAreaOperativa(usuarioActual.area, usuarioActual.rango);
                     if (recordar) {
                         localStorage.setItem("crediban_asistencia_sesion", JSON.stringify(usuarioActual));
                     }
@@ -1703,23 +1428,15 @@
             document.getElementById("pantalla-login").classList.add("hidden");
             document.getElementById("app-principal").classList.remove("hidden");
 
-            usuarioActual.area = normalizarAreaOperativa(usuarioActual.area, usuarioActual.rango);
-
             document.getElementById("header-nombre").innerText = usuarioActual.nombre;
             document.getElementById("badge-rango").innerText = usuarioActual.rango;
             document.getElementById("badge-sede").innerText = usuarioActual.sede;
-            document.getElementById("badge-area").innerText = usuarioActual.area;
+            document.getElementById("badge-area").innerText = usuarioActual.area || "General";
 
             const selArea = document.getElementById("area-marcaje");
-            if (selArea) selArea.value = usuarioActual.area;
-
-            // Mostrar horario oficial de su sede en el subtítulo
-            const cfgHor = HORARIOS_SEDES_CACHE[usuarioActual.sede];
-            const subHor = document.getElementById("subtitulo-horario-sede");
-            if (cfgHor && subHor) {
-                subHor.innerText = `Horario ${usuarioActual.sede}: L-V ${cfgHor.horaLV} | Sáb ${cfgHor.horaSab} (Tolerancia ${cfgHor.tolerancia}m | Refr. ${cfgHor.refrigerio}m)`;
+            if (usuarioActual.area && [...selArea.options].some(o => o.value === usuarioActual.area)) {
+                selArea.value = usuarioActual.area;
             }
-
             verificarBannerHorasExtrasCaja();
 
             const btnMarcar = document.getElementById("tab-btn-marcar");
@@ -1740,6 +1457,7 @@
             selectorSedeDev.classList.add("hidden");
             gpsBadge.classList.remove("hidden");
 
+            // Inicializar todos los selectores de Fecha Específica, Mes y Rango con la fecha local actual
             const hoyISO = obtenerFechaLocalISO();
             const mesActualISO = obtenerMesLocalISO();
 
@@ -1787,25 +1505,21 @@
             }
         }
 
-        function obtenerAreaEfectivaMarcaje() {
-            if (usuarioActual && usuarioActual.rango === "Desarrollador") {
-                return document.getElementById("area-marcaje").value;
-            }
-            return usuarioActual ? normalizarAreaOperativa(usuarioActual.area, usuarioActual.rango) : "Asesor de Créditos";
-        }
-
         function verificarBannerHorasExtrasCaja() {
-            const area = obtenerAreaEfectivaMarcaje();
+            const area = document.getElementById("area-marcaje").value;
             const tipo = document.getElementById("tipo-marcaje").value;
             const banner = document.getElementById("aviso-horas-extras-caja");
             const labelObs = document.getElementById("label-obs-marcaje");
+            const inputObs = document.getElementById("obs-marcaje");
 
             if (area === "Caja" && tipo === "Salida Final") {
                 banner.classList.remove("hidden");
-                labelObs.innerText = "3. Motivo de Cierre / Horas Extras Caja (Sale en la foto)";
+                labelObs.innerText = "4. Cliente o Motivo de Cierre (Sale en la foto)";
+                inputObs.placeholder = "Ej. Arqueo de bóveda y cuadre de cierre";
             } else {
                 banner.classList.add("hidden");
-                labelObs.innerText = "3. Cliente o Motivo (Se estampará en la marca de agua)";
+                labelObs.innerText = "4. Cliente o Motivo (Sale en la foto)";
+                inputObs.placeholder = "Ej. Cliente Sr. Pérez / Labor en agencia";
             }
         }
 
@@ -1837,27 +1551,8 @@
             if (tab === "dev") cargarDatosDesarrollador();
         }
 
-        function cambiarSubvistaReporte(vista, subvista) {
-            const btnM = document.getElementById(`btn-subvista-${vista}-marcajes`);
-            const btnF = document.getElementById(`btn-subvista-${vista}-faltas`);
-            const contM = document.getElementById(`contenedor-tabla-${vista}-marcajes`);
-            const contF = document.getElementById(`contenedor-tabla-${vista}-faltas`);
-
-            if (subvista === "faltas") {
-                contM.classList.add("hidden");
-                contF.classList.remove("hidden");
-                btnM.className = "bg-slate-100 text-slate-700 hover:bg-slate-200 px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2";
-                btnF.className = "subvista-activa px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2";
-            } else {
-                contF.classList.add("hidden");
-                contM.classList.remove("hidden");
-                btnM.className = "subvista-activa px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2";
-                btnF.className = "bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 px-4 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2";
-            }
-        }
-
         // =====================================================================
-        // 7. PREVISUALIZACIÓN Y MARCA DE AGUA CON ÁREA AUTOMÁTICA
+        // 6. PREVISUALIZACIÓN CON LIBERACIÓN DE RAM (URL.createObjectURL)
         // =====================================================================
         function generarPrevisualizacion() {
             const inputFoto = document.getElementById("inputFoto");
@@ -1891,11 +1586,10 @@
                 const sedeMarcaje = (usuarioActual.sede === "TODAS")
                     ? document.getElementById("marcaje-sede-dev").value
                     : usuarioActual.sede;
-                const areaMarcaje = obtenerAreaEfectivaMarcaje();
+                const areaMarcaje = document.getElementById("area-marcaje").value;
                 const tipoMarcaje = document.getElementById("tipo-marcaje").value;
                 const modalidad = document.getElementById("modalidad-marcaje").value;
-                const textoDefecto = modalidad === "Campo" ? "Gestión en Campo" : "Labor en Agencia";
-                const clienteOMotivo = document.getElementById("obs-marcaje").value.trim() || textoDefecto;
+                const clienteOMotivo = document.getElementById("obs-marcaje").value.trim() || `Labor en ${modalidad}`;
                 const fechaHoraStr = new Date().toLocaleString("es-PE");
 
                 ctx.textAlign = "left";
@@ -1964,11 +1658,10 @@
             const sedeMarcaje = (usuarioActual.sede === "TODAS")
                 ? document.getElementById("marcaje-sede-dev").value
                 : usuarioActual.sede;
-            const area = obtenerAreaEfectivaMarcaje();
+            const area = document.getElementById("area-marcaje").value;
             const tipo = document.getElementById("tipo-marcaje").value;
             const modalidad = document.getElementById("modalidad-marcaje").value;
-            const textoDefecto = modalidad === "Campo" ? "Gestión en Campo" : "Labor en Agencia";
-            const observacion = document.getElementById("obs-marcaje").value.trim() || textoDefecto;
+            const observacion = document.getElementById("obs-marcaje").value.trim() || `Labor en ${modalidad}`;
 
             const payload = {
                 action: "registrarAsistencia",
@@ -1992,8 +1685,6 @@
                     res.registro.usuario = usuarioActual.nombre;
                     guardarEnHistorialLocal(res.registro);
                     gestionarEstadoRefrigerio(tipo, sedeMarcaje);
-                    document.getElementById("banner-alerta-obligatoria").classList.add("hidden");
-
                     let alertasExtra = "";
                     if (res.registro.tardanza > 0) {
                         const convT = convertirMinutosAHoras(res.registro.tardanza);
@@ -2029,7 +1720,7 @@
         }
 
         // =====================================================================
-        // 8. CHECKLIST DE 4 PASOS Y CRONÓMETRO DE REFRIGERIO (90M)
+        // 7. CRONÓMETRO DE REFRIGERIO (90M) Y SECUENCIA INTELIGENTE DE HOY
         // =====================================================================
         function gestionarEstadoRefrigerio(tipo, sede) {
             if (tipo === "Salida a Refrigerio") {
@@ -2083,28 +1774,6 @@
             localStorage.setItem("crediban_mis_marcajes_hoy", JSON.stringify(todos.slice(0, 8)));
         }
 
-        function actualizarChecklistVisual4Pasos(marcajesHoy) {
-            const tiposHechos = marcajesHoy.map(m => m.tipo);
-            const pasos = [
-                { id: "step-chk-1", tipo: "Entrada", label: "1. Entrada" },
-                { id: "step-chk-2", tipo: "Salida a Refrigerio", label: "2. Refrigerio" },
-                { id: "step-chk-3", tipo: "Retorno de Refrigerio", label: "3. Retorno" },
-                { id: "step-chk-4", tipo: "Salida Final", label: "4. Salida" }
-            ];
-
-            pasos.forEach(p => {
-                const el = document.getElementById(p.id);
-                if (!el) return;
-                if (tiposHechos.includes(p.tipo)) {
-                    el.className = "p-2 rounded-xl border-2 border-green-500 bg-green-50 text-[10px] font-extrabold text-green-800";
-                    el.innerHTML = `<i class="fa-solid fa-circle-check block text-sm text-green-600 mb-0.5"></i> ${p.label}`;
-                } else {
-                    el.className = "p-2 rounded-xl border bg-white text-[10px] font-extrabold text-slate-400";
-                    el.innerHTML = `<i class="fa-regular fa-circle block text-sm mb-0.5"></i> ${p.label}`;
-                }
-            });
-        }
-
         function sugerirSiguienteMomentoMarcaje(marcajesHoy) {
             const selTipo = document.getElementById("tipo-marcaje");
             if (!selTipo) return;
@@ -2126,9 +1795,7 @@
             const badgeCont = document.getElementById("contador-marcajes-hoy");
             const lista = obtenerMarcajesLocalesDeHoyUsuario();
 
-            const unicos = new Set(lista.map(m => m.tipo)).size;
-            if (badgeCont) badgeCont.innerText = `${unicos} / 4 completados`;
-            actualizarChecklistVisual4Pasos(lista);
+            if (badgeCont) badgeCont.innerText = `${lista.length} / 4`;
             sugerirSiguienteMomentoMarcaje(lista);
 
             if (lista.length === 0) {
@@ -2222,17 +1889,25 @@
         }
 
         // =====================================================================
-        // 9. BARRA UNIFICADA DE FILTROS DE FECHA Y DETECTOR MATEMÁTICO DE FALTAS
+        // 8. CONTROLADOR DE FILTROS MULTIMODALES (DÍA ESPECÍFICO / MES / RANGO / TODO)
         // =====================================================================
-        function seleccionarFiltroUnificado(vista, opcion) {
-            const ahora = new Date();
-            const hoyISO = obtenerFechaLocalISO(ahora);
-            const botones = ["hoy", "ayer", "dia", "mes", "rango", "todo"];
+        function cambiarModoFecha(vista, modo) {
+            const modos = ["dia", "mes", "rango", "todo"];
+            if (vista === "admin") {
+                modoFechaAdmin = modo;
+            } else {
+                modoFechaGerente = modo;
+            }
 
-            botones.forEach(b => {
-                const btn = document.getElementById(`btn-modo-${vista}-${b}`);
+            modos.forEach(m => {
+                const caja = document.getElementById(`box-${vista}-${m}`);
+                const btn = document.getElementById(`btn-modo-${vista}-${m}`);
+                if (caja) {
+                    if (m === modo) caja.classList.remove("hidden");
+                    else caja.classList.add("hidden");
+                }
                 if (btn) {
-                    if (b === opcion) {
+                    if (m === modo) {
                         btn.classList.add("modo-fecha-activo");
                     } else {
                         btn.classList.remove("modo-fecha-activo");
@@ -2240,79 +1915,28 @@
                 }
             });
 
-            let modoInterno = opcion;
-            if (opcion === "hoy") {
-                document.getElementById(`filtro-${vista}-dia`).value = hoyISO;
-                modoInterno = "dia";
-            } else if (opcion === "ayer") {
-                const ayer = new Date(ahora);
-                ayer.setDate(ahora.getDate() - 1);
-                document.getElementById(`filtro-${vista}-dia`).value = obtenerFechaLocalISO(ayer);
-                modoInterno = "dia";
-            } else if (opcion === "mes") {
-                if (!document.getElementById(`filtro-${vista}-mes`).value) {
-                    document.getElementById(`filtro-${vista}-mes`).value = obtenerMesLocalISO(ahora);
-                }
-                modoInterno = "mes";
-            }
-
-            if (vista === "admin") modoFechaAdmin = modoInterno;
-            else modoFechaGerente = modoInterno;
-
-            ["dia", "mes", "rango", "todo"].forEach(m => {
-                const caja = document.getElementById(`box-${vista}-${m}`);
-                if (caja) {
-                    if (m === modoInterno) caja.classList.remove("hidden");
-                    else caja.classList.add("hidden");
-                }
-            });
-
             if (vista === "admin") renderizarTablaAdmin();
             else renderizarTablaGerente();
-        }
-
-        function obtenerRangoFechasActivo(vista, todosLosRegistros) {
-            const hoyISO = obtenerFechaLocalISO();
-            const modo = (vista === "admin") ? modoFechaAdmin : modoFechaGerente;
-
-            if (modo === "dia") {
-                const d = document.getElementById(`filtro-${vista}-dia`).value || hoyISO;
-                return { inicio: d, fin: d };
-            }
-            if (modo === "mes") {
-                const m = document.getElementById(`filtro-${vista}-mes`).value || obtenerMesLocalISO();
-                const partes = m.split("-");
-                const anio = parseInt(partes[0]);
-                const mes = parseInt(partes[1]);
-                const ultimoDia = new Date(anio, mes, 0).getDate();
-                const inicioMes = `${m}-01`;
-                const finMes = `${m}-${String(ultimoDia).padStart(2, "0")}`;
-                return { inicio: inicioMes, fin: finMes > hoyISO ? hoyISO : finMes };
-            }
-            if (modo === "rango") {
-                const desde = document.getElementById(`filtro-${vista}-desde`).value || hoyISO;
-                const hasta = document.getElementById(`filtro-${vista}-hasta`).value || hoyISO;
-                return { inicio: desde, fin: hasta > hoyISO ? hoyISO : hasta };
-            }
-
-            // Modo "todo": desde la primera fecha registrada en la base hasta hoy
-            const fechas = todosLosRegistros.map(r => r.fecha).filter(Boolean).sort();
-            const minFecha = fechas.length > 0 ? fechas[0] : hoyISO;
-            return { inicio: minFecha, fin: hoyISO };
         }
 
         function cumpleFiltroFechaMultimodal(fechaRegistro, vista) {
             if (!fechaRegistro) return false;
             const modo = (vista === "admin") ? modoFechaAdmin : modoFechaGerente;
+
             if (modo === "todo") return true;
+
             if (modo === "dia") {
-                const d = document.getElementById(`filtro-${vista}-dia`).value;
-                return !d || fechaRegistro === d;
+                const diaBuscado = document.getElementById(`filtro-${vista}-dia`).value;
+                if (!diaBuscado) return true;
+                return fechaRegistro === diaBuscado;
             }
+
             if (modo === "mes") {
-                const m = document.getElementById(`filtro-${vista}-mes`).value;
-                return !m || fechaRegistro.startsWith(m);
+                const mesBuscado = document.getElementById(`filtro-${vista}-mes`).value; // YYYY-MM
+                if (!mesBuscado) return true;
+                return fechaRegistro.startsWith(mesBuscado);
             }
+
             if (modo === "rango") {
                 const desde = document.getElementById(`filtro-${vista}-desde`).value;
                 const hasta = document.getElementById(`filtro-${vista}-hasta`).value;
@@ -2320,196 +1944,32 @@
                 if (hasta && fechaRegistro > hasta) return false;
                 return true;
             }
+
             return true;
         }
 
-        /**
-         * Genera la lista de días laborables (Lunes a Sábado, excluyendo Domingos y Feriados de Hoja 1)
-         * entre fechaInicioISO y fechaFinISO.
-         */
-        function generarDiasHabilesEntre(inicioISO, finISO) {
-            const dias = [];
-            if (!inicioISO || !finISO || inicioISO > finISO) return dias;
+        function aplicarRangoRapido(vista, periodo) {
+            const ahora = new Date();
+            const hoyISO = obtenerFechaLocalISO(ahora);
 
-            const pIni = inicioISO.split("-");
-            const pFin = finISO.split("-");
-            let actual = new Date(Number(pIni[0]), Number(pIni[1]) - 1, Number(pIni[2]));
-            const limite = new Date(Number(pFin[0]), Number(pFin[1]) - 1, Number(pFin[2]));
-            const hoyISO = obtenerFechaLocalISO();
-            const horaActual = new Date().getHours();
-
-            while (actual <= limite) {
-                const fISO = obtenerFechaLocalISO(actual);
-                const diaSem = actual.getDay(); // 0 = Domingo
-                if (diaSem !== 0 && !FERIADOS_CACHE.includes(fISO)) {
-                    // Si es el día de hoy y aún es muy temprano (< 11:00 AM), no lo marca como falta cerrada todavía
-                    if (fISO === hoyISO && horaActual < 11) {
-                        // Aún en horario de ingreso matutino
-                    } else {
-                        dias.push(fISO);
-                    }
-                }
-                actual.setDate(actual.getDate() + 1);
-            }
-            return dias;
-        }
-
-        /**
-         * Calcula el Consolidado de Asistencias, Faltas Acumuladas, Fechas Exactas de Falta y Horas
-         * para cada colaborador activo de la sede seleccionada.
-         */
-        function calcularConsolidadoFaltasYHoras(vista, registrosBase, sedeFiltro, asesorFiltro, rangoFiltro) {
-            const rangoFechas = obtenerRangoFechasActivo(vista, registrosBase);
-            const contarMesCompleto = document.getElementById(`chk-${vista}-faltas-mes-completo`)?.checked || false;
-
-            // Obtener colaboradores activos desde Hoja 1 (excluyendo Gerentes y Desarrolladores que no marcan)
-            let personalEvaluar = DIRECTORIO_HOJA_1.filter(u => u.rango !== "Gerente" && u.rango !== "Desarrollador");
-            if (sedeFiltro && sedeFiltro !== "TODAS") {
-                personalEvaluar = personalEvaluar.filter(u => u.sede === sedeFiltro);
-            }
-            if (asesorFiltro && asesorFiltro !== "TODOS") {
-                personalEvaluar = personalEvaluar.filter(u => u.nombre === asesorFiltro);
-            }
-            if (rangoFiltro && rangoFiltro !== "TODOS") {
-                if (rangoFiltro === "CAJA") {
-                    personalEvaluar = personalEvaluar.filter(u => normalizarAreaOperativa(u.area, u.rango) === "Caja");
-                } else {
-                    personalEvaluar = personalEvaluar.filter(u => u.rango === rangoFiltro);
-                }
+            if (periodo === "hoy") {
+                document.getElementById(`filtro-${vista}-dia`).value = hoyISO;
+                cambiarModoFecha(vista, "dia");
+            } else if (periodo === "ayer") {
+                const ayer = new Date(ahora);
+                ayer.setDate(ahora.getDate() - 1);
+                document.getElementById(`filtro-${vista}-dia`).value = obtenerFechaLocalISO(ayer);
+                cambiarModoFecha(vista, "dia");
+            } else if (periodo === "mes") {
+                document.getElementById(`filtro-${vista}-mes`).value = obtenerMesLocalISO(ahora);
+                cambiarModoFecha(vista, "mes");
             }
 
-            // Añadir también cualquier colaborador que tenga registros históricos aunque no esté en el directorio
-            const nombresEnPersonal = new Set(personalEvaluar.map(u => u.nombre));
-            registrosBase.forEach(r => {
-                if (r.rango === "Gerente" || r.rango === "Desarrollador") return;
-                if (sedeFiltro !== "TODAS" && r.sede !== sedeFiltro) return;
-                if (asesorFiltro !== "TODOS" && r.nombre !== asesorFiltro) return;
-                const areaNorm = normalizarAreaOperativa(r.area, r.rango);
-                if (rangoFiltro === "CAJA" && areaNorm !== "Caja") return;
-                if (rangoFiltro !== "TODOS" && rangoFiltro !== "CAJA" && r.rango !== rangoFiltro) return;
-
-                if (!nombresEnPersonal.has(r.nombre)) {
-                    nombresEnPersonal.add(r.nombre);
-                    personalEvaluar.push({
-                        nombre: r.nombre,
-                        sede: r.sede,
-                        rango: r.rango,
-                        area: areaNorm
-                    });
-                }
-            });
-
-            const resultado = personalEvaluar.map(colab => {
-                const regsColabTodos = registrosBase.filter(r => r.nombre === colab.nombre);
-                const fechasConMarcaje = new Set(regsColabTodos.map(r => r.fecha));
-
-                // Fecha de primer registro histórico del colaborador (para no atribuir faltas antes de su ingreso)
-                const todasFechasOrdenadas = [...fechasConMarcaje].sort();
-                const primeraFechaColab = todasFechasOrdenadas.length > 0 ? todasFechasOrdenadas[0] : rangoFechas.inicio;
-
-                const inicioEfectivo = (!contarMesCompleto && primeraFechaColab > rangoFechas.inicio)
-                    ? primeraFechaColab
-                    : rangoFechas.inicio;
-
-                const diasHabilesEvaluados = generarDiasHabilesEntre(inicioEfectivo, rangoFechas.fin);
-
-                // Filtrar registros del colaborador dentro del período consultado
-                const regsPeriodo = regsColabTodos.filter(r => cumpleFiltroFechaMultimodal(r.fecha, vista));
-                const diasAsistidosSet = new Set(regsPeriodo.map(r => r.fecha));
-
-                const fechasFalto = [];
-                diasHabilesEvaluados.forEach(diaISO => {
-                    if (!fechasConMarcaje.has(diaISO)) {
-                        fechasFalto.push(diaISO);
-                    }
-                });
-
-                let minTardanza = 0, minRefrigerio = 0, minExtrasCaja = 0;
-                regsPeriodo.forEach(r => {
-                    minTardanza += Number(r.tardanza || 0);
-                    minRefrigerio += Number(r.excesoRefrigerio || 0);
-                    minExtrasCaja += Number(r.extrasCaja || 0);
-                });
-
-                return {
-                    nombre: colab.nombre,
-                    sede: colab.sede,
-                    rango: colab.rango,
-                    area: normalizarAreaOperativa(colab.area, colab.rango),
-                    diasAsistidos: diasAsistidosSet.size,
-                    totalFaltas: fechasFalto.length,
-                    fechasFaltoISO: fechasFalto,
-                    fechasFaltoTexto: fechasFalto.map(f => formatearFechaCortaPE(f)).join(", "),
-                    minTardanza,
-                    minRefrigerio,
-                    minExtrasCaja
-                };
-            });
-
-            // Ordenar mostrando primero a quienes tienen más faltas o más tardanzas
-            resultado.sort((a, b) => (b.totalFaltas - a.totalFaltas) || (b.minTardanza - a.minTardanza));
-            return resultado;
-        }
-
-        /**
-         * Renderiza el Monitor en Vivo de Hoy: ¿Quiénes ya marcaron y quiénes faltan marcar Entrada hoy?
-         */
-        function renderizarMonitorPendientesHoy(idContenedor, registrosBase, sedeFiltro) {
-            const cont = document.getElementById(idContenedor);
-            if (!cont) return;
-
-            const hoyISO = obtenerFechaLocalISO();
-            let personalActivo = DIRECTORIO_HOJA_1.filter(u => u.rango !== "Gerente" && u.rango !== "Desarrollador");
-            if (sedeFiltro && sedeFiltro !== "TODAS") {
-                personalActivo = personalActivo.filter(u => u.sede === sedeFiltro);
-            }
-
-            if (personalActivo.length === 0) {
-                cont.classList.add("hidden");
-                return;
-            }
-            cont.classList.remove("hidden");
-
-            const marcaronHoySet = new Set(
-                registrosBase
-                    .filter(r => r.fecha === hoyISO)
-                    .map(r => r.nombre)
-            );
-
-            const pendientesHoy = personalActivo.filter(u => !marcaronHoySet.has(u.nombre));
-            const presentesHoy = personalActivo.filter(u => marcaronHoySet.has(u.nombre));
-
-            if (pendientesHoy.length === 0) {
-                cont.className = "bg-green-50 border border-green-300 rounded-2xl p-3.5 text-xs flex items-center justify-between";
-                cont.innerHTML = `
-                    <div class="flex items-center gap-2 font-extrabold text-green-900">
-                        <i class="fa-solid fa-circle-check text-green-600 text-base"></i>
-                        <span>¡Asistencia Completa Hoy (${formatearFechaCortaPE(hoyISO)})! Todos los ${presentesHoy.length} colaboradores activos ya registraron su asistencia.</span>
-                    </div>
-                `;
-            } else {
-                const chipsPendientes = pendientesHoy.map(u =>
-                    `<span class="bg-white border border-rose-300 text-rose-800 font-extrabold px-2.5 py-1 rounded-lg text-[11px] inline-flex items-center gap-1 shadow-sm">
-                        <i class="fa-solid fa-clock text-rose-500"></i> ${u.nombre} <span class="text-[9px] text-slate-400">(${u.sede})</span>
-                    </span>`
-                ).join(" ");
-
-                cont.className = "bg-amber-50 border-2 border-amber-300 rounded-2xl p-3.5 text-xs space-y-2";
-                cont.innerHTML = `
-                    <div class="flex flex-wrap justify-between items-center gap-2">
-                        <span class="font-extrabold text-amber-900 uppercase flex items-center gap-1.5">
-                            <i class="fa-solid fa-user-clock text-rose-600"></i> Estado de Hoy (${formatearFechaCortaPE(hoyISO)}):
-                            <span class="text-green-700">${presentesHoy.length} Presentes</span> |
-                            <span class="text-rose-700">${pendientesHoy.length} Pendiente(s) de Marcar</span>
-                        </span>
-                    </div>
-                    <div class="flex flex-wrap gap-1.5 pt-1">${chipsPendientes}</div>
-                `;
-            }
+            mostrarToast(`Filtro aplicado: ${periodo.toUpperCase()}`);
         }
 
         // =====================================================================
-        // 10. VISTA ADMINISTRADOR Y PANEL GERENCIAL
+        // 9. VISTA ADMINISTRADOR Y PANEL GERENCIAL (CON CONVERSIÓN A HORAS)
         // =====================================================================
         async function cargarReporteSedeAdmin() {
             document.getElementById("titulo-sede-admin").innerText = usuarioActual.sede;
@@ -2517,7 +1977,6 @@
             tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400 font-bold"><i class="fa-solid fa-spinner fa-spin"></i> Consultando hoja de sede...</td></tr>';
 
             try {
-                await cargarDirectorioDesdeSheet(false);
                 const res = await llamarAppsScriptPOST({
                     action: "obtenerReportes",
                     nombre: usuarioActual.nombre,
@@ -2525,12 +1984,8 @@
                     baseFiltro: usuarioActual.sede
                 });
                 if (res.estado === "exito") {
-                    registrosAdminCache = res.registros.map(r => ({
-                        ...r,
-                        area: normalizarAreaOperativa(r.area, r.rango)
-                    }));
+                    registrosAdminCache = res.registros;
                     poblarSelectorColaboradoresPorSede("filtro-admin-asesor", registrosAdminCache, usuarioActual.sede);
-                    renderizarMonitorPendientesHoy("monitor-pendientes-admin", registrosAdminCache, usuarioActual.sede);
                     renderizarTablaAdmin();
                 } else {
                     throw new Error(res.mensaje);
@@ -2551,10 +2006,6 @@
                 return true;
             });
 
-            // Calcular Faltas Acumuladas y Fechas Exactas de Falta
-            consolidadoFaltasAdminActual = calcularConsolidadoFaltasYHoras("admin", registrosAdminCache, usuarioActual.sede, asesor, "TODOS");
-            const totalFaltasSede = consolidadoFaltasAdminActual.reduce((acc, c) => acc + c.totalFaltas, 0);
-
             let sumaMinutosTard = 0, sumaExcesoRefr = 0, sumaExtrasCaja = 0;
             listaFiltradaAdminActual.forEach(r => {
                 sumaMinutosTard += Number(r.tardanza || 0);
@@ -2567,8 +2018,6 @@
             const convExtr = convertirMinutosAHoras(sumaExtrasCaja);
 
             document.getElementById("kpi-admin-total").innerText = listaFiltradaAdminActual.length;
-            document.getElementById("kpi-admin-faltas").innerText = `${totalFaltasSede} falta(s)`;
-
             document.getElementById("kpi-admin-minutos").innerText = convTard.textoMinutos;
             document.getElementById("kpi-admin-minutos-horas").innerText = convTard.textoHorasKPI;
 
@@ -2578,92 +2027,51 @@
             document.getElementById("kpi-admin-extras-caja").innerText = convExtr.textoMinutos;
             document.getElementById("kpi-admin-extras-horas").innerText = convExtr.textoHorasKPI;
 
-            // Renderizar Tabla 1: Marcajes Fotográficos
             const tbody = document.getElementById("tbody-admin");
             if (listaFiltradaAdminActual.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400">No hay marcajes para el período seleccionado.</td></tr>';
-            } else {
-                tbody.innerHTML = listaFiltradaAdminActual.map((r, idx) => {
-                    const urlMapa = obtenerUrlMapaSegura(r);
-                    const hayFoto = tieneEvidenciaFotografica(r);
-                    return `
-                    <tr class="hover:bg-slate-50">
-                        <td class="p-3 font-mono font-bold text-slate-700">${r.fecha}<br><span class="text-[#59B447]">${r.hora}</span></td>
-                        <td class="p-3 font-extrabold text-slate-800">${r.nombre}</td>
-                        <td class="p-3">
-                            <span class="bg-slate-100 px-2 py-0.5 rounded text-[10px] font-bold block">${r.rango}</span>
-                            <span class="text-[10px] font-extrabold text-purple-700">${r.area || ''}</span>
-                        </td>
-                        <td class="p-3">
-                            <span class="font-extrabold text-slate-800 block">${r.tipo} (${r.modalidad})</span>
-                            <span class="text-[11px] font-bold text-blue-700 block">👤 ${r.observacion || 'Sin detalle'}</span>
-                        </td>
-                        <td class="p-3 space-y-1">
-                            ${r.tardanza > 0
-                                ? `<span class="bg-red-100 text-red-700 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] inline-block">${convertirMinutosAHoras(r.tardanza).textoFila} Tardanza</span>`
-                                : `<span class="bg-green-100 text-green-700 font-bold px-2.5 py-0.5 rounded-full text-[10px] inline-block">A tiempo</span>`
-                            }
-                            ${r.excesoRefrigerio > 0
-                                ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">🍽️ ${convertirMinutosAHoras(r.excesoRefrigerio).textoFila} Exceso Refr.</span>`
-                                : ""
-                            }
-                            ${r.extrasCaja > 0
-                                ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">⏱️ ${convertirMinutosAHoras(r.extrasCaja).textoFila} Extra Caja</span>`
-                                : ""
-                            }
-                        </td>
-                        <td class="p-3 max-w-xs">
-                            <a href="${urlMapa}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-bold block"><i class="fa-solid fa-map-location-dot"></i> ${r.direccion || 'Ver Mapa'}</a>
-                        </td>
-                        <td class="p-3 text-center">
-                            <button type="button" onclick="abrirVisorFotoDesdeTabla('admin', ${idx})" class="${hayFoto ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'} inline-flex items-center gap-1.5 font-extrabold px-3.5 py-2 rounded-xl text-[11px] shadow-sm transition-all active:scale-95">
-                                <i class="fa-solid ${hayFoto ? 'fa-camera' : 'fa-circle-info'}"></i> ${hayFoto ? 'Ver Foto' : 'Sin Foto'}
-                            </button>
-                        </td>
-                    </tr>
-                `}).join("");
+                tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400">No hay registros para el filtro de fecha o mes seleccionado.</td></tr>';
+                return;
             }
 
-            // Renderizar Tabla 2: Consolidado de Faltas, Fechas de Inasistencia y Horas
-            const tbodyFaltas = document.getElementById("tbody-admin-faltas");
-            if (consolidadoFaltasAdminActual.length === 0) {
-                tbodyFaltas.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400">Sin colaboradores para evaluar.</td></tr>';
-            } else {
-                tbodyFaltas.innerHTML = consolidadoFaltasAdminActual.map(c => {
-                    const cT = convertirMinutosAHoras(c.minTardanza);
-                    const cR = convertirMinutosAHoras(c.minRefrigerio);
-                    const cE = convertirMinutosAHoras(c.minExtrasCaja);
-                    return `
-                    <tr class="hover:bg-rose-50/40">
-                        <td class="p-3 font-extrabold text-slate-800">${c.nombre}</td>
-                        <td class="p-3">
-                            <span class="bg-slate-100 px-2 py-0.5 rounded text-[10px] font-bold block">${c.rango}</span>
-                            <span class="text-[10px] font-extrabold text-purple-700">${c.area}</span>
-                        </td>
-                        <td class="p-3 text-center font-black text-green-700">${c.diasAsistidos} día(s)</td>
-                        <td class="p-3 text-center">
-                            ${c.totalFaltas > 0
-                                ? `<span class="bg-rose-600 text-white font-black px-3 py-1 rounded-full text-xs">${c.totalFaltas} Falta(s)</span>`
-                                : `<span class="bg-green-100 text-green-800 font-extrabold px-2.5 py-1 rounded-full text-[11px]">0 Faltas</span>`
-                            }
-                        </td>
-                        <td class="p-3 max-w-xs">
-                            ${c.totalFaltas > 0
-                                ? `<div class="flex flex-wrap gap-1">${c.fechasFaltoISO.map(f => `<span class="bg-rose-100 text-rose-800 border border-rose-300 font-mono font-bold px-2 py-0.5 rounded text-[10px]">🔴 ${formatearFechaCortaPE(f)}</span>`).join("")}</div>`
-                                : `<span class="text-green-600 font-bold text-[11px]">✅ Asistencia regular sin faltas</span>`
-                            }
-                        </td>
-                        <td class="p-3">
-                            <span class="font-extrabold text-red-700 block">${cT.textoMinutos}</span>
-                            <span class="text-[10px] font-bold text-slate-600">${cT.textoHorasKPI}</span>
-                        </td>
-                        <td class="p-3 space-y-1">
-                            <span class="text-[11px] font-bold text-amber-800 block">🍽️ Refr: ${cR.textoMinutos} (${cR.horasDecimalesCSV}h)</span>
-                            <span class="text-[11px] font-bold text-purple-800 block">🏦 Extras: ${cE.textoMinutos} (${cE.horasDecimalesCSV}h)</span>
-                        </td>
-                    </tr>
-                `}).join("");
-            }
+            tbody.innerHTML = listaFiltradaAdminActual.map((r, idx) => {
+                const urlMapa = obtenerUrlMapaSegura(r);
+                const hayFoto = tieneEvidenciaFotografica(r);
+                return `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 font-mono font-bold text-slate-700">${r.fecha}<br><span class="text-[#59B447]">${r.hora}</span></td>
+                    <td class="p-3 font-extrabold text-slate-800">${r.nombre}</td>
+                    <td class="p-3">
+                        <span class="bg-slate-100 px-2 py-0.5 rounded text-[10px] font-bold block">${r.rango}</span>
+                        <span class="text-[10px] font-extrabold text-purple-700">${r.area || ''}</span>
+                    </td>
+                    <td class="p-3">
+                        <span class="font-extrabold text-slate-800 block">${r.tipo} (${r.modalidad})</span>
+                        <span class="text-[11px] font-bold text-blue-700 block">👤 ${r.observacion || 'Sin detalle'}</span>
+                    </td>
+                    <td class="p-3 space-y-1">
+                        ${r.tardanza > 0
+                            ? `<span class="bg-red-100 text-red-700 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] inline-block">\${convertirMinutosAHoras(r.tardanza).textoFila} Tardanza</span>`
+                            : `<span class="bg-green-100 text-green-700 font-bold px-2.5 py-0.5 rounded-full text-[10px] inline-block">A tiempo</span>`
+                        }
+                        ${r.excesoRefrigerio > 0
+                            ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">🍽️ \${convertirMinutosAHoras(r.excesoRefrigerio).textoFila} Exceso Refr.</span>`
+                            : ""
+                        }
+                        ${r.extrasCaja > 0
+                            ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] block">⏱️ \${convertirMinutosAHoras(r.extrasCaja).textoFila} Extra Caja</span>`
+                            : ""
+                        }
+                    </td>
+                    <td class="p-3 max-w-xs">
+                        <a href="${urlMapa}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-bold block"><i class="fa-solid fa-map-location-dot"></i> ${r.direccion || 'Ver Mapa'}</a>
+                    </td>
+                    <td class="p-3 text-center">
+                        <button type="button" onclick="abrirVisorFotoDesdeTabla('admin', ${idx})" class="${hayFoto ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'} inline-flex items-center gap-1.5 font-extrabold px-3.5 py-2 rounded-xl text-[11px] shadow-sm transition-all active:scale-95">
+                            <i class="fa-solid ${hayFoto ? 'fa-camera' : 'fa-circle-info'}"></i> ${hayFoto ? 'Ver Foto' : 'Sin Foto'}
+                        </button>
+                    </td>
+                </tr>
+            `}).join("");
         }
 
         async function cargarDatosGerente() {
@@ -2671,7 +2079,6 @@
             tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400 font-bold"><i class="fa-solid fa-spinner fa-spin"></i> Sincronizando todas las sedes para Gerencia...</td></tr>';
 
             try {
-                await cargarDirectorioDesdeSheet(false);
                 const res = await llamarAppsScriptPOST({
                     action: "obtenerReportes",
                     nombre: usuarioActual.nombre,
@@ -2679,10 +2086,7 @@
                     baseFiltro: "TODAS"
                 });
                 if (res.estado === "exito") {
-                    registrosGerenteCache = res.registros.map(r => ({
-                        ...r,
-                        area: normalizarAreaOperativa(r.area, r.rango)
-                    }));
+                    registrosGerenteCache = res.registros;
                     actualizarFiltrosGerente();
                 } else {
                     throw new Error(res.mensaje);
@@ -2698,7 +2102,6 @@
                 ? registrosGerenteCache
                 : registrosGerenteCache.filter(r => r.sede === sedeElegida);
             poblarSelectorColaboradoresPorSede("filtro-gerente-asesor", sublista, sedeElegida);
-            renderizarMonitorPendientesHoy("monitor-pendientes-gerente", registrosGerenteCache, sedeElegida);
             renderizarTablaGerente();
         }
 
@@ -2710,7 +2113,7 @@
             listaFiltradaGerenteActual = registrosGerenteCache.filter(r => {
                 if (sede !== "TODAS" && r.sede !== sede) return false;
                 if (rangoFiltro === "CAJA") {
-                    if (normalizarAreaOperativa(r.area, r.rango) !== "Caja") return false;
+                    if (String(r.area || "").toUpperCase().indexOf("CAJA") === -1) return false;
                 } else if (rangoFiltro !== "TODOS" && r.rango !== rangoFiltro) {
                     return false;
                 }
@@ -2718,9 +2121,6 @@
                 if (!cumpleFiltroFechaMultimodal(r.fecha, "gerente")) return false;
                 return true;
             });
-
-            consolidadoFaltasGerenteActual = calcularConsolidadoFaltasYHoras("gerente", registrosGerenteCache, sede, asesor, rangoFiltro);
-            const totalFaltasGlobal = consolidadoFaltasGerenteActual.reduce((acc, c) => acc + c.totalFaltas, 0);
 
             let sumaTard = 0, sumaRefr = 0, sumaExt = 0;
             listaFiltradaGerenteActual.forEach(r => {
@@ -2734,8 +2134,6 @@
             const convExtrG = convertirMinutosAHoras(sumaExt);
 
             document.getElementById("kpi-gerente-total").innerText = listaFiltradaGerenteActual.length;
-            document.getElementById("kpi-gerente-faltas").innerText = `${totalFaltasGlobal} falta(s)`;
-
             document.getElementById("kpi-gerente-tardanza").innerText = convTardG.textoMinutos;
             document.getElementById("kpi-gerente-tardanza-horas").innerText = convTardG.textoHorasKPI;
 
@@ -2745,98 +2143,56 @@
             document.getElementById("kpi-gerente-extras").innerText = convExtrG.textoMinutos;
             document.getElementById("kpi-gerente-extras-horas").innerText = convExtrG.textoHorasKPI;
 
-            // Tabla 1: Marcajes Fotográficos
             const tbody = document.getElementById("tbody-gerente");
             if (listaFiltradaGerenteActual.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400">Sin marcajes para los filtros seleccionados.</td></tr>';
-            } else {
-                tbody.innerHTML = listaFiltradaGerenteActual.map((r, idx) => {
-                    const urlMapa = obtenerUrlMapaSegura(r);
-                    const hayFoto = tieneEvidenciaFotografica(r);
-                    return `
-                    <tr class="hover:bg-amber-50/30">
-                        <td class="p-3 font-mono font-bold">${r.fecha}<br><span class="text-[#59B447]">${r.hora}</span></td>
-                        <td class="p-3"><span class="bg-blue-100 text-blue-800 font-extrabold px-2 py-0.5 rounded text-[10px]">${r.sede}</span></td>
-                        <td class="p-3 font-extrabold text-slate-800">${r.nombre}</td>
-                        <td class="p-3">
-                            <span class="${r.rango === 'Administrador' ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-700'} font-bold px-2 py-0.5 rounded text-[10px] block">${r.rango}</span>
-                            <span class="text-[10px] font-bold text-slate-500">${r.area || ''}</span>
-                        </td>
-                        <td class="p-3">
-                            <span class="font-bold text-slate-800 block">${r.tipo} (${r.modalidad})</span>
-                            <span class="text-[11px] font-bold text-blue-700 block">👤 ${r.observacion || ''}</span>
-                        </td>
-                        <td class="p-3 space-y-1">
-                            ${r.tardanza > 0
-                                ? `<span class="bg-red-100 text-red-700 font-extrabold px-2 py-0.5 rounded-full text-[10px] inline-block">${convertirMinutosAHoras(r.tardanza).textoFila} Tard.</span>`
-                                : `<span class="bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full text-[10px] inline-block">Puntual</span>`
-                            }
-                            ${r.excesoRefrigerio > 0
-                                ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">🍽️ ${convertirMinutosAHoras(r.excesoRefrigerio).textoFila} Refr.</span>`
-                                : ""
-                            }
-                            ${r.extrasCaja > 0
-                                ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">⏱️ ${convertirMinutosAHoras(r.extrasCaja).textoFila} Extra Caja</span>`
-                                : ""
-                            }
-                        </td>
-                        <td class="p-3 max-w-xs">
-                            <a href="${urlMapa}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-bold block"><i class="fa-solid fa-location-dot"></i> ${r.direccion || 'Mapa'}</a>
-                        </td>
-                        <td class="p-3 text-center">
-                            <button type="button" onclick="abrirVisorFotoDesdeTabla('gerente', ${idx})" class="${hayFoto ? 'bg-[#59B447] hover:bg-[#4a973a] text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'} font-extrabold px-3.5 py-2 rounded-xl text-[11px] inline-flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
-                                <i class="fa-solid ${hayFoto ? 'fa-eye' : 'fa-circle-info'}"></i> ${hayFoto ? 'Ver Foto' : 'Sin Foto'}
-                            </button>
-                        </td>
-                    </tr>
-                `}).join("");
+                tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400">Sin registros para el filtro de fecha, mes o sede seleccionado.</td></tr>';
+                return;
             }
 
-            // Tabla 2 Gerente: Consolidado de Faltas y Fechas Exactas
-            const tbodyFaltasG = document.getElementById("tbody-gerente-faltas");
-            if (consolidadoFaltasGerenteActual.length === 0) {
-                tbodyFaltasG.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400">Sin colaboradores para evaluar.</td></tr>';
-            } else {
-                tbodyFaltasG.innerHTML = consolidadoFaltasGerenteActual.map(c => {
-                    const cT = convertirMinutosAHoras(c.minTardanza);
-                    const cR = convertirMinutosAHoras(c.minRefrigerio);
-                    const cE = convertirMinutosAHoras(c.minExtrasCaja);
-                    return `
-                    <tr class="hover:bg-rose-50/40">
-                        <td class="p-3 font-extrabold text-slate-800">${c.nombre}</td>
-                        <td class="p-3"><span class="bg-blue-100 text-blue-800 font-extrabold px-2 py-0.5 rounded text-[10px]">${c.sede}</span></td>
-                        <td class="p-3">
-                            <span class="bg-slate-100 px-2 py-0.5 rounded text-[10px] font-bold block">${c.rango}</span>
-                            <span class="text-[10px] font-extrabold text-purple-700">${c.area}</span>
-                        </td>
-                        <td class="p-3 text-center font-black text-green-700">${c.diasAsistidos} día(s)</td>
-                        <td class="p-3 text-center">
-                            ${c.totalFaltas > 0
-                                ? `<span class="bg-rose-600 text-white font-black px-3 py-1 rounded-full text-xs">${c.totalFaltas} Falta(s)</span>`
-                                : `<span class="bg-green-100 text-green-800 font-extrabold px-2.5 py-1 rounded-full text-[11px]">0 Faltas</span>`
-                            }
-                        </td>
-                        <td class="p-3 max-w-xs">
-                            ${c.totalFaltas > 0
-                                ? `<div class="flex flex-wrap gap-1">\${c.fechasFaltoISO.map(f => `<span class="bg-rose-100 text-rose-800 border border-rose-300 font-mono font-bold px-2 py-0.5 rounded text-[10px]">🔴 ${formatearFechaCortaPE(f)}</span>`).join("")}</div>`
-                                : `<span class="text-green-600 font-bold text-[11px]">✅ Sin faltas en el período</span>`
-                            }
-                        </td>
-                        <td class="p-3">
-                            <span class="font-extrabold text-red-700 block">${cT.textoMinutos}</span>
-                            <span class="text-[10px] font-bold text-slate-600">${cT.textoHorasKPI}</span>
-                        </td>
-                        <td class="p-3 space-y-1">
-                            <span class="text-[11px] font-bold text-amber-800 block">🍽️ Refr: ${cR.textoMinutos} (${cR.horasDecimalesCSV}h)</span>
-                            <span class="text-[11px] font-bold text-purple-800 block">🏦 Extras: ${cE.textoMinutos} (${cE.horasDecimalesCSV}h)</span>
-                        </td>
-                    </tr>
-                `}).join("");
-            }
+            tbody.innerHTML = listaFiltradaGerenteActual.map((r, idx) => {
+                const urlMapa = obtenerUrlMapaSegura(r);
+                const hayFoto = tieneEvidenciaFotografica(r);
+                return `
+                <tr class="hover:bg-amber-50/30">
+                    <td class="p-3 font-mono font-bold">${r.fecha}<br><span class="text-[#59B447]">${r.hora}</span></td>
+                    <td class="p-3"><span class="bg-blue-100 text-blue-800 font-extrabold px-2 py-0.5 rounded text-[10px]">${r.sede}</span></td>
+                    <td class="p-3 font-extrabold text-slate-800">${r.nombre}</td>
+                    <td class="p-3">
+                        <span class="${r.rango === 'Administrador' ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-700'} font-bold px-2 py-0.5 rounded text-[10px] block">${r.rango}</span>
+                        <span class="text-[10px] font-bold text-slate-500">${r.area || ''}</span>
+                    </td>
+                    <td class="p-3">
+                        <span class="font-bold text-slate-800 block">${r.tipo} (${r.modalidad})</span>
+                        <span class="text-[11px] font-bold text-blue-700 block">👤 ${r.observacion || ''}</span>
+                    </td>
+                    <td class="p-3 space-y-1">
+                        ${r.tardanza > 0
+                            ? `<span class="bg-red-100 text-red-700 font-extrabold px-2 py-0.5 rounded-full text-[10px] inline-block">\${convertirMinutosAHoras(r.tardanza).textoFila} Tard.</span>`
+                            : `<span class="bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full text-[10px] inline-block">Puntual</span>`
+                        }
+                        ${r.excesoRefrigerio > 0
+                            ? `<span class="bg-amber-100 text-amber-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">🍽️ \${convertirMinutosAHoras(r.excesoRefrigerio).textoFila} Refr.</span>`
+                            : ""
+                        }
+                        ${r.extrasCaja > 0
+                            ? `<span class="bg-purple-100 text-purple-800 font-extrabold px-2 py-0.5 rounded-full text-[10px] block">⏱️ \${convertirMinutosAHoras(r.extrasCaja).textoFila} Extra Caja</span>`
+                            : ""
+                        }
+                    </td>
+                    <td class="p-3 max-w-xs">
+                        <a href="${urlMapa}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-bold block"><i class="fa-solid fa-location-dot"></i> ${r.direccion || 'Mapa'}</a>
+                    </td>
+                    <td class="p-3 text-center">
+                        <button type="button" onclick="abrirVisorFotoDesdeTabla('gerente', ${idx})" class="${hayFoto ? 'bg-[#59B447] hover:bg-[#4a973a] text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'} font-extrabold px-3.5 py-2 rounded-xl text-[11px] inline-flex items-center gap-1.5 shadow-sm transition-all active:scale-95">
+                            <i class="fa-solid ${hayFoto ? 'fa-eye' : 'fa-circle-info'}"></i> ${hayFoto ? 'Ver Foto' : 'Sin Foto'}
+                        </button>
+                    </td>
+                </tr>
+            `}).join("");
         }
 
         // =====================================================================
-        // 11. PANEL DEL DESARROLLADOR Y EXPORTACIÓN DE PLANILLAS CSV
+        // 10. PANEL EXCLUSIVO DEL DESARROLLADOR (Configuración Total de Hoja 1)
         // =====================================================================
         async function cargarDatosDesarrollador() {
             await cargarDirectorioDesdeSheet(false);
@@ -2884,7 +2240,7 @@
                     <td class="p-2.5 font-extrabold text-slate-800">${u.nombre}</td>
                     <td class="p-2.5 font-mono text-slate-600">${u.clave}</td>
                     <td class="p-2.5 font-bold">${u.rango}</td>
-                    <td class="p-2.5 text-purple-700 font-bold">${normalizarAreaOperativa(u.area, u.rango)}</td>
+                    <td class="p-2.5 text-purple-700 font-bold">${u.area}</td>
                     <td class="p-2.5 font-bold text-blue-700">${u.sede}</td>
                     <td class="p-2.5">
                         <span class="${u.estado === 'ACTIVO' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-700'} px-2 py-0.5 rounded-full text-[10px] font-extrabold">${u.estado}</span>
@@ -2904,7 +2260,7 @@
             document.getElementById("cfg-user-nombre").value = u.nombre;
             document.getElementById("cfg-user-clave").value = u.clave;
             document.getElementById("cfg-user-rango").value = u.rango;
-            document.getElementById("cfg-user-area").value = normalizarAreaOperativa(u.area, u.rango);
+            document.getElementById("cfg-user-area").value = u.area || "Asesor de Créditos";
             document.getElementById("cfg-user-sede").value = u.sede;
             document.getElementById("cfg-user-estado").value = u.estado;
             mostrarToast(`Usuario cargado: ${u.nombre}`);
@@ -3019,7 +2375,7 @@
         function exportarTablaCSV(modo) {
             const datos = (modo === "gerente") ? listaFiltradaGerenteActual : listaFiltradaAdminActual;
             if (!datos || datos.length === 0) {
-                alert("No hay marcajes filtrados para exportar.");
+                alert("No hay registros filtrados para exportar.");
                 return;
             }
             const cabeceras = [
@@ -3042,37 +2398,7 @@
             const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [cabeceras.join(","), ...filas].join("\n");
             const link = document.createElement("a");
             link.setAttribute("href", encodeURI(csvContent));
-            link.setAttribute("download", `Detalle_Marcajes_CREDIBAN_${modo}_${obtenerFechaLocalISO()}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function exportarConsolidadoFaltasCSV(modo) {
-            const datos = (modo === "gerente") ? consolidadoFaltasGerenteActual : consolidadoFaltasAdminActual;
-            if (!datos || datos.length === 0) {
-                alert("No hay datos consolidados para exportar.");
-                return;
-            }
-            const cabeceras = [
-                "Colaborador", "Sede", "Rango", "Area",
-                "Dias_Asistidos", "Faltas_Acumuladas", "Fechas_Exactas_Faltas",
-                "Minutos_Tardanza", "Horas_Tardanza",
-                "Minutos_Exceso_Refrigerio", "Horas_Exceso_Refrigerio",
-                "Minutos_Extras_Caja", "Horas_Extras_Caja"
-            ];
-            const filas = datos.map(c => [
-                `"${c.nombre}"`, c.sede, c.rango, `"${c.area}"`,
-                c.diasAsistidos, c.totalFaltas, `"${c.fechasFaltoTexto || 'Sin faltas'}"`,
-                c.minTardanza, convertirMinutosAHoras(c.minTardanza).horasDecimalesCSV,
-                c.minRefrigerio, convertirMinutosAHoras(c.minRefrigerio).horasDecimalesCSV,
-                c.minExtrasCaja, convertirMinutosAHoras(c.minExtrasCaja).horasDecimalesCSV
-            ].join(","));
-
-            const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [cabeceras.join(","), ...filas].join("\n");
-            const link = document.createElement("a");
-            link.setAttribute("href", encodeURI(csvContent));
-            link.setAttribute("download", `Planilla_Faltas_Y_Horas_CREDIBAN_${modo}_${obtenerFechaLocalISO()}.csv`);
+            link.setAttribute("download", `Reporte_Asistencia_CREDIBAN_${modo}_${obtenerFechaLocalISO()}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
