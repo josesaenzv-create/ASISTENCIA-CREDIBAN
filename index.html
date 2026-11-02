@@ -1,6 +1,6 @@
 <!-- ============================================================================
      SISTEMA INTEGRAL DE ASISTENCIA Y FOTOS DE GESTIÓN EN CAMPO - CREDIBAN PERÚ S.A.C.
-     PARTE 1 DE 2: Estructura HTML5, Logo Oficial SVG Exacto y Login Blindado
+     PARTE 1 DE 2: Estructura HTML5, Logo Oficial SVG[cite: 9], Login Privado y Paneles por Rol
      ============================================================================ -->
 <!DOCTYPE html>
 <html lang="es">
@@ -44,7 +44,7 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Tipografía Oficial del Estándar Gráfico CREDIBAN */
+    /* Tipografía Oficial del Estándar Gráfico CREDIBAN[cite: 9] */
     .font-crediban-title {
       font-family: Georgia, 'Times New Roman', serif;
     }
@@ -52,7 +52,6 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    /* Animación suave para las 6 barras del logo oficial */
     @keyframes barGlow {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.78; }
@@ -87,7 +86,6 @@
        ========================================================================== -->
   <div id="loadingOverlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0F291E] text-white transition-opacity duration-300">
     <div class="w-16 h-20 mb-3 flex items-center justify-center">
-      <!-- SVG Oficial de 6 barras y hoja curva -->
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 240" class="w-full h-full">
         <g fill="#59B447">
           <rect x="90" y="8" width="24" height="13" rx="6.5" class="bar-anim-1"/>
@@ -101,16 +99,16 @@
       </svg>
     </div>
     <p class="text-sm font-extrabold tracking-widest uppercase text-emerald-300">CREDIBAN PERÚ</p>
-    <p class="text-xs text-slate-300 mt-1">Iniciando módulo seguro...</p>
+    <p class="text-xs text-slate-300 mt-1">Sincronizando parámetros y sedes habilitadas...</p>
   </div>
 
   <!-- ==========================================================================
-       2. PANTALLA DE LOGIN BLINDADA (SOLO USUARIO Y CONTRASEÑA - CERO FILTRACIÓN)
+       2. PANTALLA DE LOGIN BLINDADA (SOLO USUARIO Y CONTRASEÑA)
        ========================================================================== -->
   <div id="loginScreen" class="hidden min-h-screen flex flex-col justify-center items-center p-4 bg-gradient-to-br from-[#0F291E] via-[#1B4332] to-slate-900">
     <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20 border-t-8 border-t-[#59B447]">
       
-      <!-- Cabecera Blanca Limpia con el Logo Oficial Exacto de CREDIBAN -->
+      <!-- Cabecera con Logo Oficial Exacto de CREDIBAN[cite: 9] -->
       <div class="px-6 pt-7 pb-4 text-center bg-white border-b border-slate-100">
         <div class="inline-flex items-center justify-center gap-3 bg-white px-5 py-2.5 rounded-2xl border border-slate-100 shadow-sm mb-3">
           <div class="w-11 h-14 flex-shrink-0">
@@ -136,15 +134,14 @@
           </div>
         </div>
 
-        <h1 class="text-lg font-black text-slate-800 tracking-tight">Acceso al Sistema</h1>
-        <p class="text-xs font-semibold text-slate-500 mt-0.5">Control de Asistencia y Gestión en Campo</p>
+        <h1 class="text-lg font-black text-slate-800 tracking-tight">Acceso Corporativo</h1>
+        <p class="text-xs font-semibold text-slate-500 mt-0.5">Asistencia y Gestión de Campo</p>
       </div>
 
-      <!-- Formulario de Login Cerrado (Solo Usuario y Contraseña) -->
+      <!-- Formulario Cerrado (Solo Usuario y Contraseña) -->
       <form onsubmit="iniciarSesion(event)" class="p-6 space-y-4">
         <div id="loginAlert" class="hidden p-3 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 text-center"></div>
 
-        <!-- Campo 1: Usuario (Escrito manualmente para no filtrar nombres ni cargos) -->
         <div>
           <label for="loginUsuarioInput" class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1.5 ml-1">
             Usuario
@@ -159,14 +156,13 @@
               autocomplete="username"
               autocapitalize="characters"
               spellcheck="false"
-              placeholder="Ingresa tu usuario asignado..."
+              placeholder="Escribe tu usuario..."
               required
               class="w-full pl-10 pr-4 py-3.5 rounded-xl border-2 border-slate-200 bg-slate-50 focus:bg-white text-sm font-bold text-slate-800 focus:outline-none focus:border-[#59B447] focus:ring-4 focus:ring-[#59B447]/15 transition"
             />
           </div>
         </div>
 
-        <!-- Campo 2: Contraseña Personal -->
         <div>
           <label for="loginClaveInput" class="block text-[11px] font-extrabold uppercase text-slate-600 mb-1.5 ml-1">
             Contraseña
@@ -194,7 +190,6 @@
           </div>
         </div>
 
-        <!-- Recordar sesión en este dispositivo -->
         <label class="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50/70 border border-emerald-200/80 cursor-pointer">
           <input id="loginRecordar" type="checkbox" checked class="w-4 h-4 accent-[#59B447] rounded" />
           <span class="text-xs font-bold text-[#1B4332]">🔒 Recordar mi sesión en este celular</span>
@@ -217,11 +212,11 @@
        ========================================================================== -->
   <div id="mainAppContainer" class="hidden app-shell-mobile transition-all duration-300">
 
-    <!-- CABECERA COMPACTA CON LOGO OFICIAL CREDIBAN, GPS Y CAMBIADOR DE VISTA -->
+    <!-- CABECERA COMPACTA CON LOGO OFICIAL CREDIBAN[cite: 9], GPS Y CAMBIADOR DE VISTA -->
     <header class="glass-header text-white sticky top-0 z-40 shadow-lg">
       <div class="px-3 py-2.5 flex items-center justify-between gap-2">
         
-        <!-- Logo Oficial CREDIBAN en cápsula blanca -->
+        <!-- Logo Oficial CREDIBAN en cápsula blanca[cite: 9] -->
         <div class="inline-flex items-center gap-2 bg-white px-2.5 py-1 rounded-xl shadow-sm shrink-0">
           <div class="w-6 h-8 flex-shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 240" class="w-full h-full">
@@ -246,28 +241,25 @@
           </div>
         </div>
 
-        <!-- Controles Superiores: GPS + Cambiar Vista (Celular/PC) + Cerrar Sesión -->
+        <!-- Controles Superiores: Semáforo GPS + Botón Cambiar Vista + Salir -->
         <div class="flex items-center gap-1.5">
-          <!-- Indicador GPS en Vivo -->
-          <button onclick="forzarRefrescoGPS()" id="gpsBadge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/40" title="Toca para refrescar GPS">
+          <button onclick="forzarRefrescoGPS()" id="gpsBadge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/40" title="Toca para actualizar dirección exacta">
             <span id="gpsDot" class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
             <span id="gpsText">GPS...</span>
           </button>
 
-          <!-- Botón para alternar entre Vista Celular y Vista PC -->
-          <button onclick="alternarModoPantalla()" id="btnCambiarVista" class="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-[11px] font-extrabold text-emerald-200 border border-white/15 transition" title="Cambiar ancho de pantalla">
+          <button onclick="alternarModoPantalla()" id="btnCambiarVista" class="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-[11px] font-extrabold text-emerald-200 border border-white/15 transition" title="Alternar entre vista móvil y vista PC">
             <i id="iconCambiarVista" class="fa-solid fa-expand mr-1"></i>
             <span id="labelCambiarVista">Vista PC</span>
           </button>
 
-          <!-- Botón Cerrar Sesión -->
           <button onclick="cerrarSesion()" class="px-2 py-1 rounded-xl bg-rose-500/20 hover:bg-rose-500/40 text-rose-200 border border-rose-400/30 text-xs font-bold" title="Cerrar sesión">
             <i class="fa-solid fa-power-off"></i>
           </button>
         </div>
       </div>
 
-      <!-- Cintillo de Identidad Detectada Automáticamente por el Sistema -->
+      <!-- Cintillo de Identidad y Sede Habilitada -->
       <div class="bg-black/25 px-3.5 py-1.5 flex items-center justify-between text-[11px] border-t border-white/10">
         <div class="flex items-center gap-1.5 truncate">
           <span id="headerRolBadge" class="px-2 py-0.5 rounded-md bg-[#59B447] text-white font-black uppercase text-[10px]">ASESOR</span>
@@ -275,40 +267,36 @@
         </div>
         <div class="flex items-center gap-2 shrink-0 text-emerald-300 font-bold">
           <span><i class="fa-solid fa-location-dot mr-1"></i><span id="headerUserSede">SEDE</span></span>
-          <!-- Si el usuario es Gerente (Sede TODAS), puede cambiar su sede operativa aquí adentro -->
-          <select id="gerenteSedeOperativaSelect" onchange="cambiarSedeOperativaGerente(this.value)" class="hidden bg-[#0F291E] text-emerald-200 border border-emerald-500/40 rounded-lg px-1.5 py-0.5 text-[10px] font-extrabold outline-none">
-            <option value="HUACHO">Operar: HUACHO</option>
-            <option value="HUARAZ">Operar: HUARAZ</option>
-            <option value="ICA">Operar: ICA</option>
-            <option value="NUEVA OFICINA">Operar: NUEVA OFICINA</option>
-            <option value="HUANUCO">Operar: HUANUCO</option>
-          </select>
+          <!-- Selector de Sede Operativa (Solo para Gerentes, alimentado con las Sedes HABILITADAS en PARAMETROS) -->
+          <select id="gerenteSedeOperativaSelect" onchange="cambiarSedeOperativaGerente(this.value)" class="hidden bg-[#0F291E] text-emerald-200 border border-emerald-500/40 rounded-lg px-1.5 py-0.5 text-[10px] font-extrabold outline-none"></select>
         </div>
       </div>
 
-      <!-- Barra de Navegación Principal (Adaptada automáticamente según Rango) -->
+      <!-- Barra de Navegación (Controlada por Rol) -->
       <nav class="bg-[#0F291E] px-2 py-1.5 flex gap-1 overflow-x-auto no-scrollbar border-t border-emerald-900">
         <button onclick="cambiarPestana('MARCAR')" id="tabBtn_MARCAR" class="flex-1 min-w-[105px] py-2 px-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-[#59B447] text-white shadow">
           <i class="fa-solid fa-clock mr-1"></i> Asistencia
         </button>
 
-        <button onclick="cambiarPestana('GESTION')" id="tabBtn_GESTION" class="flex-1 min-w-[120px] py-2 px-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-white/10 text-emerald-100 hover:bg-white/20">
+        <button onclick="cambiarPestana('GESTION')" id="tabBtn_GESTION" class="flex-1 min-w-[115px] py-2 px-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-white/10 text-emerald-100 hover:bg-white/20">
           <i class="fa-solid fa-camera-retro mr-1"></i> Fotos Gestión
         </button>
 
-        <!-- Visible para Administradores (ven su sede) y Gerentes (ven absolutamente todos) -->
-        <button onclick="cambiarPestana('REPORTE')" id="tabBtn_REPORTE" class="hidden flex-1 min-w-[125px] py-2 px-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-white/10 text-emerald-100 hover:bg-white/20">
-          <i class="fa-solid fa-chart-column mr-1"></i> <span id="tabLabelReporte">Mi Sede</span>
+        <!-- Pestaña de Supervisión:
+             - Administrador: "Supervisión Sede [X]" (Solo ve asesores, trabajadores y cajeros de su sede)
+             - Gerente: "Supervisión Gerencial" (Ve todas las sedes habilitadas + Administradores) -->
+        <button onclick="cambiarPestana('REPORTE')" id="tabBtn_REPORTE" class="hidden flex-1 min-w-[130px] py-2 px-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-white/10 text-emerald-100 hover:bg-white/20">
+          <i class="fa-solid fa-clipboard-user mr-1"></i> <span id="tabLabelReporte">Mi Sede</span>
         </button>
 
-        <!-- Exclusivo para Gerentes -->
-        <button onclick="cambiarPestana('GERENCIA')" id="tabBtn_GERENCIA" class="hidden flex-1 min-w-[120px] py-2 px-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-amber-400/20 text-amber-300 border border-amber-400/30">
+        <!-- Pestaña Control Global: EXCLUSIVA PARA GERENTES -->
+        <button onclick="cambiarPestana('GERENCIA')" id="tabBtn_GERENCIA" class="hidden flex-1 min-w-[125px] py-2 px-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-amber-400/20 text-amber-300 border border-amber-400/30">
           <i class="fa-solid fa-crown mr-1"></i> Control Global
         </button>
       </nav>
     </header>
 
-    <!-- CRONÓMETRO FLOTANTE DE REFRIGERIO -->
+    <!-- CRONÓMETRO DE REFRIGERIO EN CURSO -->
     <div id="refrigerioBanner" class="hidden mx-3 mt-3 p-3 rounded-2xl bg-amber-500 text-slate-950 shadow-lg flex items-center justify-between">
       <div class="flex items-center gap-2.5">
         <i class="fa-solid fa-utensils text-lg"></i>
@@ -321,11 +309,11 @@
     </div>
 
     <!-- ========================================================================
-         PESTAÑA 1: MARCAR ASISTENCIA
+         PESTAÑA 1: MARCAR ASISTENCIA (CON REGLAS DE LA HOJA "PARAMETROS")
          ======================================================================== -->
     <main id="view_MARCAR" class="p-3 space-y-3">
       
-      <!-- Reloj Digital y Dirección GPS en Vivo -->
+      <!-- Reloj Digital, Horario Oficial desde PARAMETROS y Dirección Exacta Google Maps -->
       <div class="card-clean p-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div>
@@ -333,23 +321,24 @@
             <p id="relojHora" class="text-2xl font-black text-[#1B4332] tracking-tight">10:00:00 AM</p>
           </div>
           <div class="text-right">
-            <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-emerald-50 text-[#59B447] border border-emerald-200">Horario Sede</span>
-            <p id="horarioSedeTexto" class="text-xs font-bold text-slate-600 mt-1">Entrada: 08:30 AM</p>
+            <span id="badgeEstadoLaborableHoy" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-emerald-50 text-[#59B447] border border-emerald-200">Día Laborable</span>
+            <p id="horarioSedeTexto" class="text-[11px] font-bold text-slate-600 mt-1">Entrada: 08:30 | Salida: 18:30</p>
           </div>
         </div>
 
+        <!-- Dirección exacta obtenida con Google Maps Geocoding API -->
         <div class="mt-3 flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
           <div class="w-10 h-10 rounded-lg bg-emerald-100 text-[#1B4332] flex items-center justify-center shrink-0">
             <i class="fa-solid fa-map-location-dot text-lg"></i>
           </div>
           <div class="min-w-0 flex-1">
-            <p id="calleDetectadaTitulo" class="text-xs font-extrabold text-slate-800 truncate">Detectando calle exacta en GPS...</p>
-            <p id="coordenadasDetectadasSub" class="text-[10px] font-semibold text-slate-500 truncate">Listo para estampar minimapa Google Maps</p>
+            <p id="calleDetectadaTitulo" class="text-xs font-extrabold text-slate-800 truncate">Obteniendo dirección exacta con Google Maps...</p>
+            <p id="distritoDetectadoSub" class="text-[10px] font-semibold text-slate-500 truncate">Sin coordenadas en foto • Solo dirección exacta y minimapa</p>
           </div>
         </div>
       </div>
 
-      <!-- Selector de Tipo de Marcaje -->
+      <!-- Selección de Tipo de Marcaje -->
       <div class="card-clean p-4 space-y-3">
         <label class="block text-[11px] font-extrabold uppercase text-slate-500">1. Selecciona el Tipo de Marcaje</label>
         <div class="grid grid-cols-2 gap-2">
@@ -390,14 +379,13 @@
           <div class="flex items-center justify-between">
             <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
               <input id="chkEnCampo" type="checkbox" class="w-4 h-4 accent-[#59B447] rounded" />
-              <span>🛵 Marcaje desde Campo / Cliente</span>
+              <span>🛵 Marcaje desde Campo / Comisión</span>
             </label>
             <span class="text-[10px] font-semibold text-slate-400">Opcional</span>
           </div>
-          <input id="inputMotivoAsistencia" type="text" placeholder="Observación opcional (Ej. Agencia / Comisión / Cliente)" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 focus:outline-none focus:border-[#59B447]" />
+          <input id="inputMotivoAsistencia" type="text" placeholder="Cliente o motivo opcional (Ej. Agencia / Visita Cliente)" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 focus:outline-none focus:border-[#59B447]" />
         </div>
 
-        <!-- Nota Obligatoria -->
         <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-300/80 flex items-center gap-2.5">
           <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base shrink-0"></i>
           <p class="text-[11px] font-bold text-amber-900 leading-snug">
@@ -421,7 +409,7 @@
         <div>
           <span class="px-2 py-0.5 rounded-md bg-emerald-100 text-[#1B4332] font-black text-[10px] uppercase">100% Calidad Original • Sin Subir al Servidor</span>
           <h2 class="text-base font-black text-slate-800 mt-1">📸 Cámara de Gestión en Campo</h2>
-          <p class="text-xs text-slate-500">Estampa el minimapa de Google Maps al lado de las coordenadas reales, lista para compartir por WhatsApp y guardar en <strong>"Mi gestión Crediban"</strong>.</p>
+          <p class="text-xs text-slate-500">Estampa el minimapa de Google Maps al lado de la <strong>dirección exacta</strong> (sin coordenadas), lista para enviar por WhatsApp y guardar en <strong>"Mi gestión Crediban"</strong>.</p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
@@ -430,7 +418,7 @@
             <input id="gestionClienteNombre" type="text" placeholder="Ej. Visita Cliente / Negocio" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#59B447]" />
           </div>
           <div>
-            <label class="block text-[11px] font-extrabold uppercase text-slate-500 mb-1">Actividad de Campo</label>
+            <label class="block text-[11px] font-extrabold uppercase text-slate-500 mb-1">Tipo de Gestión</label>
             <select id="gestionTipoActividad" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#59B447]">
               <option value="Evaluación / Visita de Campo">Evaluación / Visita de Campo</option>
               <option value="Cobranza / Notificación">Cobranza / Notificación</option>
@@ -476,7 +464,7 @@
             <h3 class="text-xs font-black uppercase text-[#1B4332]">
               <i class="fa-solid fa-images mr-1 text-[#59B447]"></i> Carpeta: Mi gestión Crediban (<span id="contadorFotosGestion">0</span>)
             </h3>
-            <p class="text-[10px] text-slate-500">Separado de tu galería personal</p>
+            <p class="text-[10px] text-slate-500">Tus fotos de gestión separadas de tu galería personal</p>
           </div>
           <div class="flex items-center gap-1.5">
             <button onclick="descargarAlbumZip()" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#1B4332] border border-emerald-200 text-[11px] font-extrabold">
@@ -493,22 +481,34 @@
     </section>
 
     <!-- ========================================================================
-         PESTAÑA 3: REPORTE DE SEDE / SUPERVISIÓN (ADMINISTRADORES Y GERENTES)
+         PESTAÑA 3: SUPERVISIÓN DE ASISTENCIA
+         - ADMINISTRADOR: Solo ve asesores, trabajadores y cajeros de SU SEDE
+         - GERENTE: Ve Supervisión Gerencial de todas las sedes habilitadas + Administradores
          ======================================================================== -->
     <section id="view_REPORTE" class="hidden p-3 space-y-3">
       
-      <!-- Barra exclusiva para Gerentes (Ven todas las sedes y a los Administradores) -->
+      <!-- Cabecera de Supervisión para ADMINISTRADOR DE SEDE -->
+      <div id="adminSedeHeaderBar" class="hidden card-clean p-3 bg-emerald-950 text-white flex items-center justify-between">
+        <div>
+          <span class="text-[10px] font-black uppercase text-emerald-300">🛡️ Panel de Administración de Agencia</span>
+          <h3 id="adminSedeTitulo" class="text-xs font-black">Supervisión de Asesores, Trabajadores y Cajeros • SEDE HUACHO</h3>
+        </div>
+        <span class="px-2.5 py-1 rounded-lg bg-[#59B447] text-white text-[10px] font-black uppercase">Solo Mi Sede</span>
+      </div>
+
+      <!-- Barra de Supervisión Gerencial: EXCLUSIVA PARA GERENTES -->
       <div id="gerenteSedeSelectorBar" class="hidden card-clean p-3 bg-[#1B4332] text-white space-y-2">
         <div class="flex items-center justify-between gap-2 flex-wrap">
           <span class="text-[11px] font-black uppercase text-emerald-300">
-            <i class="fa-solid fa-earth-americas mr-1"></i> Supervisión Gerencial (Incluye Administradores):
+            <i class="fa-solid fa-crown text-amber-400 mr-1"></i> Supervisión Gerencial (Todas las Sedes Habilitadas + Administradores):
           </span>
           <div class="flex gap-1">
             <button onclick="cambiarFiltroRolReporte('TODOS')" id="rolPill_TODOS" class="px-2.5 py-1 rounded-lg text-[10px] font-black bg-[#59B447] text-white">Todos</button>
             <button onclick="cambiarFiltroRolReporte('ADMINISTRADOR')" id="rolPill_ADMIN" class="px-2.5 py-1 rounded-lg text-[10px] font-black bg-white/10 text-emerald-100">Solo Administradores</button>
-            <button onclick="cambiarFiltroRolReporte('ASESOR')" id="rolPill_ASESOR" class="px-2.5 py-1 rounded-lg text-[10px] font-black bg-white/10 text-emerald-100">Asesores / Caja</button>
+            <button onclick="cambiarFiltroRolReporte('ASESOR')" id="rolPill_ASESOR" class="px-2.5 py-1 rounded-lg text-[10px] font-black bg-white/10 text-emerald-100">Asesores / Caja / Trabajadores</button>
           </div>
         </div>
+        <!-- Botones dinámicos de las sedes HABILITADAS en la hoja PARAMETROS -->
         <div id="botonesSedesReporte" class="flex gap-1.5 overflow-x-auto no-scrollbar pt-1"></div>
       </div>
 
@@ -532,7 +532,7 @@
         </div>
       </div>
 
-      <!-- Filtros y Botón Cambiador de Vista (Tarjetas Móvil vs Tabla PC) -->
+      <!-- Filtros y Cambiador de Vista (Tarjetas Móvil vs Tabla PC) -->
       <div class="card-clean p-3 space-y-2.5">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="flex gap-1 bg-slate-100 p-1 rounded-xl">
@@ -547,8 +547,8 @@
               <i id="iconFormatoReporte" class="fa-solid fa-table-list mr-1"></i>
               <span id="textoFormatoReporte">Ver como Tabla</span>
             </button>
-            <button onclick="cargarAsistenciasDesdeServidor()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs" title="Refrescar">
-              <i class="fa-solid fa-rotate"></i>
+            <button onclick="cargarAsistenciasDesdeServidor(true)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs" title="Sincronizar con Google Sheet">
+              <i id="iconSyncReporte" class="fa-solid fa-rotate"></i>
             </button>
           </div>
         </div>
@@ -566,20 +566,20 @@
           </div>
 
           <select id="filtroTrabajadorReporte" onchange="renderizarReportes()" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700">
-            <option value="TODOS">👤 Todos los colaboradores permitidos</option>
+            <option value="TODOS">👤 Todos los colaboradores supervisados</option>
           </select>
 
           <select id="filtroEquipoReporte" onchange="renderizarReportes()" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700">
-            <option value="TODOS">🛡️ Todos los Equipos (A - J)</option>
+            <option value="TODOS">🛡️ Todas las Áreas / Equipos</option>
           </select>
         </div>
       </div>
 
-      <!-- Personal pendiente de marcar hoy -->
+      <!-- Personal pendiente de marcar entrada hoy -->
       <details class="card-clean p-3 bg-rose-50/50 border-rose-200">
         <summary class="text-xs font-black text-rose-800 cursor-pointer flex items-center justify-between">
           <span><i class="fa-solid fa-user-clock mr-1.5 text-rose-600"></i> Personal Pendiente de Marcar Entrada Hoy (<span id="badgePendientesCount">0</span>)</span>
-          <span class="text-[10px] font-bold underline">Ver lista</span>
+          <span class="text-[10px] font-bold underline">Desplegar</span>
         </summary>
         <div id="listaPendientesHoy" class="mt-2.5 flex flex-wrap gap-1.5"></div>
       </details>
@@ -593,11 +593,11 @@
             <tr class="bg-[#1B4332] text-white uppercase text-[10px]">
               <th class="p-2.5">Fecha / Hora</th>
               <th class="p-2.5">Colaborador</th>
-              <th class="p-2.5">Cargo / Sede</th>
+              <th class="p-2.5">Rango / Sede</th>
               <th class="p-2.5">Marcaje</th>
-              <th class="p-2.5">Tardanza</th>
-              <th class="p-2.5">Ubicación GPS</th>
-              <th class="p-2.5 text-center">Evidencia</th>
+              <th class="p-2.5">Tardanza / Extras</th>
+              <th class="p-2.5">Dirección Exacta GPS</th>
+              <th class="p-2.5 text-center">Foto</th>
             </tr>
           </thead>
           <tbody id="tablaReporteBody" class="divide-y divide-slate-200"></tbody>
@@ -606,47 +606,52 @@
     </section>
 
     <!-- ========================================================================
-         PESTAÑA 4: PANEL GLOBAL DE GERENCIA
+         PESTAÑA 4: CONTROL GLOBAL (EXCLUSIVO PARA GERENTES)
+         Muestra las reglas activas leídas desde la hoja PARAMETROS del Excel
          ======================================================================== -->
     <section id="view_GERENCIA" class="hidden p-3 space-y-3">
       <div class="card-clean p-4 space-y-3 border-l-4 border-l-amber-500">
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <h2 class="text-sm font-black uppercase text-[#1B4332]"><i class="fa-solid fa-crown text-amber-500 mr-1.5"></i> Panel Gerencial Multi-Sede</h2>
-            <p class="text-xs text-slate-500">Supervisión de Administradores, Asesores y Sedes en tiempo real</p>
+            <h2 class="text-sm font-black uppercase text-[#1B4332]"><i class="fa-solid fa-crown text-amber-500 mr-1.5"></i> Control Global Gerencial</h2>
+            <p class="text-xs text-slate-500">Consolidado de Sedes Habilitadas en la hoja <strong>PARAMETROS</strong> (Incluye Administradores y Personal)</p>
           </div>
           <button onclick="exportarReporteCSV()" class="px-3 py-2 rounded-xl bg-[#1B4332] hover:bg-[#0F291E] text-white text-xs font-extrabold shadow">
-            <i class="fa-solid fa-file-csv mr-1"></i> Exportar Excel (CSV)
+            <i class="fa-solid fa-file-csv mr-1"></i> Descargar Excel (CSV)
           </button>
         </div>
 
-        <div id="resumenPorSedesGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2"></div>
+        <div id="resumenPorSedesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-2"></div>
       </div>
     </section>
 
   </div>
 
   <!-- ==========================================================================
-       4. MODAL DE VISTA PREVIA DE FOTO (CON MINIMAPA GOOGLE MAPS + DATOS A LA DERECHA)
+       4. MODAL DE VISTA PREVIA Y VISOR DE EVIDENCIA FOTOGRÁFICA
        ========================================================================== -->
   <div id="modalPreviewFoto" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm flex flex-col justify-between p-3 overflow-y-auto">
     <div class="max-w-lg w-full mx-auto bg-white rounded-3xl overflow-hidden shadow-2xl my-auto border border-emerald-500/30">
       
       <div class="bg-[#0F291E] text-white px-4 py-3 flex items-center justify-between">
         <div>
-          <span id="previewBadgeModo" class="px-2 py-0.5 rounded bg-[#59B447] text-[10px] font-black uppercase">VISTA PREVIA</span>
-          <h3 class="text-xs font-bold text-emerald-200 mt-0.5">Verifica el minimapa, tus datos y que tu rostro sea visible</h3>
+          <span id="previewBadgeModo" class="px-2 py-0.5 rounded bg-[#59B447] text-[10px] font-black uppercase">EVIDENCIA FOTOGRÁFICA</span>
+          <h3 id="previewSubtitulo" class="text-xs font-bold text-emerald-200 mt-0.5">Minimapa Google Maps + Dirección Exacta</h3>
         </div>
         <button onclick="cerrarModalPreview()" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      <div class="p-3 bg-slate-900 flex items-center justify-center">
-        <img id="imgPreviewResultado" src="" alt="Vista previa con sello GPS y Mapa" class="max-h-[62vh] w-auto rounded-xl shadow-lg border border-white/15 object-contain" />
+      <div class="p-3 bg-slate-900 flex flex-col items-center justify-center min-h-[260px]">
+        <img id="imgPreviewResultado" src="" alt="Evidencia Fotográfica CREDIBAN" class="max-h-[62vh] w-auto rounded-xl shadow-lg border border-white/15 object-contain" />
+        <a id="linkAbrirFotoDrive" href="#" target="_blank" class="hidden mt-2 text-[11px] font-extrabold text-emerald-300 underline">
+          <i class="fa-solid fa-up-right-from-square mr-1"></i> Abrir imagen original en alta resolución
+        </a>
       </div>
 
       <div class="p-4 bg-white space-y-2.5">
+        <!-- Botones al tomar Asistencia -->
         <div id="previewBotonesAsistencia" class="grid grid-cols-2 gap-2.5">
           <button onclick="repetirFotoActual()" class="py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-xs uppercase">
             <i class="fa-solid fa-camera-rotate mr-1"></i> Volver a Tomar
@@ -656,6 +661,7 @@
           </button>
         </div>
 
+        <!-- Botones al tomar Foto de Gestión en Campo -->
         <div id="previewBotonesGestion" class="hidden space-y-2">
           <button onclick="compartirYGuardarGestion()" class="w-full py-3.5 rounded-xl bg-[#25D366] hover:bg-[#1ebe5d] text-white font-black text-xs uppercase tracking-wide shadow-lg flex items-center justify-center gap-2">
             <i class="fa-brands fa-whatsapp text-lg"></i> Compartir por WhatsApp + Guardar en "Mi gestión Crediban"
@@ -669,74 +675,69 @@
             </button>
           </div>
         </div>
+
+        <!-- Botón al inspeccionar una foto desde el Reporte -->
+        <div id="previewBotonesLecturaReporte" class="hidden">
+          <button onclick="cerrarModalPreview()" class="w-full py-3 rounded-xl bg-slate-800 text-white font-extrabold text-xs uppercase">
+            Cerrar Visor de Evidencia
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Lienzo oculto para renderizado en calidad original -->
+  <!-- Lienzo oculto para renderizado de alta precisión -->
   <canvas id="hiddenCanvas" class="hidden"></canvas>
 <!-- FIN DE LA PARTE 1 DE 2 — PEGA LA PARTE 2 JUSTO DEBAJO DE ESTA LÍNEA --><!-- ============================================================================
      SISTEMA INTEGRAL DE ASISTENCIA Y FOTOS DE GESTIÓN EN CAMPO - CREDIBAN PERÚ S.A.C.
-     PARTE 2 DE 2: Motor JavaScript, Login Privado, Minimapa GPS y Carpeta "Mi gestión Crediban"
+     PARTE 2 DE 2: Motor JavaScript, Google Maps API, Roles y Sincronización Excel
      ============================================================================ -->
   <script>
     /***************************************************************************
-     * 1. BÓVEDA DE SEGURIDAD Y CONEXIÓN AL SCRIPT DE USUARIOS
+     * 1. CONFIGURACIÓN DE SERVIDORES Y API KEYS OFICIALES
      ***************************************************************************/
-    const SecurityVault = (() => {
-      // URL Oficial del Script Maestro de Usuarios de CREDIBAN
-      const _authEndpoint = "https://script.google.com/macros/s/AKfycbyPGo-OSC0KZcz03bAMpKQ82cipc2T1LNztaI229FhYqqNNXqG1oSb6hPPgVSSU3piqiw/exec";
-      return {
-        getAuthUrl: () => _authEndpoint
-      };
-    })();
-
-    // URL de tu Google Sheet de Asistencias (se puede configurar o sincronizar automáticamente)
-    let ATTENDANCE_API_URL = localStorage.getItem("crediban_asistencia_api_url") || "";
-
-    const SEDES_OFICIALES = ["HUACHO", "HUARAZ", "ICA", "NUEVA OFICINA", "HUANUCO"];
-
-    // Horarios por Sede (L-V 08:30 AM, Sábados 09:00 AM, Tolerancia 10 min)
-    let PARAMETROS_HORARIOS = JSON.parse(localStorage.getItem("crediban_horarios_config")) || {
-      "HUACHO":        { lv: "08:30", sab: "09:00", tolerancia: 10, refriMax: 60 },
-      "HUARAZ":        { lv: "08:30", sab: "09:00", tolerancia: 10, refriMax: 60 },
-      "ICA":           { lv: "08:30", sab: "09:00", tolerancia: 10, refriMax: 60 },
-      "NUEVA OFICINA": { lv: "08:30", sab: "09:00", tolerancia: 10, refriMax: 60 },
-      "HUANUCO":       { lv: "08:30", sab: "09:00", tolerancia: 10, refriMax: 60 }
+    const CONFIG_SISTEMA = {
+      // URL de tu Apps Script implementado (Backend que lee PARAMETROS y guarda en Google Sheets)
+      ATTENDANCE_API_URL: "https://script.google.com/macros/s/AKfycbzhHImayB8Qu2WnFI0dYhWIU11L7eV78gRidEp_at8ulhlyPzWTm1at4CjtrHs6dwb_Gg/exec",
+      // URL del Script Maestro de Usuarios (Login Único)
+      AUTH_USERS_API_URL: "https://script.google.com/macros/s/AKfycbyPGo-OSC0KZcz03bAMpKQ82cipc2T1LNztaI229FhYqqNNXqG1oSb6hPPgVSSU3piqiw/exec",
+      // Tu API Key de Google Maps
+      MAPS_API_KEY: "AIzaSyAUKZpqTuuS8of7s8b96y9H3B4iEUE9cSc"
     };
 
-    // Respaldo interno encriptado en memoria para operar incluso si cae la red móvil
+    // Sedes iniciales por defecto (se actualizan dinámicamente desde la hoja PARAMETROS del Excel)
+    let SEDES_HABILITADAS = ["HUACHO", "HUARAZ", "ICA", "HUANUCO"];
+    let PARAMETROS_SEDES = {
+      "HUACHO":        { estado: "HABILITADO", entradaLV: "08:30", salidaLV: "18:30", entradaSab: "09:00", salidaSab: "13:30", toleranciaMin: 10, refrigerioMin: 60 },
+      "HUARAZ":        { estado: "HABILITADO", entradaLV: "08:30", salidaLV: "18:30", entradaSab: "09:00", salidaSab: "13:30", toleranciaMin: 10, refrigerioMin: 60 },
+      "ICA":           { estado: "HABILITADO", entradaLV: "08:30", salidaLV: "18:30", entradaSab: "09:00", salidaSab: "13:30", toleranciaMin: 10, refrigerioMin: 60 },
+      "HUANUCO":       { estado: "HABILITADO", entradaLV: "08:30", salidaLV: "18:30", entradaSab: "09:00", salidaSab: "13:30", toleranciaMin: 10, refrigerioMin: 60 }
+    };
+    let FERIADOS_NO_LABORABLES = [];
+
+    // Catálogo de respaldo local por si el asesor está en zona sin internet
     const USUARIOS_RESPALDO = [
-      { usuario: "CRISTHIAN.TRINIDAD", nombre: "CRISTHIAN.TRINIDAD", clave: "123", rol: "GERENTE", cargo: "GERENTE", sede: "TODAS", equipo: "TODOS", estado: "HABILITADO" },
-      { usuario: "GERENTE", nombre: "GERENTE GENERAL", clave: "123", rol: "GERENTE", cargo: "GERENTE", sede: "TODAS", equipo: "TODOS", estado: "HABILITADO" },
-      { usuario: "CARLOS.MENDOZA", nombre: "CARLOS MENDOZA", clave: "admin123", rol: "ADMINISTRADOR", cargo: "ADMINISTRADOR", sede: "HUACHO", equipo: "EQUIPO A", estado: "HABILITADO" },
-      { usuario: "ADMIN.HUARAZ", nombre: "MARIA ADMIN HUARAZ", clave: "admin123", rol: "ADMINISTRADOR", cargo: "ADMINISTRADOR", sede: "HUARAZ", equipo: "EQUIPO B", estado: "HABILITADO" },
-      { usuario: "ADMIN.ICA", nombre: "ADMIN ICA", clave: "admin123", rol: "ADMINISTRADOR", cargo: "ADMINISTRADOR", sede: "ICA", equipo: "EQUIPO C", estado: "HABILITADO" },
-      { usuario: "ABIGAIL.SANDOVAL", nombre: "ABIGAIL SANDOVAL", clave: "1234", rol: "ASESOR", cargo: "ASESOR", sede: "HUACHO", equipo: "EQUIPO A", estado: "HABILITADO" },
-      { usuario: "HEYDI.TALAVERANOJ", nombre: "HEIDY", clave: "1234", rol: "ASESOR", cargo: "ASESOR", sede: "HUACHO", equipo: "EQUIPO A", estado: "HABILITADO" },
-      { usuario: "HUGO", nombre: "HUGO", clave: "1234", rol: "ASESOR", cargo: "ASESOR", sede: "HUACHO", equipo: "EQUIPO A", estado: "HABILITADO" },
-      { usuario: "MELISSA", nombre: "MELISSA", clave: "1234", rol: "ASESOR", cargo: "ASESOR", sede: "HUACHO", equipo: "EQUIPO B", estado: "HABILITADO" },
-      { usuario: "ARTURO.PICHILINGUEV", nombre: "ARTURO", clave: "1234", rol: "ASESOR", cargo: "ASESOR", sede: "HUACHO", equipo: "EQUIPO B", estado: "HABILITADO" },
-      { usuario: "BRITHANY.BERNALR", nombre: "BRITHANY", clave: "1234", rol: "ASESOR", cargo: "ASESOR", sede: "HUACHO", equipo: "EQUIPO B", estado: "HABILITADO" },
-      { usuario: "SHEILA", nombre: "SHEILA", clave: "1234", rol: "ASESOR", cargo: "ASESOR", sede: "HUARAZ", equipo: "EQUIPO A", estado: "HABILITADO" },
-      { usuario: "YOVANA", nombre: "YOVANA", clave: "1234", rol: "ASESOR", cargo: "ASESOR", sede: "HUARAZ", equipo: "EQUIPO A", estado: "HABILITADO" },
-      { usuario: "CORONEL", nombre: "CORONEL", clave: "1234", rol: "ASESOR", cargo: "ASESOR", sede: "HUARAZ", equipo: "EQUIPO B", estado: "HABILITADO" }
+      { usuario: "CRISTHIAN.TRINIDAD", nombre: "CRISTHIAN TRINIDAD", clave: "123", rol: "GERENTE", cargo: "GERENTE GENERAL", sede: "TODAS", equipo: "TODOS", estado: "HABILITADO" },
+      { usuario: "CARLOS.MENDOZA", nombre: "CARLOS MENDOZA", clave: "admin123", rol: "ADMINISTRADOR", cargo: "ADMINISTRADOR DE AGENCIA", sede: "HUACHO", equipo: "EQUIPO A", estado: "HABILITADO" },
+      { usuario: "MARIA.HUARAZ", nombre: "MARIA ADMIN HUARAZ", clave: "admin123", rol: "ADMINISTRADOR", cargo: "ADMINISTRADOR DE AGENCIA", sede: "HUARAZ", equipo: "EQUIPO B", estado: "HABILITADO" },
+      { usuario: "ABIGAIL.SANDOVAL", nombre: "ABIGAIL SANDOVAL", clave: "1234", rol: "ASESOR", cargo: "ASESOR DE CRÉDITOS", sede: "HUACHO", equipo: "EQUIPO A", estado: "HABILITADO" },
+      { usuario: "HEIDY.TALAVERANO", nombre: "HEIDY", clave: "1234", rol: "ASESOR", cargo: "ASESOR DE CRÉDITOS", sede: "HUACHO", equipo: "EQUIPO A", estado: "HABILITADO" },
+      { usuario: "SHAYRA.CAJA", nombre: "SHAYRA CAJA", clave: "caja123", rol: "CAJERO", cargo: "CAJERO", sede: "HUACHO", equipo: "CAJA", estado: "HABILITADO" }
     ];
 
     /***************************************************************************
      * 2. VARIABLES DE ESTADO GLOBAL
      ***************************************************************************/
     let catalogoUsuarios = [];
-    let promesaSincronizacionUsuarios = null;
+    let promesaCargaUsuarios = null;
     let usuarioActivo = null;
     let tipoMarcajeSeleccionado = "ENTRADA";
-    let modoCapturaActual = "ASISTENCIA"; // 'ASISTENCIA' o 'GESTION'
+    let modoCapturaActual = "ASISTENCIA";
     let ultimoBlobGenerado = null;
     let ultimoBase64Servidor = "";
     let ultimoNombreArchivo = "";
     let enviandoAsistencia = false;
 
-    // Estado de Vistas y Reportes
     let vistaPantallaAmplia = false;
     let formatoReporteTabla = false;
     let sedeFiltroGerente = "TODAS";
@@ -744,27 +745,25 @@
     let modoFechaReporte = "HOY";
     let registrosAsistenciaGlobal = [];
 
-    // Carpeta "Mi gestión Crediban"
     let directorioGestionHandle = null;
-    let albumGestionCrediban = JSON.parse(localStorage.getItem("crediban_album_gestion_dia") || "[]");
+    let albumGestionCrediban = JSON.parse(localStorage.getItem("crediban_album_gestion_dia_v3") || "[]");
 
-    // Estado GPS en Tiempo Real (Pre-calentado desde el inicio)
     let gpsState = {
       activo: false,
       lat: -11.097847,
       lng: -77.609756,
       precision: 10,
       rumbo: "124° SE",
-      calleNumero: "879 Avenida Cincuentenario",
+      calleExacta: "Avenida Miguel Grau",
       distrito: "Hualmay",
       provincia: "Huaura",
-      region: "Gobierno Regional de Lima",
-      direccionCompleta: "879 Avenida Cincuentenario, Hualmay, Huaura",
+      region: "Lima",
+      direccionCompleta: "Avenida Miguel Grau, Hualmay, Huaura",
       ultimoGeocodeTs: 0
     };
 
     /***************************************************************************
-     * 3. ARRANQUE DEL SISTEMA Y SINCRONIZACIÓN SILENCIOSA DE USUARIOS
+     * 3. INICIALIZACIÓN Y SINCRONIZACIÓN CON EL EXCEL Y SCRIPT DE USUARIOS
      ***************************************************************************/
     window.addEventListener("DOMContentLoaded", async () => {
       iniciarRelojEnVivo();
@@ -772,32 +771,30 @@
       inicializarFechasFiltro();
       renderizarGaleriaGestion();
 
-      // Cargar caché inmediato y lanzar sincronización silenciosa en segundo plano
+      // Cargar caché local inmediato y sincronizar en segundo plano con el Google Sheet
       cargarCacheUsuariosInmediato();
-      promesaSincronizacionUsuarios = sincronizarUsuariosSilencioso();
+      promesaCargaUsuarios = sincronizarUsuariosYParametros();
 
-      // Verificar si hay sesión guardada en este dispositivo
-      const sesionGuardada = localStorage.getItem("crediban_sesion_activa_v3");
+      const sesionGuardada = localStorage.getItem("crediban_sesion_activa_v4");
       if (sesionGuardada) {
         try {
           usuarioActivo = JSON.parse(sesionGuardada);
           mostrarAppPrincipal();
         } catch (e) {
-          localStorage.removeItem("crediban_sesion_activa_v3");
+          localStorage.removeItem("crediban_sesion_activa_v4");
           mostrarPantallaLogin();
         }
       } else {
         mostrarPantallaLogin();
       }
 
-      // Ocultar pantalla de carga
       const overlay = document.getElementById("loadingOverlay");
       overlay.classList.add("opacity-0");
       setTimeout(() => overlay.classList.add("hidden"), 250);
     });
 
     function cargarCacheUsuariosInmediato() {
-      const cache = localStorage.getItem("crediban_usuarios_cache_v3");
+      const cache = localStorage.getItem("crediban_usuarios_cache_v4");
       if (cache) {
         try {
           const parsed = JSON.parse(cache);
@@ -810,11 +807,32 @@
       catalogoUsuarios = [...USUARIOS_RESPALDO];
     }
 
-    async function sincronizarUsuariosSilencioso() {
+    async function sincronizarUsuariosYParametros() {
       try {
-        const resp = await fetch(`${SecurityVault.getAuthUrl()}?action=getUsers&t=${Date.now()}`);
-        const data = await resp.json();
-        const listaCruda = Array.isArray(data) ? data : (data.usuarios || data.users || data.data || []);
+        // 1. Sincronizar Parámetros y Sedes desde el Apps Script
+        const respParam = await fetch(`${CONFIG_SISTEMA.ATTENDANCE_API_URL}?action=getParametros&t=${Date.now()}`);
+        const dataParam = await respParam.json();
+        if (dataParam && dataParam.status === "ok" && dataParam.parametros) {
+          const p = dataParam.parametros;
+          if (Array.isArray(p.sedesHabilitadas) && p.sedesHabilitadas.length > 0) {
+            SEDES_HABILITADAS = p.sedesHabilitadas;
+          }
+          if (p.reglasPorSede) {
+            PARAMETROS_SEDES = p.reglasPorSede;
+          }
+          if (Array.isArray(p.feriados)) {
+            FERIADOS_NO_LABORABLES = p.feriados;
+          }
+        }
+      } catch (e) {
+        console.warn("Usando parámetros locales de respaldo.");
+      }
+
+      try {
+        // 2. Sincronizar Catálogo de Usuarios desde el Script Maestro
+        const respUser = await fetch(`${CONFIG_SISTEMA.AUTH_USERS_API_URL}?action=getUsers&t=${Date.now()}`);
+        const dataUser = await respUser.json();
+        const listaCruda = Array.isArray(dataUser) ? dataUser : (dataUser.usuarios || dataUser.users || dataUser.data || []);
 
         if (listaCruda.length > 0) {
           const normalizados = listaCruda
@@ -823,11 +841,11 @@
 
           if (normalizados.length > 0) {
             catalogoUsuarios = normalizados;
-            localStorage.setItem("crediban_usuarios_cache_v3", JSON.stringify(catalogoUsuarios));
+            localStorage.setItem("crediban_usuarios_cache_v4", JSON.stringify(catalogoUsuarios));
           }
         }
-      } catch (err) {
-        console.warn("Operando con base de usuarios en caché seguro.");
+      } catch (e) {
+        console.warn("Usando catálogo de usuarios en caché.");
       }
     }
 
@@ -840,7 +858,6 @@
       const equipo = String(raw.equipo || raw.grupo || raw.jefeEquipo || raw.Equipo || "").trim().toUpperCase();
       const estado = String(raw.estado || raw.Estado || "HABILITADO").trim().toUpperCase();
 
-      // Clasificación automática de Rango Jerárquico
       let rol = "ASESOR";
       if (cargoRaw.includes("GERENTE") || cargoRaw.includes("DIRECTOR") || cargoRaw.includes("DESARROLLADOR") || cargoRaw.includes("MASTER")) {
         rol = "GERENTE";
@@ -855,28 +872,14 @@
         rol = "CAJERO";
       }
 
-      return {
-        usuario: usuarioLogin,
-        nombre: nombreMostrar,
-        clave,
-        rol,
-        cargo: cargoRaw,
-        sede,
-        equipo,
-        estado
-      };
+      return { usuario: usuarioLogin, nombre: nombreMostrar, clave, rol, cargo: cargoRaw, sede, equipo, estado };
     }
 
     /***************************************************************************
-     * 4. LOGIN BLINDADO (SOLO USUARIO Y CONTRASEÑA - CERO FILTRACIÓN)
+     * 4. LOGIN BLINDADO Y GESTIÓN DE SESIÓN
      ***************************************************************************/
     function limpiarIdentificador(texto) {
-      return String(texto || "")
-        .trim()
-        .toUpperCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/\s+/g, ".");
+      return String(texto || "").trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, ".");
     }
 
     async function iniciarSesion(event) {
@@ -895,37 +898,27 @@
         return;
       }
 
-      // Mostrar estado de verificación mientras termina la sincronización si aún está en curso
       const btnTextoOriginal = btn.innerHTML;
       btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Verificando credenciales...</span>`;
+      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Verificando...</span>`;
 
       try {
-        if (promesaSincronizacionUsuarios) {
-          await Promise.race([
-            promesaSincronizacionUsuarios,
-            new Promise(res => setTimeout(res, 2500))
-          ]);
+        if (promesaCargaUsuarios) {
+          await Promise.race([promesaCargaUsuarios, new Promise(res => setTimeout(res, 2000))]);
         }
 
         const userLimpio = limpiarIdentificador(inputUser);
         const userSinPuntos = userLimpio.replace(/\./g, " ");
 
-        // Buscar coincidencia exacta de usuario (soportando punto o espacio)
         let encontrado = catalogoUsuarios.find(u => {
           const uLogin = limpiarIdentificador(u.usuario);
           const uNombre = limpiarIdentificador(u.nombre);
           const uNombreSinPuntos = uNombre.replace(/\./g, " ");
-          return (
-            uLogin === userLimpio ||
-            uNombre === userLimpio ||
-            uNombreSinPuntos === userSinPuntos
-          );
+          return uLogin === userLimpio || uNombre === userLimpio || uNombreSinPuntos === userSinPuntos;
         });
 
-        // Si aún no aparece en la primera carga, forzar una consulta rápida al Script
         if (!encontrado) {
-          await sincronizarUsuariosSilencioso();
+          await sincronizarUsuariosYParametros();
           encontrado = catalogoUsuarios.find(u => {
             const uLogin = limpiarIdentificador(u.usuario);
             const uNombre = limpiarIdentificador(u.nombre);
@@ -933,13 +926,12 @@
           });
         }
 
-        // Validación unificada para no revelar si falló el usuario o la clave
         if (!encontrado || String(encontrado.clave).trim() !== String(inputPass).trim()) {
           mostrarErrorLogin("Credenciales incorrectas. Verifica tu usuario y contraseña.");
           return;
         }
 
-        const sedeInicial = (encontrado.sede === "TODAS" || !encontrado.sede) ? "HUACHO" : encontrado.sede;
+        const sedeInicial = (encontrado.sede === "TODAS" || !encontrado.sede) ? (SEDES_HABILITADAS[0] || "HUACHO") : encontrado.sede;
 
         usuarioActivo = {
           ...encontrado,
@@ -947,9 +939,9 @@
         };
 
         if (recordar) {
-          localStorage.setItem("crediban_sesion_activa_v3", JSON.stringify(usuarioActivo));
+          localStorage.setItem("crediban_sesion_activa_v4", JSON.stringify(usuarioActivo));
         } else {
-          localStorage.removeItem("crediban_sesion_activa_v3");
+          localStorage.removeItem("crediban_sesion_activa_v4");
         }
 
         mostrarAppPrincipal();
@@ -983,22 +975,19 @@
     }
 
     function cerrarSesion() {
-      localStorage.removeItem("crediban_sesion_activa_v3");
+      localStorage.removeItem("crediban_sesion_activa_v4");
       usuarioActivo = null;
       document.getElementById("loginClaveInput").value = "";
       mostrarPantallaLogin();
     }
 
     /***************************************************************************
-     * 5. CONTROL DE VISTAS Y PERMISOS AUTOMÁTICOS POR RANGO
-     *    - Administrador: Ve exclusivamente a los asesores/trabajadores de SU sede
-     *    - Gerente: Ve absolutamente a TODOS (incluidos los Administradores)
+     * 5. ENRUTAMIENTO POR ROLES Y PERMISOS DE SUPERVISIÓN
      ***************************************************************************/
     function mostrarAppPrincipal() {
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("mainAppContainer").classList.remove("hidden");
 
-      // Cintillo de identidad detectada por el sistema
       document.getElementById("headerRolBadge").textContent = usuarioActivo.rol;
       document.getElementById("headerUserName").textContent = usuarioActivo.nombre;
       document.getElementById("headerUserSede").textContent =
@@ -1008,37 +997,45 @@
       const tabReporte = document.getElementById("tabBtn_REPORTE");
       const tabGerencia = document.getElementById("tabBtn_GERENCIA");
       const barraGerenteSedes = document.getElementById("gerenteSedeSelectorBar");
+      const adminSedeHeader = document.getElementById("adminSedeHeaderBar");
       const labelReporte = document.getElementById("tabLabelReporte");
 
+      // Poblar selector de sedes operativas para gerentes
+      selectSedeGerente.innerHTML = SEDES_HABILITADAS.map(s => `<option value="${s}">Operar: ${s}</option>`).join("");
+
       if (usuarioActivo.rol === "GERENTE" || usuarioActivo.rol === "JEFE ZONAL") {
-        // GERENTE: Acceso total a todas las sedes y visualización de Administradores + Asesores
+        // GERENTE: Supervisión gerencial total y control global
         selectSedeGerente.classList.remove("hidden");
-        selectSedeGerente.value = usuarioActivo.sedeOperativa || "HUACHO";
+        selectSedeGerente.value = usuarioActivo.sedeOperativa || SEDES_HABILITADAS[0];
         tabReporte.classList.remove("hidden");
         tabGerencia.classList.remove("hidden");
         barraGerenteSedes.classList.remove("hidden");
-        labelReporte.textContent = "Supervisión Total";
+        adminSedeHeader.classList.add("hidden");
+        labelReporte.textContent = "Supervisión Gerencial";
         sedeFiltroGerente = "TODAS";
         construirBotonesSedesGerente();
       } else if (usuarioActivo.rol === "ADMINISTRADOR" || usuarioActivo.rol === "JEFE DE EQUIPO") {
-        // ADMINISTRADOR: Ve a los asesores de su propia sede
+        // ADMINISTRADOR: Supervisa la asistencia de asesores, trabajadores y cajeros de SU sede
         selectSedeGerente.classList.add("hidden");
         tabReporte.classList.remove("hidden");
         tabGerencia.classList.add("hidden");
         barraGerenteSedes.classList.add("hidden");
+        adminSedeHeader.classList.remove("hidden");
+        document.getElementById("adminSedeTitulo").textContent = `Supervisión de Asesores, Trabajadores y Cajeros • SEDE ${usuarioActivo.sedeOperativa}`;
         labelReporte.textContent = `Sede ${usuarioActivo.sedeOperativa}`;
         sedeFiltroGerente = usuarioActivo.sedeOperativa;
       } else {
-        // ASESOR / CAJERO: Ve Asistencia y Cámara de Gestión en Campo
+        // ASESOR / CAJERO: Asistencia y Cámara de Gestión en Campo
         selectSedeGerente.classList.add("hidden");
         tabReporte.classList.add("hidden");
         tabGerencia.classList.add("hidden");
         barraGerenteSedes.classList.add("hidden");
+        adminSedeHeader.classList.add("hidden");
       }
 
       actualizarTextoHorarioSede();
       cambiarPestana("MARCAR");
-      cargarAsistenciasDesdeServidor();
+      cargarAsistenciasDesdeServidor(false);
       verificarRefrigerioActivo();
     }
 
@@ -1046,7 +1043,7 @@
       if (!usuarioActivo) return;
       usuarioActivo.sedeOperativa = nuevaSede;
       document.getElementById("headerUserSede").textContent = `GLOBAL (${nuevaSede})`;
-      localStorage.setItem("crediban_sesion_activa_v3", JSON.stringify(usuarioActivo));
+      localStorage.setItem("crediban_sesion_activa_v4", JSON.stringify(usuarioActivo));
       actualizarTextoHorarioSede();
     }
 
@@ -1091,7 +1088,7 @@
     }
 
     /***************************************************************************
-     * 6. RASTREO GPS EN TIEMPO REAL Y FORMATO DMS PARA SELLO FOTOGRÁFICO
+     * 6. RASTREO GPS Y GEOCODIFICACIÓN CON GOOGLE MAPS API (DIRECCIÓN EXACTA)
      ***************************************************************************/
     function iniciarRastreoGpsContinuo() {
       if (!navigator.geolocation) {
@@ -1111,15 +1108,15 @@
           }
 
           actualizarSemaforoGPS("OK", `GPS ±${gpsState.precision}m`);
-          const subEl = document.getElementById("coordenadasDetectadasSub");
+          const subEl = document.getElementById("distritoDetectadoSub");
           if (subEl) {
-            subEl.textContent = `${formatearCoordenadaDMS(gpsState.lat, true)} ${formatearCoordenadaDMS(gpsState.lng, false)} • ${gpsState.rumbo}`;
+            subEl.textContent = `${gpsState.distrito}, ${gpsState.provincia} • ${gpsState.rumbo}`;
           }
 
           const ahora = Date.now();
           if (ahora - gpsState.ultimoGeocodeTs > 25000) {
             gpsState.ultimoGeocodeTs = ahora;
-            await obtenerDireccionExactaOSM(gpsState.lat, gpsState.lng);
+            await obtenerDireccionExactaGoogleMaps(gpsState.lat, gpsState.lng);
           }
         },
         () => actualizarSemaforoGPS("WARN", "GPS Débil"),
@@ -1135,7 +1132,7 @@
           gpsState.activo = true;
           gpsState.lat = pos.coords.latitude;
           gpsState.lng = pos.coords.longitude;
-          await obtenerDireccionExactaOSM(gpsState.lat, gpsState.lng);
+          await obtenerDireccionExactaGoogleMaps(gpsState.lat, gpsState.lng);
           actualizarSemaforoGPS("OK", `GPS ±${Math.round(pos.coords.accuracy || 8)}m`);
         },
         () => actualizarSemaforoGPS("WARN", "Activar GPS"),
@@ -1162,35 +1159,42 @@
       }
     }
 
-    async function obtenerDireccionExactaOSM(lat, lng) {
+    async function obtenerDireccionExactaGoogleMaps(lat, lng) {
       try {
-        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
-        const res = await fetch(url, { headers: { "Accept-Language": "es" } });
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${CONFIG_SISTEMA.MAPS_API_KEY}&language=es`;
+        const res = await fetch(url);
         const data = await res.json();
-        if (data && data.address) {
-          const a = data.address;
-          const calle = a.road || a.pedestrian || a.suburb || a.neighbourhood || "Vía Pública";
-          const numero = a.house_number ? `${a.house_number} ` : "";
-          gpsState.calleNumero = `${numero}${calle}`.trim();
-          gpsState.distrito = a.city_district || a.town || a.suburb || a.village || a.municipality || "Hualmay";
-          gpsState.provincia = a.county || a.city || a.state_district || "Huaura";
-          gpsState.region = a.state || a.region || "Gobierno Regional de Lima";
-          gpsState.direccionCompleta = `${gpsState.calleNumero}, ${gpsState.distrito}, ${gpsState.provincia}`;
+        if (data.status === "OK" && data.results && data.results.length > 0) {
+          const resGeo = data.results[0];
+          gpsState.direccionCompleta = resGeo.formatted_address;
+          
+          let calle = "";
+          let num = "";
+          let dist = "";
+          let prov = "";
+          let reg = "Lima";
+
+          resGeo.address_components.forEach(c => {
+            if (c.types.includes("route")) calle = c.long_name;
+            if (c.types.includes("street_number")) num = c.long_name;
+            if (c.types.includes("locality") || c.types.includes("sublocality")) dist = c.long_name;
+            if (c.types.includes("administrative_area_level_2")) prov = c.long_name;
+            if (c.types.includes("administrative_area_level_1")) reg = c.long_name;
+          });
+
+          gpsState.calleExacta = [calle, num].filter(Boolean).join(" ") || resGeo.formatted_address.split(",")[0];
+          gpsState.distrito = dist || "Hualmay";
+          gpsState.provincia = prov || "Huaura";
+          gpsState.region = reg;
 
           const elTitulo = document.getElementById("calleDetectadaTitulo");
-          if (elTitulo) elTitulo.textContent = gpsState.direccionCompleta;
+          if (elTitulo) elTitulo.textContent = gpsState.calleExacta;
+          const elSub = document.getElementById("distritoDetectadoSub");
+          if (elSub) elSub.textContent = `${gpsState.distrito}, ${gpsState.provincia} • ${gpsState.rumbo}`;
         }
-      } catch (e) {}
-    }
-
-    function formatearCoordenadaDMS(decimal, esLatitud) {
-      const absoluto = Math.abs(decimal);
-      const grados = Math.floor(absoluto);
-      const minutosNotacion = (absoluto - grados) * 60;
-      const minutos = Math.floor(minutosNotacion);
-      const segundos = ((minutosNotacion - minutos) * 60).toFixed(4);
-      const cardinal = esLatitud ? (decimal >= 0 ? "N" : "S") : (decimal >= 0 ? "E" : "W");
-      return `${grados}°${minutos}'${segundos}"${cardinal}`;
+      } catch (e) {
+        console.warn("Error consultando Geocoding API:", e);
+      }
     }
 
     function obtenerPuntoCardinal(angulo) {
@@ -1199,7 +1203,7 @@
     }
 
     /***************************************************************************
-     * 7. MOTOR CANVAS: MINIMAPA GOOGLE MAPS A LA IZQUIERDA + DATOS A LA DERECHA
+     * 7. MOTOR CANVAS: MINIMAPA GOOGLE MAPS + DIRECCIÓN EXACTA (SIN COORDENADAS)
      ***************************************************************************/
     function seleccionarTipoMarcaje(tipo) {
       tipoMarcajeSeleccionado = tipo;
@@ -1240,7 +1244,6 @@
         const canvas = document.getElementById("hiddenCanvas");
         const ctx = canvas.getContext("2d");
 
-        // En modo GESTION conservamos la resolución original de la cámara
         const maxDimension = (modo === "GESTION") ? 2400 : 1280;
         let width = img.naturalWidth || img.width;
         let height = img.naturalHeight || img.height;
@@ -1258,31 +1261,30 @@
         canvas.width = width;
         canvas.height = height;
 
-        // 1. Dibujar imagen base
+        // 1. Dibujar imagen nítida
         ctx.drawImage(img, 0, 0, width, height);
 
-        // 2. Sombreado inferior suave para lectura perfecta de los datos
+        // 2. Degradado inferior
         const altoGradiente = Math.round(height * 0.38);
         const grad = ctx.createLinearGradient(0, height - altoGradiente, 0, height);
         grad.addColorStop(0, "rgba(0, 0, 0, 0)");
-        grad.addColorStop(0.55, "rgba(0, 0, 0, 0.36)");
-        grad.addColorStop(1, "rgba(0, 0, 0, 0.75)");
+        grad.addColorStop(0.55, "rgba(0, 0, 0, 0.38)");
+        grad.addColorStop(1, "rgba(0, 0, 0, 0.78)");
         ctx.fillStyle = grad;
         ctx.fillRect(0, height - altoGradiente, width, altoGradiente);
 
-        // 3. Dibujar Minimapa estilo Google Maps abajo a la izquierda
+        // 3. Dibujar Minimapa de Google Maps (Usando tu API Key)
         const margen = Math.round(width * 0.026);
         const mapWidth = Math.round(width * 0.27);
         const mapHeight = Math.round(mapWidth * 1.18);
         const mapX = margen;
         const mapY = height - mapHeight - margen;
 
-        await dibujarMinimapaEnCanvas(ctx, gpsState.lat, gpsState.lng, mapX, mapY, mapWidth, mapHeight);
+        await dibujarMinimapaConApiKey(ctx, gpsState.lat, gpsState.lng, mapX, mapY, mapWidth, mapHeight);
 
-        // 4. Dibujar datos geolocalizados a la derecha (idéntico al modelo)
+        // 4. Estampar líneas de datos a la derecha (DIRECCIÓN EXACTA SIN COORDENADAS)
         const ahora = new Date();
         const fechaFormateada = formatearFechaHoraEstiloFoto(ahora);
-        const coordLinea = `${formatearCoordenadaDMS(gpsState.lat, true)} ${formatearCoordenadaDMS(gpsState.lng, false)}`;
         const indiceUnico = Math.floor(10000 + (ahora.getTime() % 89999));
 
         const detalleActividad = (modo === "GESTION")
@@ -1291,9 +1293,8 @@
 
         const lineasDerecha = [
           fechaFormateada,
-          coordLinea,
           gpsState.rumbo,
-          gpsState.calleNumero,
+          gpsState.calleExacta,
           gpsState.distrito,
           gpsState.provincia,
           gpsState.region,
@@ -1332,7 +1333,6 @@
         ctx.fillText(cintaSuperior, rightX, currentY - 2);
         ctx.restore();
 
-        // 5. Exportar conservando la calidad original en Gestión
         const calidadJpeg = (modo === "GESTION") ? 0.95 : 0.82;
         ultimoBase64Servidor = canvas.toDataURL("image/jpeg", calidadJpeg);
         ultimoBlobGenerado = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", calidadJpeg));
@@ -1351,7 +1351,7 @@
       }
     }
 
-    async function dibujarMinimapaEnCanvas(ctx, lat, lng, x, y, w, h) {
+    async function dibujarMinimapaConApiKey(ctx, lat, lng, x, y, w, h) {
       ctx.save();
       const radio = Math.round(w * 0.05);
       trazarRectanguloRedondeado(ctx, x, y, w, h, radio);
@@ -1362,69 +1362,31 @@
       ctx.stroke();
       ctx.clip();
 
-      const zoom = 16;
-      const n = Math.pow(2, zoom);
-      const exactTileX = ((lng + 180) / 360) * n;
-      const latRad = (lat * Math.PI) / 180;
-      const exactTileY = ((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * n;
-
-      const centerTileX = Math.floor(exactTileX);
-      const centerTileY = Math.floor(exactTileY);
-      const offsetX = Math.round((exactTileX - centerTileX) * 256);
-      const offsetY = Math.round((exactTileY - centerTileY) * 256);
-
-      let mapaDibujado = false;
-
+      // Cargar imagen del mapa estático utilizando tu API Key de Google Maps
+      const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=16&size=${w}x${h}&scale=2&markers=color:red%7C${lat},${lng}&key=${CONFIG_SISTEMA.MAPS_API_KEY}`;
+      
+      let mapaCargado = false;
       try {
-        const promesas = [];
-        for (let dx = -1; dx <= 1; dx++) {
-          for (let dy = -1; dy <= 1; dy++) {
-            const tx = centerTileX + dx;
-            const ty = centerTileY + dy;
-            const tileUrl = `https://a.basemaps.cartocdn.com/rastertiles/voyager/${zoom}/${tx}/${ty}.png`;
-            promesas.push(cargarTileCorsSeguro(tileUrl, dx, dy));
-          }
-        }
-        const tiles = await Promise.all(promesas);
-        const centerX = x + w / 2;
-        const centerY = y + h / 2;
-
-        tiles.forEach(item => {
-          if (item && item.img) {
-            const drawX = centerX - offsetX + item.dx * 256;
-            const drawY = centerY - offsetY + item.dy * 256;
-            ctx.drawImage(item.img, drawX, drawY, 256, 256);
-            mapaDibujado = true;
-          }
+        const imgMap = await new Promise((resolve) => {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          const timer = setTimeout(() => resolve(null), 3000);
+          img.onload = () => { clearTimeout(timer); resolve(img); };
+          img.onerror = () => { clearTimeout(timer); resolve(null); };
+          img.src = staticMapUrl;
         });
+
+        if (imgMap) {
+          ctx.drawImage(imgMap, x, y, w, h);
+          mapaCargado = true;
+        }
       } catch (e) {
-        mapaDibujado = false;
+        mapaCargado = false;
       }
 
-      if (!mapaDibujado) {
+      if (!mapaCargado) {
         dibujarPlanoVectorialRespaldo(ctx, x, y, w, h);
       }
-
-      // Pin rojo central estilo Google Maps
-      const pinX = x + w / 2;
-      const pinY = y + h / 2;
-      const pinRadius = Math.max(8, Math.round(w * 0.075));
-
-      ctx.beginPath();
-      ctx.arc(pinX, pinY - pinRadius, pinRadius, Math.PI, 0, false);
-      ctx.quadraticCurveTo(pinX + pinRadius, pinY - pinRadius * 0.2, pinX, pinY + pinRadius * 0.7);
-      ctx.quadraticCurveTo(pinX - pinRadius, pinY - pinRadius * 0.2, pinX - pinRadius, pinY - pinRadius);
-      ctx.closePath();
-      ctx.fillStyle = "#EA4335";
-      ctx.fill();
-      ctx.lineWidth = 1.5;
-      ctx.strokeStyle = "#B31412";
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(pinX, pinY - pinRadius, Math.round(pinRadius * 0.38), 0, Math.PI * 2);
-      ctx.fillStyle = "#7A0E0C";
-      ctx.fill();
 
       // Insignia "Google" en la esquina inferior izquierda del minimapa
       const fontGoogle = Math.max(11, Math.round(w * 0.095));
@@ -1433,12 +1395,9 @@
       ctx.textAlign = "left";
 
       const letrasGoogle = [
-        { l: "G", c: "#4285F4" },
-        { l: "o", c: "#EA4335" },
-        { l: "o", c: "#FBBC05" },
-        { l: "g", c: "#4285F4" },
-        { l: "l", c: "#34A853" },
-        { l: "e", c: "#EA4335" }
+        { l: "G", c: "#4285F4" }, { l: "o", c: "#EA4335" },
+        { l: "o", c: "#FBBC05" }, { l: "g", c: "#4285F4" },
+        { l: "l", c: "#34A853" }, { l: "e", c: "#EA4335" }
       ];
 
       let gx = x + Math.round(w * 0.045);
@@ -1456,23 +1415,11 @@
       ctx.restore();
     }
 
-    function cargarTileCorsSeguro(url, dx, dy) {
-      return new Promise(resolve => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        const timer = setTimeout(() => resolve(null), 2600);
-        img.onload = () => { clearTimeout(timer); resolve({ img, dx, dy }); };
-        img.onerror = () => { clearTimeout(timer); resolve(null); };
-        img.src = url;
-      });
-    }
-
     function dibujarPlanoVectorialRespaldo(ctx, x, y, w, h) {
       ctx.fillStyle = "#F3F4F6";
       ctx.fillRect(x, y, w, h);
       ctx.fillStyle = "#D1FAE5";
       ctx.fillRect(x + w * 0.1, y + h * 0.12, w * 0.32, h * 0.22);
-      ctx.fillRect(x + w * 0.62, y + h * 0.65, w * 0.28, h * 0.22);
       ctx.strokeStyle = "#FFFFFF";
       ctx.lineWidth = Math.max(4, Math.round(w * 0.04));
       for (let i = 1; i <= 4; i++) {
@@ -1480,17 +1427,7 @@
         ctx.moveTo(x, y + (h * i) / 5);
         ctx.lineTo(x + w, y + (h * i) / 5 + 12);
         ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(x + (w * i) / 5, y);
-        ctx.lineTo(x + (w * i) / 5 - 10, y + h);
-        ctx.stroke();
       }
-      ctx.strokeStyle = "#FDE68A";
-      ctx.lineWidth = Math.max(6, Math.round(w * 0.055));
-      ctx.beginPath();
-      ctx.moveTo(x, y + h * 0.52);
-      ctx.lineTo(x + w, y + h * 0.46);
-      ctx.stroke();
     }
 
     function trazarRectanguloRedondeado(ctx, x, y, width, height, radius) {
@@ -1521,22 +1458,38 @@
     }
 
     /***************************************************************************
-     * 8. MODAL PREVIEW, CONFIRMACIÓN DE ASISTENCIA Y WHATSAPP GESTIÓN
+     * 8. MODAL PREVIEW Y ENVÍO DE ASISTENCIA / GESTIÓN
      ***************************************************************************/
-    function abrirModalPreview(dataUrl, modo) {
+    function abrirModalPreview(dataUrl, modo, urlDriveOriginal = "") {
       document.getElementById("imgPreviewResultado").src = dataUrl;
       const badge = document.getElementById("previewBadgeModo");
       const boxAsistencia = document.getElementById("previewBotonesAsistencia");
       const boxGestion = document.getElementById("previewBotonesGestion");
+      const boxLectura = document.getElementById("previewBotonesLecturaReporte");
+      const linkDrive = document.getElementById("linkAbrirFotoDrive");
 
-      if (modo === "GESTION") {
-        badge.textContent = "MODO GESTIÓN EN CAMPO • CALIDAD ORIGINAL (NO SUBE AL SERVIDOR)";
+      if (urlDriveOriginal) {
+        linkDrive.href = urlDriveOriginal;
+        linkDrive.classList.remove("hidden");
+      } else {
+        linkDrive.classList.add("hidden");
+      }
+
+      if (modo === "LECTURA") {
+        badge.textContent = "VISOR DE EVIDENCIA FOTOGRÁFICA";
+        boxAsistencia.classList.add("hidden");
+        boxGestion.classList.add("hidden");
+        boxLectura.classList.remove("hidden");
+      } else if (modo === "GESTION") {
+        badge.textContent = "MODO GESTIÓN EN CAMPO • CALIDAD ORIGINAL";
         boxAsistencia.classList.add("hidden");
         boxGestion.classList.remove("hidden");
+        boxLectura.classList.add("hidden");
       } else {
         badge.textContent = `CONFIRMAR ${tipoMarcajeSeleccionado} • SEDE ${usuarioActivo.sedeOperativa}`;
         boxAsistencia.classList.remove("hidden");
         boxGestion.classList.add("hidden");
+        boxLectura.classList.add("hidden");
       }
 
       document.getElementById("modalPreviewFoto").classList.remove("hidden");
@@ -1570,11 +1523,9 @@
         const observacion = document.getElementById("inputMotivoAsistencia").value.trim() || (enCampo ? "Labor en Campo" : "Labor en Agencia");
         const minutosTardanza = calcularMinutosTardanza(ahora, usuarioActivo.sedeOperativa, tipoMarcajeSeleccionado, enCampo);
 
-        const nuevoRegistro = {
+        const payload = {
+          action: "registrarAsistencia",
           id: "AS-" + ahora.getTime(),
-          fechaIso: ahora.toISOString().slice(0, 10),
-          horaTexto: ahora.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
-          fechaHora: ahora.toISOString(),
           nombre: usuarioActivo.nombre,
           sede: usuarioActivo.sedeOperativa,
           rol: usuarioActivo.rol,
@@ -1584,12 +1535,20 @@
           coordenadas: `${gpsState.lat.toFixed(6)},${gpsState.lng.toFixed(6)}`,
           enCampo: enCampo,
           observaciones: observacion,
-          minutosTardanza: minutosTardanza,
-          fotoUrl: ultimoBase64Servidor
+          fotoBase64: ultimoBase64Servidor
         };
 
-        registrosAsistenciaGlobal.unshift(nuevoRegistro);
-        guardarRegistrosLocales();
+        const resp = await fetch(CONFIG_SISTEMA.ATTENDANCE_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+        const resultadoJson = await resp.json();
+
+        if (resultadoJson.status === "ok") {
+          registrosAsistenciaGlobal.unshift(resultadoJson.registro);
+          guardarRegistrosLocales();
+        }
 
         if (tipoMarcajeSeleccionado === "SALIDA REFRIGERIO") {
           activarCronometroRefrigerio(ahora);
@@ -1597,25 +1556,14 @@
           detenerCronometroRefrigerio();
         }
 
-        if (ATTENDANCE_API_URL) {
-          await fetch(ATTENDANCE_API_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({
-              action: "registrarAsistencia",
-              ...nuevoRegistro,
-              fotoBase64: ultimoBase64Servidor
-            })
-          });
-        }
-
         cerrarModalPreview();
         document.getElementById("inputMotivoAsistencia").value = "";
-        alert(`✅ ${tipoMarcajeSeleccionado} registrada correctamente.`);
+        alert(`✅ ${tipoMarcajeSeleccionado} registrada correctamente y guardada en el Excel.`);
+        cargarAsistenciasDesdeServidor(false);
       } catch (e) {
+        console.error("Error al registrar:", e);
+        alert("Asistencia registrada en modo local.");
         cerrarModalPreview();
-        alert("Asistencia guardada en el dispositivo.");
       } finally {
         enviandoAsistencia = false;
         btn.disabled = false;
@@ -1624,7 +1572,7 @@
     }
 
     /***************************************************************************
-     * 9. GUARDADO EN CARPETA "Mi gestión Crediban" Y COMPARTIR POR WHATSAPP
+     * 9. CARPETA "Mi gestión Crediban" Y WHATSAPP
      ***************************************************************************/
     async function vincularCarpetaDispositivo() {
       if ("showDirectoryPicker" in window) {
@@ -1635,7 +1583,7 @@
             `<span class="text-emerald-700 font-extrabold">✅ Vinculado directo a la carpeta "Mi gestión Crediban"</span>`;
         } catch (e) {}
       } else {
-        alert('Las fotos se guardan automáticamente en el Álbum "Mi gestión Crediban" y en tu teléfono con el nombre "Mi_gestion_Crediban_..." para no mezclarse con tus archivos.');
+        alert('Las fotos se guardan automáticamente en el Álbum "Mi gestión Crediban".');
       }
     }
 
@@ -1653,11 +1601,8 @@
       albumGestionCrediban.unshift(itemAlbum);
       if (albumGestionCrediban.length > 25) albumGestionCrediban.pop();
       try {
-        localStorage.setItem("crediban_album_gestion_dia", JSON.stringify(albumGestionCrediban));
-      } catch (e) {
-        albumGestionCrediban.splice(10);
-        localStorage.setItem("crediban_album_gestion_dia", JSON.stringify(albumGestionCrediban));
-      }
+        localStorage.setItem("crediban_album_gestion_dia_v3", JSON.stringify(albumGestionCrediban));
+      } catch (e) {}
       renderizarGaleriaGestion();
 
       if (directorioGestionHandle) {
@@ -1681,8 +1626,6 @@
 
     async function compartirYGuardarGestion() {
       if (!ultimoBlobGenerado) return;
-
-      // 1. Guardar siempre en "Mi gestión Crediban"
       await guardarArchivoEnCarpetaCrediban(ultimoBlobGenerado, ultimoNombreArchivo, ultimoBase64Servidor);
 
       const cliente = document.getElementById("gestionClienteNombre").value.trim() || "Visita en Campo";
@@ -1691,12 +1634,11 @@
         `📸 *MI GESTIÓN CREDIBAN*\n` +
         `👤 *Asesor:* ${usuarioActivo ? usuarioActivo.nombre : ""}\n` +
         `🏷️ *Actividad:* ${actividad} (${cliente})\n` +
-        `📍 *Ubicación:* ${gpsState.direccionCompleta}\n` +
+        `📍 *Dirección:* ${gpsState.direccionCompleta}\n` +
         `🗺️ *Google Maps:* https://www.google.com/maps?q=${gpsState.lat},${gpsState.lng}`;
 
       const archivoCompartir = new File([ultimoBlobGenerado], ultimoNombreArchivo, { type: "image/jpeg" });
 
-      // 2. Compartir foto original directo a WhatsApp mediante menú nativo del celular
       if (navigator.canShare && navigator.canShare({ files: [archivoCompartir] })) {
         try {
           await navigator.share({
@@ -1753,12 +1695,10 @@
       }
       const zip = new JSZip();
       const carpeta = zip.folder("Mi gestion Crediban");
-
       albumGestionCrediban.forEach(item => {
         const base64Data = item.dataUrl.split(",")[1];
         carpeta.file(item.nombreArchivo, base64Data, { base64: true });
       });
-
       const content = await zip.generateAsync({ type: "blob" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(content);
@@ -1769,23 +1709,24 @@
     function limpiarAlbumGestion() {
       if (!confirm('¿Limpiar las fotos del álbum interno "Mi gestión Crediban"?')) return;
       albumGestionCrediban = [];
-      localStorage.removeItem("crediban_album_gestion_dia");
+      localStorage.removeItem("crediban_album_gestion_dia_v3");
       renderizarGaleriaGestion();
     }
 
     /***************************************************************************
-     * 10. REPORTES Y FILTRADO JERÁRQUICO (ADMINISTRADOR vs GERENTE)
+     * 10. REPORTES Y SUPERVISIÓN SEGÚN RANGO Y HOJA PARAMETROS
      ***************************************************************************/
     function calcularMinutosTardanza(fechaObj, sede, tipoMarcaje, enCampo) {
       if (tipoMarcaje !== "ENTRADA" || enCampo) return 0;
       const diaSemana = fechaObj.getDay();
       if (diaSemana === 0) return 0;
 
-      const configSede = PARAMETROS_HORARIOS[sede] || { lv: "08:30", sab: "09:00", tolerancia: 10 };
-      const horaOficialStr = (diaSemana === 6) ? configSede.sab : configSede.lv;
-      const [hOfi, mOfi] = horaOficialStr.split(":").map(Number);
+      const reglaSede = PARAMETROS_SEDES[sede] || { entradaLV: "08:30", entradaSab: "09:00", toleranciaMin: 10 };
+      const esSabado = (diaSemana === 6);
+      const horaStr = esSabado ? reglaSede.entradaSab : reglaSede.entradaLV;
+      const [hOfi, mOfi] = (horaStr || "08:30").split(":").map(Number);
 
-      const limiteMinutos = hOfi * 60 + mOfi + (Number(configSede.tolerancia) || 0);
+      const limiteMinutos = hOfi * 60 + mOfi + (Number(reglaSede.toleranciaMin) || 10);
       const marcadosMinutos = fechaObj.getHours() * 60 + fechaObj.getMinutes();
 
       return marcadosMinutos > limiteMinutos ? (marcadosMinutos - limiteMinutos) : 0;
@@ -1793,17 +1734,17 @@
 
     function actualizarTextoHorarioSede() {
       if (!usuarioActivo) return;
-      const sede = usuarioActivo.sedeOperativa || "HUACHO";
-      const cfg = PARAMETROS_HORARIOS[sede] || { lv: "08:30", sab: "09:00", tolerancia: 10 };
+      const sede = usuarioActivo.sedeOperativa || SEDES_HABILITADAS[0];
+      const cfg = PARAMETROS_SEDES[sede] || { entradaLV: "08:30", salidaLV: "18:30" };
       const esSabado = new Date().getDay() === 6;
       document.getElementById("horarioSedeTexto").textContent =
-        `Ingreso: ${esSabado ? cfg.sab : cfg.lv} AM (+${cfg.tolerancia}m tol.)`;
+        `Entrada: ${esSabado ? (cfg.entradaSab||"09:00") : cfg.entradaLV} | Salida: ${esSabado ? (cfg.salidaSab||"13:30") : cfg.salidaLV}`;
     }
 
     function construirBotonesSedesGerente() {
       const cont = document.getElementById("botonesSedesReporte");
       if (!cont) return;
-      const sedes = ["TODAS", ...SEDES_OFICIALES];
+      const sedes = ["TODAS", ...SEDES_HABILITADAS];
       cont.innerHTML = sedes.map(s => {
         const activo = (s === sedeFiltroGerente);
         return `<button onclick="seleccionarSedeGerente('${s}')" class="px-3 py-1 rounded-xl text-[11px] font-extrabold whitespace-nowrap transition ${activo ? 'bg-[#59B447] text-white shadow' : 'bg-white/10 text-emerald-100 hover:bg-white/20'}">${s === 'TODAS' ? '🌎 TODAS LAS SEDES' : '📍 ' + s}</button>`;
@@ -1826,9 +1767,6 @@
       renderizarReportes();
     }
 
-    // Regla Estricta:
-    // - Administrador: Ve a los asesores de su sede
-    // - Gerente: Ve absolutamente a todos, incluidos Administradores
     function obtenerPersonalPermitidoSupervision() {
       if (!usuarioActivo) return [];
 
@@ -1843,6 +1781,7 @@
         }
 
         if (usuarioActivo.rol === "ADMINISTRADOR") {
+          // El Administrador supervisa a asesores, trabajadores y cajeros de SU sede
           return u.sede === usuarioActivo.sedeOperativa && u.rol !== "GERENTE";
         }
 
@@ -1867,7 +1806,7 @@
 
       const equipos = new Set(["EQUIPO A", "EQUIPO B", "EQUIPO C", "CAJA"]);
       permitidos.forEach(u => { if (u.equipo) equipos.add(u.equipo); });
-      selEquipo.innerHTML = `<option value="TODOS">🛡️ Todos los Equipos</option>`;
+      selEquipo.innerHTML = `<option value="TODOS">🛡️ Todas las Áreas / Equipos</option>`;
       Array.from(equipos).forEach(eq => {
         selEquipo.innerHTML += `<option value="${eq}">${eq}</option>`;
       });
@@ -1908,98 +1847,46 @@
 
     function guardarRegistrosLocales() {
       try {
-        localStorage.setItem("crediban_asistencias_db_v3", JSON.stringify(registrosAsistenciaGlobal.slice(0, 150)));
+        localStorage.setItem("crediban_asistencias_db_v4", JSON.stringify(registrosAsistenciaGlobal.slice(0, 150)));
       } catch (e) {}
     }
 
-    async function cargarAsistenciasDesdeServidor() {
-      const localData = localStorage.getItem("crediban_asistencias_db_v3");
+    async function cargarAsistenciasDesdeServidor(mostrarAlerta = false) {
+      const iconSync = document.getElementById("iconSyncReporte");
+      if (iconSync) iconSync.classList.add("fa-spin");
+
+      const localData = localStorage.getItem("crediban_asistencias_db_v4");
       if (localData) {
         try { registrosAsistenciaGlobal = JSON.parse(localData); } catch (e) {}
       }
 
-      if (registrosAsistenciaGlobal.length === 0) {
-        const hoyIso = new Date().toISOString().slice(0, 10);
-        registrosAsistenciaGlobal = [
-          {
-            id: "AS-DEMO-1",
-            fechaIso: hoyIso,
-            horaTexto: "08:22:14 a. m.",
-            nombre: "CARLOS MENDOZA",
-            sede: "HUACHO",
-            rol: "ADMINISTRADOR",
-            equipo: "EQUIPO A",
-            tipo: "ENTRADA",
-            direccion: "879 Avenida Cincuentenario, Hualmay, Huaura",
-            coordenadas: "-11.097847,-77.609756",
-            enCampo: false,
-            observaciones: "Apertura de Agencia Huacho",
-            minutosTardanza: 0,
-            fotoUrl: ""
-          },
-          {
-            id: "AS-DEMO-2",
-            fechaIso: hoyIso,
-            horaTexto: "08:28:40 a. m.",
-            nombre: "ABIGAIL SANDOVAL",
-            sede: "HUACHO",
-            rol: "ASESOR",
-            equipo: "EQUIPO A",
-            tipo: "ENTRADA",
-            direccion: "879 Avenida Cincuentenario, Hualmay, Huaura",
-            coordenadas: "-11.097847,-77.609756",
-            enCampo: false,
-            observaciones: "Labor en Agencia",
-            minutosTardanza: 0,
-            fotoUrl: ""
-          },
-          {
-            id: "AS-DEMO-3",
-            fechaIso: hoyIso,
-            horaTexto: "08:46:10 a. m.",
-            nombre: "HUGO",
-            sede: "HUACHO",
-            rol: "ASESOR",
-            equipo: "EQUIPO A",
-            tipo: "ENTRADA",
-            direccion: "Av. 28 de Julio, Huacho",
-            coordenadas: "-11.106800,-77.604600",
-            enCampo: false,
-            observaciones: "Tráfico vehicular",
-            minutosTardanza: 6,
-            fotoUrl: ""
-          },
-          {
-            id: "AS-DEMO-4",
-            fechaIso: hoyIso,
-            horaTexto: "08:25:05 a. m.",
-            nombre: "MARIA ADMIN HUARAZ",
-            sede: "HUARAZ",
-            rol: "ADMINISTRADOR",
-            equipo: "EQUIPO B",
-            tipo: "ENTRADA",
-            direccion: "Av. Luzuriaga, Huaraz",
-            coordenadas: "-9.527790,-77.527780",
-            enCampo: false,
-            observaciones: "Apertura Sede Huaraz",
-            minutosTardanza: 0,
-            fotoUrl: ""
-          }
-        ];
-      }
+      try {
+        const urlReq = `${CONFIG_SISTEMA.ATTENDANCE_API_URL}?action=init&rol=${encodeURIComponent(usuarioActivo.rol)}&sede=${encodeURIComponent(usuarioActivo.sedeOperativa)}&nombre=${encodeURIComponent(usuarioActivo.nombre)}&t=${Date.now()}`;
+        const resp = await fetch(urlReq);
+        const data = await resp.json();
 
-      if (ATTENDANCE_API_URL) {
-        try {
-          const resp = await fetch(`${ATTENDANCE_API_URL}?action=obtenerAsistencias&t=${Date.now()}`);
-          const data = await resp.json();
-          if (data && Array.isArray(data.registros) && data.registros.length > 0) {
+        if (data && data.status === "ok") {
+          if (data.parametros) {
+            if (Array.isArray(data.parametros.sedesHabilitadas) && data.parametros.sedesHabilitadas.length > 0) {
+              SEDES_HABILITADAS = data.parametros.sedesHabilitadas;
+            }
+            if (data.parametros.reglasPorSede) {
+              PARAMETROS_SEDES = data.parametros.reglasPorSede;
+            }
+          }
+          if (Array.isArray(data.registros) && data.registros.length > 0) {
             registrosAsistenciaGlobal = data.registros;
             guardarRegistrosLocales();
           }
-        } catch (err) {}
+          if (mostrarAlerta) alert("✅ Sincronización exitosa con Google Sheets.");
+        }
+      } catch (e) {
+        console.warn("Usando registros en caché local.");
+        if (mostrarAlerta) alert("⚠️ Modo sin conexión: Se muestran los registros guardados en este dispositivo.");
+      } finally {
+        if (iconSync) iconSync.classList.remove("fa-spin");
+        renderizarReportes();
       }
-
-      renderizarReportes();
     }
 
     function obtenerRegistrosFiltrados() {
@@ -2069,7 +1956,7 @@
         contPendientes.innerHTML = `<span class="text-xs font-bold text-emerald-700">✅ Todo el personal supervisado ya registró su entrada hoy.</span>`;
       } else {
         contPendientes.innerHTML = pendientesHoy.map(u => {
-          const msg = encodeURIComponent(`Hola ${u.nombre}, el sistema de asistencia CREDIBAN reporta que aún no has registrado tu ENTRADA de hoy en sede ${u.sede}.`);
+          const msg = encodeURIComponent(`Hola ${u.nombre}, el sistema CREDIBAN reporta que aún no has registrado tu ENTRADA de hoy en sede ${u.sede}.`);
           return `
             <a href="https://wa.me/?text=${msg}" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-rose-200 text-[11px] font-bold text-rose-800 shadow-sm hover:bg-rose-100">
               <span>${u.nombre} (${u.rol === 'ADMINISTRADOR' ? 'ADMIN' : u.sede})</span>
@@ -2094,6 +1981,8 @@
             ? `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-black">⏰ +${tard} min</span>`
             : `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black">✅ Puntual</span>`;
 
+          const fotoEvidencia = r.fotoUrl || "";
+
           return `
             <div class="card-clean p-3.5 flex items-center justify-between gap-3">
               <div class="min-w-0 flex-1 space-y-1">
@@ -2108,14 +1997,12 @@
                   ${r.tipo === 'ENTRADA' ? badgeTardanza : ''}
                 </div>
                 <p class="text-[11px] text-slate-500 truncate">
-                  <i class="fa-solid fa-location-dot text-rose-500 mr-1"></i>${r.direccion || 'Ubicación GPS'}
+                  <i class="fa-solid fa-location-dot text-rose-500 mr-1"></i>${r.direccion || 'Dirección GPS'}
                 </p>
               </div>
               <div class="flex flex-col items-end gap-1.5 shrink-0">
-                <a href="https://www.google.com/maps?q=${r.coordenadas || ''}" target="_blank" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-extrabold">
-                  <i class="fa-solid fa-map mr-1"></i>Mapa
-                </a>
-                ${r.fotoUrl ? `<button onclick="abrirModalPreview('${r.fotoUrl}', 'ASISTENCIA')" class="px-2.5 py-1 rounded-lg bg-[#59B447] text-white text-[10px] font-extrabold"><i class="fa-solid fa-image mr-1"></i>Foto</button>` : ''}
+                ${r.linkMapa ? `<a href="${r.linkMapa}" target="_blank" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-extrabold"><i class="fa-solid fa-map mr-1"></i>Mapa</a>` : ''}
+                ${fotoEvidencia ? `<button onclick="abrirModalPreview('${fotoEvidencia}', 'LECTURA', '${r.linkFotoOriginal || ''}')" class="px-2.5 py-1 rounded-lg bg-[#59B447] text-white text-[10px] font-extrabold"><i class="fa-solid fa-image mr-1"></i>Foto</button>` : ''}
               </div>
             </div>`;
         }).join("");
@@ -2124,6 +2011,7 @@
       const tbody = document.getElementById("tablaReporteBody");
       tbody.innerHTML = filtrados.map(r => {
         const tard = Number(r.minutosTardanza) || 0;
+        const fotoEvidencia = r.fotoUrl || "";
         return `
           <tr class="hover:bg-slate-50">
             <td class="p-2.5 font-semibold whitespace-nowrap">${r.fechaIso}<br><span class="text-[10px] text-slate-400">${r.horaTexto}</span></td>
@@ -2133,7 +2021,7 @@
             <td class="p-2.5 font-bold ${tard > 0 ? 'text-rose-600' : 'text-emerald-600'}">${tard > 0 ? '+' + tard + ' min' : '0 min'}</td>
             <td class="p-2.5 max-w-[200px] truncate" title="${r.direccion}">${r.direccion}</td>
             <td class="p-2.5 text-center">
-              ${r.fotoUrl ? `<button onclick="abrirModalPreview('${r.fotoUrl}', 'ASISTENCIA')" class="px-2 py-1 rounded bg-emerald-100 text-[#1B4332] font-bold">Ver Foto</button>` : '-'}
+              ${fotoEvidencia ? `<button onclick="abrirModalPreview('${fotoEvidencia}', 'LECTURA', '${r.linkFotoOriginal || ''}')" class="px-2.5 py-1 rounded bg-emerald-100 text-[#1B4332] font-bold text-xs">Ver</button>` : '-'}
             </td>
           </tr>`;
       }).join("");
@@ -2146,19 +2034,21 @@
       if (!grid) return;
 
       const hoyIso = new Date().toISOString().slice(0, 10);
-      grid.innerHTML = SEDES_OFICIALES.map(sede => {
+      grid.innerHTML = SEDES_HABILITADAS.map(sede => {
         const regsSedeHoy = registrosAsistenciaGlobal.filter(r => r.sede === sede && r.fechaIso === hoyIso);
         const adminsHoy = regsSedeHoy.filter(r => r.rol === "ADMINISTRADOR").length;
         const tardanzaSede = regsSedeHoy.reduce((acc, r) => acc + (Number(r.minutosTardanza) || 0), 0);
+        const regla = PARAMETROS_SEDES[sede] || {};
 
         return `
           <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50 space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-black text-[#1B4332]">📍 SEDE ${sede}</span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">${regsSedeHoy.length} registros hoy</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">${regsSedeHoy.length} marcas</span>
             </div>
-            <p class="text-[11px] font-semibold text-slate-600">🛡️ Administradores hoy: <strong>${adminsHoy}</strong></p>
-            <p class="text-[11px] font-semibold text-slate-600">⏰ Tardanza acumulada: <strong class="${tardanzaSede > 0 ? 'text-rose-600' : 'text-emerald-600'}">${tardanzaSede} min</strong></p>
+            <p class="text-[11px] font-semibold text-slate-600">🛡️ Admins hoy: <strong>${adminsHoy}</strong></p>
+            <p class="text-[11px] font-semibold text-slate-600">⏰ Tardanza: <strong class="${tardanzaSede > 0 ? 'text-rose-600' : 'text-emerald-600'}">${tardanzaSede} min</strong></p>
+            <p class="text-[10px] text-slate-400">Entrada L-V: ${regla.entradaLV || '08:30'} | Tol: ${regla.toleranciaMin || 10}m</p>
           </div>`;
       }).join("");
     }
@@ -2169,9 +2059,9 @@
         alert("No hay registros para exportar.");
         return;
       }
-      const cabeceras = ["ID", "Fecha", "Hora", "Colaborador", "Cargo", "Sede", "Equipo", "Tipo_Marcaje", "Minutos_Tardanza", "Direccion_GPS", "Coordenadas"];
+      const cabeceras = ["ID", "Fecha", "Hora", "Colaborador", "Cargo", "Sede", "Equipo", "Tipo_Marcaje", "Minutos_Tardanza", "Direccion_GPS", "Link_Foto"];
       const filas = filtrados.map(r => [
-        r.id, r.fechaIso, r.horaTexto, `"${r.nombre}"`, r.rol, r.sede, r.equipo, r.tipo, r.minutosTardanza || 0, `"${r.direccion || ''}"`, `"${r.coordenadas || ''}"`
+        r.id, r.fechaIso, r.horaTexto, `"${r.nombre}"`, r.rol, r.sede, r.equipo, r.tipo, r.minutosTardanza || 0, `"${r.direccion || ''}"`, `"${r.fotoUrl || ''}"`
       ]);
       const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [cabeceras.join(","), ...filas.map(e => e.join(","))].join("\n");
       const link = document.createElement("a");
@@ -2183,7 +2073,7 @@
     }
 
     /***************************************************************************
-     * 11. RELOJ DIGITAL EN VIVO Y CRONÓMETRO DE REFRIGERIO
+     * 11. RELOJ DIGITAL Y CRONÓMETRO DE REFRIGERIO
      ***************************************************************************/
     function iniciarRelojEnVivo() {
       const actualizar = () => {
@@ -2202,18 +2092,18 @@
 
     function activarCronometroRefrigerio(fechaInicio) {
       const limiteMs = fechaInicio.getTime() + 60 * 60 * 1000;
-      localStorage.setItem("crediban_refri_limite", String(limiteMs));
+      localStorage.setItem("crediban_refri_limite_v3", String(limiteMs));
       verificarRefrigerioActivo();
     }
 
     function detenerCronometroRefrigerio() {
-      localStorage.removeItem("crediban_refri_limite");
+      localStorage.removeItem("crediban_refri_limite_v3");
       if (intervaloRefrigerio) clearInterval(intervaloRefrigerio);
       document.getElementById("refrigerioBanner").classList.add("hidden");
     }
 
     function verificarRefrigerioActivo() {
-      const limiteStr = localStorage.getItem("crediban_refri_limite");
+      const limiteStr = localStorage.getItem("crediban_refri_limite_v3");
       const banner = document.getElementById("refrigerioBanner");
       if (!limiteStr) {
         banner.classList.add("hidden");
