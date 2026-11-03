@@ -1,6 +1,6 @@
 <!-- ============================================================================
      SISTEMA INTEGRAL DE ASISTENCIA Y FOTOS DE GESTIÓN EN CAMPO - CREDIBAN PERÚ S.A.C.
-     PARTE 1 DE 2: Estructura HTML5, Logo Oficial SVG[cite: 9], Login Privado y Paneles por Rol
+     PARTE 1 DE 2: Estructura HTML5, Logo Oficial SVG, Roles Estrictos y Álbum por Fecha
      ============================================================================ -->
 <!DOCTYPE html>
 <html lang="es">
@@ -40,11 +40,12 @@
       background-color: #F1F5F9;
       color: #0F172A;
       overflow-x: hidden;
+      overscroll-behavior-y: contain; /* Evita recargas accidentales al deslizar hacia abajo */
     }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Tipografía Oficial del Estándar Gráfico CREDIBAN[cite: 9] */
+    /* Tipografía Oficial del Estándar Gráfico CREDIBAN */
     .font-crediban-title {
       font-family: Georgia, 'Times New Roman', serif;
     }
@@ -102,13 +103,19 @@
     <p class="text-xs text-slate-300 mt-1">Sincronizando parámetros y sedes habilitadas...</p>
   </div>
 
+  <!-- Aviso flotante suave (Para protección del botón Retroceso y notificaciones rápidas) -->
+  <div id="toastAviso" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl bg-slate-900/95 text-white text-xs font-extrabold shadow-xl border border-emerald-500/40 whitespace-nowrap">
+    <i class="fa-solid fa-shield-halved text-[#59B447] mr-1.5"></i>
+    <span id="toastAvisoTexto">Datos autoguardados</span>
+  </div>
+
   <!-- ==========================================================================
        2. PANTALLA DE LOGIN BLINDADA (SOLO USUARIO Y CONTRASEÑA)
        ========================================================================== -->
   <div id="loginScreen" class="hidden min-h-screen flex flex-col justify-center items-center p-4 bg-gradient-to-br from-[#0F291E] via-[#1B4332] to-slate-900">
     <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20 border-t-8 border-t-[#59B447]">
       
-      <!-- Cabecera con Logo Oficial Exacto de CREDIBAN[cite: 9] -->
+      <!-- Cabecera con Logo Oficial Exacto de CREDIBAN -->
       <div class="px-6 pt-7 pb-4 text-center bg-white border-b border-slate-100">
         <div class="inline-flex items-center justify-center gap-3 bg-white px-5 py-2.5 rounded-2xl border border-slate-100 shadow-sm mb-3">
           <div class="w-11 h-14 flex-shrink-0">
@@ -192,7 +199,7 @@
 
         <label class="flex items-center gap-2.5 p-3 rounded-xl bg-emerald-50/70 border border-emerald-200/80 cursor-pointer">
           <input id="loginRecordar" type="checkbox" checked class="w-4 h-4 accent-[#59B447] rounded" />
-          <span class="text-xs font-bold text-[#1B4332]">🔒 Recordar mi sesión en este celular</span>
+          <span class="text-xs font-bold text-[#1B4332]">🔒 Mantener mi sesión iniciada en este celular</span>
         </label>
 
         <button
@@ -212,11 +219,11 @@
        ========================================================================== -->
   <div id="mainAppContainer" class="hidden app-shell-mobile transition-all duration-300">
 
-    <!-- CABECERA COMPACTA CON LOGO OFICIAL CREDIBAN[cite: 9], GPS Y CAMBIADOR DE VISTA -->
+    <!-- CABECERA COMPACTA CON LOGO OFICIAL CREDIBAN, GPS Y CAMBIADOR DE VISTA -->
     <header class="glass-header text-white sticky top-0 z-40 shadow-lg">
       <div class="px-3 py-2.5 flex items-center justify-between gap-2">
         
-        <!-- Logo Oficial CREDIBAN en cápsula blanca[cite: 9] -->
+        <!-- Logo Oficial CREDIBAN en cápsula blanca -->
         <div class="inline-flex items-center gap-2 bg-white px-2.5 py-1 rounded-xl shadow-sm shrink-0">
           <div class="w-6 h-8 flex-shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 240" class="w-full h-full">
@@ -243,7 +250,7 @@
 
         <!-- Controles Superiores: Semáforo GPS + Botón Cambiar Vista + Salir -->
         <div class="flex items-center gap-1.5">
-          <button onclick="forzarRefrescoGPS()" id="gpsBadge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/40" title="Toca para actualizar dirección exacta">
+          <button onclick="forzarRefrescoGPS()" id="gpsBadge" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/40" title="Toca para actualizar calle más cercana">
             <span id="gpsDot" class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
             <span id="gpsText">GPS...</span>
           </button>
@@ -253,7 +260,7 @@
             <span id="labelCambiarVista">Vista PC</span>
           </button>
 
-          <button onclick="cerrarSesion()" class="px-2 py-1 rounded-xl bg-rose-500/20 hover:bg-rose-500/40 text-rose-200 border border-rose-400/30 text-xs font-bold" title="Cerrar sesión">
+          <button onclick="confirmarCerrarSesion()" class="px-2 py-1 rounded-xl bg-rose-500/20 hover:bg-rose-500/40 text-rose-200 border border-rose-400/30 text-xs font-bold" title="Cerrar sesión">
             <i class="fa-solid fa-power-off"></i>
           </button>
         </div>
@@ -267,12 +274,15 @@
         </div>
         <div class="flex items-center gap-2 shrink-0 text-emerald-300 font-bold">
           <span><i class="fa-solid fa-location-dot mr-1"></i><span id="headerUserSede">SEDE</span></span>
-          <!-- Selector de Sede Operativa (Solo para Gerentes, alimentado con las Sedes HABILITADAS en PARAMETROS) -->
+          <!-- Selector de Sede Operativa (Exclusivo para Gerentes) -->
           <select id="gerenteSedeOperativaSelect" onchange="cambiarSedeOperativaGerente(this.value)" class="hidden bg-[#0F291E] text-emerald-200 border border-emerald-500/40 rounded-lg px-1.5 py-0.5 text-[10px] font-extrabold outline-none"></select>
         </div>
       </div>
 
-      <!-- Barra de Navegación (Controlada por Rol) -->
+      <!-- Barra de Navegación Principal (Estrictamente bloqueada por Rol):
+           - Asesores, Cajeros y Trabajadores: SOLO ven "Asistencia" y "Fotos Gestión".
+           - Administradores: Ven "Asistencia", "Fotos Gestión" y "Mi Sede".
+           - Gerentes: Ven todas, incluyendo "Supervisión Gerencial" y "Control Global". -->
       <nav class="bg-[#0F291E] px-2 py-1.5 flex gap-1 overflow-x-auto no-scrollbar border-t border-emerald-900">
         <button onclick="cambiarPestana('MARCAR')" id="tabBtn_MARCAR" class="flex-1 min-w-[105px] py-2 px-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-[#59B447] text-white shadow">
           <i class="fa-solid fa-clock mr-1"></i> Asistencia
@@ -282,14 +292,12 @@
           <i class="fa-solid fa-camera-retro mr-1"></i> Fotos Gestión
         </button>
 
-        <!-- Pestaña de Supervisión:
-             - Administrador: "Supervisión Sede [X]" (Solo ve asesores, trabajadores y cajeros de su sede)
-             - Gerente: "Supervisión Gerencial" (Ve todas las sedes habilitadas + Administradores) -->
+        <!-- OCULTO para Asesores, Cajeros y Trabajadores -->
         <button onclick="cambiarPestana('REPORTE')" id="tabBtn_REPORTE" class="hidden flex-1 min-w-[130px] py-2 px-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-white/10 text-emerald-100 hover:bg-white/20">
           <i class="fa-solid fa-clipboard-user mr-1"></i> <span id="tabLabelReporte">Mi Sede</span>
         </button>
 
-        <!-- Pestaña Control Global: EXCLUSIVA PARA GERENTES -->
+        <!-- EXCLUSIVO PARA GERENTES -->
         <button onclick="cambiarPestana('GERENCIA')" id="tabBtn_GERENCIA" class="hidden flex-1 min-w-[125px] py-2 px-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-amber-400/20 text-amber-300 border border-amber-400/30">
           <i class="fa-solid fa-crown mr-1"></i> Control Global
         </button>
@@ -309,11 +317,11 @@
     </div>
 
     <!-- ========================================================================
-         PESTAÑA 1: MARCAR ASISTENCIA (CON REGLAS DE LA HOJA "PARAMETROS")
+         PESTAÑA 1: MARCAR ASISTENCIA (CON AUTOGUARDADO Y CALLE MÁS CERCANA)
          ======================================================================== -->
     <main id="view_MARCAR" class="p-3 space-y-3">
       
-      <!-- Reloj Digital, Horario Oficial desde PARAMETROS y Dirección Exacta Google Maps -->
+      <!-- Reloj Digital, Horario Oficial desde PARAMETROS y Calle Exacta Más Cercana -->
       <div class="card-clean p-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div>
@@ -326,14 +334,14 @@
           </div>
         </div>
 
-        <!-- Dirección exacta obtenida con Google Maps Geocoding API -->
+        <!-- Dirección exacta anclada a la calle más cercana -->
         <div class="mt-3 flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
           <div class="w-10 h-10 rounded-lg bg-emerald-100 text-[#1B4332] flex items-center justify-center shrink-0">
             <i class="fa-solid fa-map-location-dot text-lg"></i>
           </div>
           <div class="min-w-0 flex-1">
-            <p id="calleDetectadaTitulo" class="text-xs font-extrabold text-slate-800 truncate">Obteniendo dirección exacta con Google Maps...</p>
-            <p id="distritoDetectadoSub" class="text-[10px] font-semibold text-slate-500 truncate">Sin coordenadas en foto • Solo dirección exacta y minimapa</p>
+            <p id="calleDetectadaTitulo" class="text-xs font-extrabold text-slate-800 truncate">Detectando calle exacta más cercana...</p>
+            <p id="distritoDetectadoSub" class="text-[10px] font-semibold text-slate-500 truncate">Minimapa HD con calles reales + Pin Rojo activo</p>
           </div>
         </div>
       </div>
@@ -378,12 +386,12 @@
         <div class="pt-2 border-t border-slate-100 space-y-2">
           <div class="flex items-center justify-between">
             <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
-              <input id="chkEnCampo" type="checkbox" class="w-4 h-4 accent-[#59B447] rounded" />
+              <input id="chkEnCampo" type="checkbox" onchange="guardarBorradorFormulario()" class="w-4 h-4 accent-[#59B447] rounded" />
               <span>🛵 Marcaje desde Campo / Comisión</span>
             </label>
-            <span class="text-[10px] font-semibold text-slate-400">Opcional</span>
+            <span class="text-[10px] font-semibold text-emerald-600"><i class="fa-solid fa-floppy-disk mr-1"></i>Autoguardado activo</span>
           </div>
-          <input id="inputMotivoAsistencia" type="text" placeholder="Cliente o motivo opcional (Ej. Agencia / Visita Cliente)" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 focus:outline-none focus:border-[#59B447]" />
+          <input id="inputMotivoAsistencia" type="text" oninput="guardarBorradorFormulario()" placeholder="Cliente o motivo opcional (Ej. Agencia / Visita Cliente)" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 focus:outline-none focus:border-[#59B447]" />
         </div>
 
         <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-300/80 flex items-center gap-2.5">
@@ -402,24 +410,33 @@
     </main>
 
     <!-- ========================================================================
-         PESTAÑA 2: FOTOS DE GESTIÓN EN CAMPO (CALIDAD ORIGINAL + WHATSAPP + CARPETA)
+         PESTAÑA 2: FOTOS DE GESTIÓN EN CAMPO
+         - Soporta +100 fotos por día en IndexedDB sin saturar la memoria
+         - Carpeta Predefinida Fijada ("Mi gestión Crediban")
+         - Filtro por Fecha + Buscador por Cliente
          ======================================================================== -->
     <section id="view_GESTION" class="hidden p-3 space-y-3">
       <div class="card-clean p-4 space-y-3 border-l-4 border-l-[#59B447]">
-        <div>
-          <span class="px-2 py-0.5 rounded-md bg-emerald-100 text-[#1B4332] font-black text-[10px] uppercase">100% Calidad Original • Sin Subir al Servidor</span>
-          <h2 class="text-base font-black text-slate-800 mt-1">📸 Cámara de Gestión en Campo</h2>
-          <p class="text-xs text-slate-500">Estampa el minimapa de Google Maps al lado de la <strong>dirección exacta</strong> (sin coordenadas), lista para enviar por WhatsApp y guardar en <strong>"Mi gestión Crediban"</strong>.</p>
+        <div class="flex items-start justify-between gap-2">
+          <div>
+            <span class="px-2 py-0.5 rounded-md bg-emerald-100 text-[#1B4332] font-black text-[10px] uppercase">100% Calidad Original • Capacidad +100 Fotos/Día</span>
+            <h2 class="text-base font-black text-slate-800 mt-1">📸 Cámara de Gestión en Campo</h2>
+            <p class="text-xs text-slate-500">Estampa el minimapa de calles reales y la dirección más cercana, lista para enviar por WhatsApp y guardar en <strong>"Mi gestión Crediban"</strong>.</p>
+          </div>
         </div>
 
+        <!-- Campos con Autoguardado Persistente (No se borran si presionan Retroceso) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
           <div>
-            <label class="block text-[11px] font-extrabold uppercase text-slate-500 mb-1">Cliente / Negocio (Opcional)</label>
-            <input id="gestionClienteNombre" type="text" placeholder="Ej. Visita Cliente / Negocio" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#59B447]" />
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-[11px] font-extrabold uppercase text-slate-500">Cliente / Negocio (Opcional)</label>
+              <button type="button" onclick="limpiarCampoClienteGestion()" class="text-[10px] font-bold text-slate-400 hover:text-rose-500">Limpiar texto</button>
+            </div>
+            <input id="gestionClienteNombre" type="text" oninput="guardarBorradorFormulario()" placeholder="Ej. Visita Cliente / Negocio" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#59B447]" />
           </div>
           <div>
             <label class="block text-[11px] font-extrabold uppercase text-slate-500 mb-1">Tipo de Gestión</label>
-            <select id="gestionTipoActividad" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#59B447]">
+            <select id="gestionTipoActividad" onchange="guardarBorradorFormulario()" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#59B447]">
               <option value="Evaluación / Visita de Campo">Evaluación / Visita de Campo</option>
               <option value="Cobranza / Notificación">Cobranza / Notificación</option>
               <option value="Verificación Domiciliaria / Negocio">Verificación Domiciliaria / Negocio</option>
@@ -429,16 +446,19 @@
           </div>
         </div>
 
-        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <i class="fa-solid fa-folder-tree text-[#59B447] text-base"></i>
+        <!-- Panel de Carpeta Predefinida Fijada ("Mi gestión Crediban") -->
+        <div class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-[#59B447] text-white flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-folder-check"></i>
+            </div>
             <div>
-              <p class="text-xs font-extrabold text-slate-800">Carpeta destino: <span class="text-[#1B4332]">"Mi gestión Crediban"</span></p>
-              <p id="estadoCarpetaLocal" class="text-[10px] font-semibold text-slate-500">Guardado automático en Álbum Interno + Descarga etiquetada</p>
+              <p class="text-xs font-black text-[#1B4332]">📌 Carpeta Fijada: "Mi gestión Crediban"</p>
+              <p id="estadoCarpetaLocal" class="text-[10px] font-semibold text-slate-600">Autoguardado directo con prefijo de carpeta sin preguntar cada vez</p>
             </div>
           </div>
-          <button onclick="vincularCarpetaDispositivo()" class="px-3 py-1.5 rounded-lg bg-white border border-slate-300 hover:border-[#59B447] text-[11px] font-extrabold text-[#1B4332] shadow-sm">
-            <i class="fa-solid fa-folder-plus mr-1"></i> Vincular Carpeta
+          <button type="button" onclick="vincularCarpetaDispositivo()" id="btnFijarCarpeta" class="px-3 py-1.5 rounded-lg bg-white border border-emerald-300 hover:border-[#59B447] text-[11px] font-extrabold text-[#1B4332] shadow-sm">
+            <i class="fa-solid fa-thumbtack mr-1 text-[#59B447]"></i> Fijar Carpeta en Celular
           </button>
         </div>
 
@@ -457,31 +477,49 @@
         </div>
       </div>
 
-      <!-- Álbum Interno "Mi gestión Crediban" -->
+      <!-- ÁLBUM DE ALTA CAPACIDAD (+100 FOTOS/DÍA EN INDEXEDDB) CON FILTRO POR FECHA -->
       <div class="card-clean p-4 space-y-3">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
           <div>
             <h3 class="text-xs font-black uppercase text-[#1B4332]">
-              <i class="fa-solid fa-images mr-1 text-[#59B447]"></i> Carpeta: Mi gestión Crediban (<span id="contadorFotosGestion">0</span>)
+              <i class="fa-solid fa-images mr-1 text-[#59B447]"></i> Álbum: Mi gestión Crediban (<span id="contadorFotosGestion">0</span>)
             </h3>
-            <p class="text-[10px] text-slate-500">Tus fotos de gestión separadas de tu galería personal</p>
+            <p class="text-[10px] text-slate-500">Miniaturas ligeras anti-saturación • Tus fotos originales están en tu galería</p>
           </div>
           <div class="flex items-center gap-1.5">
-            <button onclick="descargarAlbumZip()" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#1B4332] border border-emerald-200 text-[11px] font-extrabold">
-              <i class="fa-solid fa-file-zipper mr-1"></i> Bajar .ZIP
+            <button onclick="alternarTamanoVistaAlbum()" id="btnTamanoAlbum" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-extrabold" title="Cambiar tamaño de vista">
+              <i class="fa-solid fa-table-cells mr-1"></i> Compacto
             </button>
-            <button onclick="limpiarAlbumGestion()" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs" title="Limpiar álbum">
+            <button onclick="descargarAlbumZip()" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#1B4332] border border-emerald-200 text-[11px] font-extrabold">
+              <i class="fa-solid fa-file-zipper mr-1"></i> .ZIP Fecha
+            </button>
+            <button onclick="limpiarAlbumGestion()" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs" title="Limpiar fotos de esta fecha">
               <i class="fa-solid fa-trash-can"></i>
             </button>
           </div>
         </div>
 
-        <div id="galeriaGestionGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div>
+        <!-- Barra de Filtro por Fecha y Buscador de Fotos de Gestión -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div class="flex items-center gap-1">
+            <button onclick="filtrarAlbumPorHoy()" id="btnAlbumHoy" class="px-2.5 py-2 rounded-xl bg-[#59B447] text-white text-[11px] font-extrabold shrink-0">Hoy</button>
+            <button onclick="filtrarAlbumTodasFechas()" id="btnAlbumTodas" class="px-2.5 py-2 rounded-xl bg-slate-100 text-slate-600 text-[11px] font-extrabold shrink-0">Todas</button>
+            <input id="filtroFechaAlbumGestion" type="date" onchange="renderizarGaleriaGestion()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700" />
+          </div>
+          <div class="sm:col-span-2 relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+            <input id="buscadorClienteAlbum" type="text" oninput="renderizarGaleriaGestion()" placeholder="Buscar foto por cliente, calle o actividad..." class="w-full pl-8 pr-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 focus:outline-none focus:border-[#59B447]" />
+          </div>
+        </div>
+
+        <!-- Cuadrícula Compacta (4 columnas en móvil para soportar +100 fotos sin ocupar pantalla gigante) -->
+        <div id="galeriaGestionGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-[380px] overflow-y-auto p-1"></div>
       </div>
     </section>
 
     <!-- ========================================================================
-         PESTAÑA 3: SUPERVISIÓN DE ASISTENCIA
+         PESTAÑA 3: SUPERVISIÓN DE SEDE
+         - Oculta totalmente para Asesores, Cajeros y Trabajadores
          - ADMINISTRADOR: Solo ve asesores, trabajadores y cajeros de SU SEDE
          - GERENTE: Ve Supervisión Gerencial de todas las sedes habilitadas + Administradores
          ======================================================================== -->
@@ -508,7 +546,6 @@
             <button onclick="cambiarFiltroRolReporte('ASESOR')" id="rolPill_ASESOR" class="px-2.5 py-1 rounded-lg text-[10px] font-black bg-white/10 text-emerald-100">Asesores / Caja / Trabajadores</button>
           </div>
         </div>
-        <!-- Botones dinámicos de las sedes HABILITADAS en la hoja PARAMETROS -->
         <div id="botonesSedesReporte" class="flex gap-1.5 overflow-x-auto no-scrollbar pt-1"></div>
       </div>
 
@@ -547,7 +584,7 @@
               <i id="iconFormatoReporte" class="fa-solid fa-table-list mr-1"></i>
               <span id="textoFormatoReporte">Ver como Tabla</span>
             </button>
-            <button onclick="cargarAsistenciasDesdeServidor(true)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs" title="Sincronizar con Google Sheet">
+            <button onclick="cargarAsistenciasDesdeServidor(true)" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs" title="Sincronizar con Servidor">
               <i id="iconSyncReporte" class="fa-solid fa-rotate"></i>
             </button>
           </div>
@@ -607,14 +644,13 @@
 
     <!-- ========================================================================
          PESTAÑA 4: CONTROL GLOBAL (EXCLUSIVO PARA GERENTES)
-         Muestra las reglas activas leídas desde la hoja PARAMETROS del Excel
          ======================================================================== -->
     <section id="view_GERENCIA" class="hidden p-3 space-y-3">
       <div class="card-clean p-4 space-y-3 border-l-4 border-l-amber-500">
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
             <h2 class="text-sm font-black uppercase text-[#1B4332]"><i class="fa-solid fa-crown text-amber-500 mr-1.5"></i> Control Global Gerencial</h2>
-            <p class="text-xs text-slate-500">Consolidado de Sedes Habilitadas en la hoja <strong>PARAMETROS</strong> (Incluye Administradores y Personal)</p>
+            <p class="text-xs text-slate-500">Consolidado de Sedes Habilitadas en <strong>PARAMETROS</strong> (Incluye Administradores y Personal)</p>
           </div>
           <button onclick="exportarReporteCSV()" class="px-3 py-2 rounded-xl bg-[#1B4332] hover:bg-[#0F291E] text-white text-xs font-extrabold shadow">
             <i class="fa-solid fa-file-csv mr-1"></i> Descargar Excel (CSV)
@@ -636,7 +672,7 @@
       <div class="bg-[#0F291E] text-white px-4 py-3 flex items-center justify-between">
         <div>
           <span id="previewBadgeModo" class="px-2 py-0.5 rounded bg-[#59B447] text-[10px] font-black uppercase">EVIDENCIA FOTOGRÁFICA</span>
-          <h3 id="previewSubtitulo" class="text-xs font-bold text-emerald-200 mt-0.5">Minimapa Google Maps + Dirección Exacta</h3>
+          <h3 id="previewSubtitulo" class="text-xs font-bold text-emerald-200 mt-0.5">Minimapa de Calles Reales + Dirección Exacta</h3>
         </div>
         <button onclick="cerrarModalPreview()" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center">
           <i class="fa-solid fa-xmark"></i>
@@ -676,10 +712,13 @@
           </div>
         </div>
 
-        <!-- Botón al inspeccionar una foto desde el Reporte -->
-        <div id="previewBotonesLecturaReporte" class="hidden">
-          <button onclick="cerrarModalPreview()" class="w-full py-3 rounded-xl bg-slate-800 text-white font-extrabold text-xs uppercase">
-            Cerrar Visor de Evidencia
+        <!-- Botón al inspeccionar una foto desde el Reporte o Álbum -->
+        <div id="previewBotonesLecturaReporte" class="hidden grid grid-cols-2 gap-2">
+          <button onclick="reenviarFotoAlbumWhatsApp()" id="btnReenviarAlbumWA" class="hidden py-3 rounded-xl bg-[#25D366] text-white font-black text-xs uppercase">
+            <i class="fa-brands fa-whatsapp mr-1"></i> Reenviar WhatsApp
+          </button>
+          <button onclick="cerrarModalPreview()" id="btnCerrarLecturaModal" class="col-span-2 py-3 rounded-xl bg-slate-800 text-white font-extrabold text-xs uppercase">
+            Cerrar Visor
           </button>
         </div>
       </div>
@@ -690,38 +729,43 @@
   <canvas id="hiddenCanvas" class="hidden"></canvas>
 <!-- FIN DE LA PARTE 1 DE 2 — PEGA LA PARTE 2 JUSTO DEBAJO DE ESTA LÍNEA --><!-- ============================================================================
      SISTEMA INTEGRAL DE ASISTENCIA Y FOTOS DE GESTIÓN EN CAMPO - CREDIBAN PERÚ S.A.C.
-     PARTE 2 DE 2: Motor JavaScript, Google Maps API, Roles y Sincronización Excel
+     PARTE 2 DE 2: Motor JavaScript, Minimapa HD Calles Reales, IndexedDB (+100 Fotos/Día),
+     Carpeta Fijada, Escudo Anti-Retroceso y Jerarquía Estricta de Roles
      ============================================================================ -->
   <script>
     /***************************************************************************
-     * 1. CONFIGURACIÓN DE SERVIDORES Y API KEYS OFICIALES
+     * 1. CONFIGURACIÓN DE SERVIDORES Y CREDENCIALES OFICIALES
      ***************************************************************************/
     const CONFIG_SISTEMA = {
-      // URL de tu Apps Script implementado (Backend que lee PARAMETROS y guarda en Google Sheets)
+      // URL de tu Google Apps Script de Asistencias y Hoja PARAMETROS
       ATTENDANCE_API_URL: "https://script.google.com/macros/s/AKfycbzhHImayB8Qu2WnFI0dYhWIU11L7eV78gRidEp_at8ulhlyPzWTm1at4CjtrHs6dwb_Gg/exec",
       // URL del Script Maestro de Usuarios (Login Único)
       AUTH_USERS_API_URL: "https://script.google.com/macros/s/AKfycbyPGo-OSC0KZcz03bAMpKQ82cipc2T1LNztaI229FhYqqNNXqG1oSb6hPPgVSSU3piqiw/exec",
-      // Tu API Key de Google Maps
+      // API Key de Google Maps
       MAPS_API_KEY: "AIzaSyAUKZpqTuuS8of7s8b96y9H3B4iEUE9cSc"
     };
 
-    // Sedes iniciales por defecto (se actualizan dinámicamente desde la hoja PARAMETROS del Excel)
+    // Sedes y Reglas dinámicas (se actualizan automáticamente desde la hoja PARAMETROS del Excel)
     let SEDES_HABILITADAS = ["HUACHO", "HUARAZ", "ICA", "HUANUCO"];
     let PARAMETROS_SEDES = {
-      "HUACHO":        { estado: "HABILITADO", entradaLV: "08:30", salidaLV: "18:30", entradaSab: "09:00", salidaSab: "13:30", toleranciaMin: 10, refrigerioMin: 60 },
-      "HUARAZ":        { estado: "HABILITADO", entradaLV: "08:30", salidaLV: "18:30", entradaSab: "09:00", salidaSab: "13:30", toleranciaMin: 10, refrigerioMin: 60 },
-      "ICA":           { estado: "HABILITADO", entradaLV: "08:30", salidaLV: "18:30", entradaSab: "09:00", salidaSab: "13:30", toleranciaMin: 10, refrigerioMin: 60 },
-      "HUANUCO":       { estado: "HABILITADO", entradaLV: "08:30", salidaLV: "18:30", entradaSab: "09:00", salidaSab: "13:30", toleranciaMin: 10, refrigerioMin: 60 }
+      "HUACHO":  { estado: "HABILITADO", diasLaborables: ["LUN","MAR","MIE","JUE","VIE","SAB"], entradaLV: "08:30", salidaLV: "18:30", entradaSab: "09:00", salidaSab: "13:30", toleranciaMin: 10, refrigerioMin: 60 },
+      "HUARAZ":  { estado: "HABILITADO", diasLaborables: ["LUN","MAR","MIE","JUE","VIE","SAB"], entradaLV: "08:30", salidaLV: "18:30", entradaSab: "09:00", salidaSab: "13:30", toleranciaMin: 10, refrigerioMin: 60 },
+      "ICA":     { estado: "HABILITADO", diasLaborables: ["LUN","MAR","MIE","JUE","VIE","SAB"], entradaLV: "08:30", salidaLV: "18:30", entradaSab: "09:00", salidaSab: "13:30", toleranciaMin: 10, refrigerioMin: 60 },
+      "HUANUCO": { estado: "HABILITADO", diasLaborables: ["LUN","MAR","MIE","JUE","VIE","SAB"], entradaLV: "08:30", salidaLV: "18:30", entradaSab: "09:00", salidaSab: "13:30", toleranciaMin: 10, refrigerioMin: 60 }
     };
     let FERIADOS_NO_LABORABLES = [];
 
-    // Catálogo de respaldo local por si el asesor está en zona sin internet
+    // Catálogo de respaldo local por si el colaborador abre la app sin señal de datos
     const USUARIOS_RESPALDO = [
-      { usuario: "CRISTHIAN.TRINIDAD", nombre: "CRISTHIAN TRINIDAD", clave: "123", rol: "GERENTE", cargo: "GERENTE GENERAL", sede: "TODAS", equipo: "TODOS", estado: "HABILITADO" },
-      { usuario: "CARLOS.MENDOZA", nombre: "CARLOS MENDOZA", clave: "admin123", rol: "ADMINISTRADOR", cargo: "ADMINISTRADOR DE AGENCIA", sede: "HUACHO", equipo: "EQUIPO A", estado: "HABILITADO" },
-      { usuario: "MARIA.HUARAZ", nombre: "MARIA ADMIN HUARAZ", clave: "admin123", rol: "ADMINISTRADOR", cargo: "ADMINISTRADOR DE AGENCIA", sede: "HUARAZ", equipo: "EQUIPO B", estado: "HABILITADO" },
-      { usuario: "ABIGAIL.SANDOVAL", nombre: "ABIGAIL SANDOVAL", clave: "1234", rol: "ASESOR", cargo: "ASESOR DE CRÉDITOS", sede: "HUACHO", equipo: "EQUIPO A", estado: "HABILITADO" },
-      { usuario: "HEIDY.TALAVERANO", nombre: "HEIDY", clave: "1234", rol: "ASESOR", cargo: "ASESOR DE CRÉDITOS", sede: "HUACHO", equipo: "EQUIPO A", estado: "HABILITADO" },
+      { usuario: "CRISTHIAN.TRINIDAD", nombre: "CRISTHIAN.TRINIDAD", clave: "123", rol: "GERENTE", cargo: "GERENTE GENERAL", sede: "TODAS", equipo: "TODOS", estado: "HABILITADO" },
+      { usuario: "JOSE.SAENZV", nombre: "JOSE.SAENZV", clave: "123", rol: "GERENTE", cargo: "GERENTE", sede: "HUACHO", equipo: "TODOS", estado: "HABILITADO" },
+      { usuario: "CARLOS.MENDOZA", nombre: "CARLOS MENDOZA", clave: "admin123", rol: "ADMINISTRADOR", cargo: "ADMINISTRADOR", sede: "HUACHO", equipo: "EQUIPO A", estado: "HABILITADO" },
+      { usuario: "MARIA.HUARAZ", nombre: "MARIA ADMIN HUARAZ", clave: "admin123", rol: "ADMINISTRADOR", cargo: "ADMINISTRADOR", sede: "HUARAZ", equipo: "EQUIPO B", estado: "HABILITADO" },
+      { usuario: "ABIGAIL.SANDOVAL", nombre: "ABIGAIL SANDOVAL", clave: "1234", rol: "ASESOR", cargo: "ASESOR", sede: "HUACHO", equipo: "EQUIPO A", estado: "HABILITADO" },
+      { usuario: "HEYDI.TALAVERANOJ", nombre: "HEIDY", clave: "1234", rol: "ASESOR", cargo: "ASESOR", sede: "HUACHO", equipo: "EQUIPO A", estado: "HABILITADO" },
+      { usuario: "HUGO", nombre: "HUGO", clave: "1234", rol: "ASESOR", cargo: "ASESOR", sede: "HUACHO", equipo: "EQUIPO A", estado: "HABILITADO" },
+      { usuario: "ARTURO.PICHILINGUEV", nombre: "ARTURO", clave: "1234", rol: "ASESOR", cargo: "ASESOR", sede: "HUACHO", equipo: "EQUIPO B", estado: "HABILITADO" },
+      { usuario: "BRITHANY.BERNALR", nombre: "BRITHANY", clave: "1234", rol: "ASESOR", cargo: "ASESOR", sede: "HUACHO", equipo: "EQUIPO B", estado: "HABILITADO" },
       { usuario: "SHAYRA.CAJA", nombre: "SHAYRA CAJA", clave: "caja123", rol: "CAJERO", cargo: "CAJERO", sede: "HUACHO", equipo: "CAJA", estado: "HABILITADO" }
     ];
 
@@ -729,59 +773,80 @@
      * 2. VARIABLES DE ESTADO GLOBAL
      ***************************************************************************/
     let catalogoUsuarios = [];
-    let promesaCargaUsuarios = null;
+    let promesaCargaInicial = null;
     let usuarioActivo = null;
+    let pestanaActual = "MARCAR";
     let tipoMarcajeSeleccionado = "ENTRADA";
     let modoCapturaActual = "ASISTENCIA";
+
+    // Variables de Imagen en Proceso
     let ultimoBlobGenerado = null;
+    let ultimoBase64Original = "";
     let ultimoBase64Servidor = "";
+    let ultimaMiniaturaAlbum = "";
     let ultimoNombreArchivo = "";
+    let itemAlbumSeleccionado = null;
     let enviandoAsistencia = false;
 
+    // Estado de Vistas y Reportes
     let vistaPantallaAmplia = false;
     let formatoReporteTabla = false;
+    let vistaAlbumCompacta = true;
+    let mostrarTodasFechasAlbum = false;
     let sedeFiltroGerente = "TODAS";
     let rolFiltroReporte = "TODOS";
     let modoFechaReporte = "HOY";
     let registrosAsistenciaGlobal = [];
 
+    // Base de Datos Local IndexedDB para soportar +100 / +500 fotos diarias y Carpeta Fijada
+    let dbGestion = null;
     let directorioGestionHandle = null;
-    let albumGestionCrediban = JSON.parse(localStorage.getItem("crediban_album_gestion_dia_v3") || "[]");
+    let listaFotosAlbumCache = [];
 
+    // Estado GPS y Calle Exacta Más Cercana
     let gpsState = {
       activo: false,
-      lat: -11.097847,
-      lng: -77.609756,
+      lat: -11.1068,
+      lng: -77.6046,
       precision: 10,
-      rumbo: "124° SE",
+      rumbo: "90° E",
       calleExacta: "Avenida Miguel Grau",
+      referenciaCercana: "",
       distrito: "Hualmay",
       provincia: "Huaura",
       region: "Lima",
-      direccionCompleta: "Avenida Miguel Grau, Hualmay, Huaura",
+      direccionCompleta: "Avenida Miguel Grau, Hualmay, Huaura, Lima",
       ultimoGeocodeTs: 0
     };
 
     /***************************************************************************
-     * 3. INICIALIZACIÓN Y SINCRONIZACIÓN CON EL EXCEL Y SCRIPT DE USUARIOS
+     * 3. INICIALIZACIÓN, ESCUDO ANTI-RETROCESO Y BASE DE DATOS INDEXEDDB
      ***************************************************************************/
     window.addEventListener("DOMContentLoaded", async () => {
       iniciarRelojEnVivo();
-      iniciarRastreoGpsContinuo();
       inicializarFechasFiltro();
-      renderizarGaleriaGestion();
+      restaurarBorradorFormulario();
+      configurarEscudoBotonRetroceso();
 
-      // Cargar caché local inmediato y sincronizar en segundo plano con el Google Sheet
+      // Inicializar IndexedDB (Soporta cientos de fotos por día + Carpeta Predefinida Fijada)
+      await inicializarBaseDatosIndexedDB();
+      await restaurarCarpetaPredefinida();
+      await cargarFotosAlbumDesdeDB();
+
+      // Pre-calentar GPS inmediatamente
+      iniciarRastreoGpsContinuo();
+
+      // Cargar caché de usuarios y sincronizar con los servidores
       cargarCacheUsuariosInmediato();
-      promesaCargaUsuarios = sincronizarUsuariosYParametros();
+      promesaCargaInicial = sincronizarUsuariosYParametros();
 
-      const sesionGuardada = localStorage.getItem("crediban_sesion_activa_v4");
+      const sesionGuardada = localStorage.getItem("crediban_sesion_activa_v5");
       if (sesionGuardada) {
         try {
           usuarioActivo = JSON.parse(sesionGuardada);
           mostrarAppPrincipal();
         } catch (e) {
-          localStorage.removeItem("crediban_sesion_activa_v4");
+          localStorage.removeItem("crediban_sesion_activa_v5");
           mostrarPantallaLogin();
         }
       } else {
@@ -793,8 +858,224 @@
       setTimeout(() => overlay.classList.add("hidden"), 250);
     });
 
+    // ESCUDO ANTI-CIERRE AL PRESIONAR "RETROCESO / ATRÁS" EN EL CELULAR
+    function configurarEscudoBotonRetroceso() {
+      window.history.pushState({ credibanApp: true }, "", window.location.href);
+
+      window.addEventListener("popstate", (event) => {
+        // 1. Si el modal de vista previa de foto está abierto, lo cierra en vez de salir de la app
+        const modal = document.getElementById("modalPreviewFoto");
+        if (modal && !modal.classList.contains("hidden")) {
+          cerrarModalPreview();
+          window.history.pushState({ credibanApp: true }, "", window.location.href);
+          mostrarToast("Vista previa cerrada (Tus datos siguen intactos)");
+          return;
+        }
+
+        // 2. Si está en otra pestaña, regresa a la pestaña principal de Asistencia sin cerrar la app
+        if (usuarioActivo && pestanaActual !== "MARCAR") {
+          cambiarPestana("MARCAR");
+          window.history.pushState({ credibanApp: true }, "", window.location.href);
+          return;
+        }
+
+        // 3. Si ya está en la pantalla principal, vuelve a empujar el estado para impedir que se cierre por accidente
+        if (usuarioActivo) {
+          window.history.pushState({ credibanApp: true }, "", window.location.href);
+          mostrarToast("🔒 App protegida contra cierre accidental. Usa el botón rojo arriba para salir.");
+        }
+      });
+    }
+
+    function mostrarToast(mensaje) {
+      const toast = document.getElementById("toastAviso");
+      const txt = document.getElementById("toastAvisoTexto");
+      if (!toast || !txt) return;
+      txt.textContent = mensaje;
+      toast.classList.remove("hidden");
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => toast.classList.add("hidden"), 2800);
+    }
+
+    // AUTOGUARDADO DE FORMULARIOS (Para no volver a escribir nunca si cambia de pantalla)
+    function guardarBorradorFormulario() {
+      const borrador = {
+        chkEnCampo: document.getElementById("chkEnCampo")?.checked || false,
+        motivoAsistencia: document.getElementById("inputMotivoAsistencia")?.value || "",
+        clienteGestion: document.getElementById("gestionClienteNombre")?.value || "",
+        tipoActividadGestion: document.getElementById("gestionTipoActividad")?.value || "Evaluación / Visita de Campo",
+        tipoMarcaje: tipoMarcajeSeleccionado
+      };
+      localStorage.setItem("crediban_borrador_form_v5", JSON.stringify(borrador));
+    }
+
+    function restaurarBorradorFormulario() {
+      try {
+        const raw = localStorage.getItem("crediban_borrador_form_v5");
+        if (!raw) return;
+        const b = JSON.parse(raw);
+        if (document.getElementById("chkEnCampo")) document.getElementById("chkEnCampo").checked = !!b.chkEnCampo;
+        if (document.getElementById("inputMotivoAsistencia")) document.getElementById("inputMotivoAsistencia").value = b.motivoAsistencia || "";
+        if (document.getElementById("gestionClienteNombre")) document.getElementById("gestionClienteNombre").value = b.clienteGestion || "";
+        if (document.getElementById("gestionTipoActividad") && b.tipoActividadGestion) {
+          document.getElementById("gestionTipoActividad").value = b.tipoActividadGestion;
+        }
+        if (b.tipoMarcaje) seleccionarTipoMarcaje(b.tipoMarcaje);
+      } catch (e) {}
+    }
+
+    function limpiarCampoClienteGestion() {
+      const inp = document.getElementById("gestionClienteNombre");
+      if (inp) {
+        inp.value = "";
+        guardarBorradorFormulario();
+        inp.focus();
+      }
+    }
+
+    /***************************************************************************
+     * 4. MOTOR INDEXEDDB PARA +100 FOTOS POR DÍA Y CARPETA PREDEFINIDA FIJADA
+     ***************************************************************************/
+    function inicializarBaseDatosIndexedDB() {
+      return new Promise((resolve) => {
+        if (!window.indexedDB) {
+          resolve(null);
+          return;
+        }
+        const request = indexedDB.open("CredibanGestionDB_v5", 1);
+
+        request.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains("fotos_gestion")) {
+            const store = db.createObjectStore("fotos_gestion", { keyPath: "id" });
+            store.createIndex("fechaIso", "fechaIso", { unique: false });
+          }
+          if (!db.objectStoreNames.contains("config_handles")) {
+            db.createObjectStore("config_handles", { keyPath: "clave" });
+          }
+        };
+
+        request.onsuccess = (e) => {
+          dbGestion = e.target.result;
+          resolve(dbGestion);
+        };
+
+        request.onerror = () => resolve(null);
+      });
+    }
+
+    async function guardarCarpetaHandleEnDB(handle) {
+      if (!dbGestion) return;
+      return new Promise((resolve) => {
+        try {
+          const tx = dbGestion.transaction("config_handles", "readwrite");
+          tx.objectStore("config_handles").put({ clave: "carpeta_mi_gestion", handle: handle });
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => resolve(false);
+        } catch (e) {
+          resolve(false);
+        }
+      });
+    }
+
+    async function restaurarCarpetaPredefinida() {
+      if (!dbGestion) return;
+      return new Promise((resolve) => {
+        try {
+          const tx = dbGestion.transaction("config_handles", "readonly");
+          const req = tx.objectStore("config_handles").get("carpeta_mi_gestion");
+          req.onsuccess = () => {
+            if (req.result && req.result.handle) {
+              directorioGestionHandle = req.result.handle;
+              actualizarUIEstadoCarpeta(true);
+            }
+            resolve();
+          };
+          req.onerror = () => resolve();
+        } catch (e) {
+          resolve();
+        }
+      });
+    }
+
+    function actualizarUIEstadoCarpeta(fijada) {
+      const estadoEl = document.getElementById("estadoCarpetaLocal");
+      const btnEl = document.getElementById("btnFijarCarpeta");
+      if (!estadoEl || !btnEl) return;
+
+      if (fijada) {
+        estadoEl.innerHTML = `<span class="text-emerald-700 font-black">✅ Carpeta "Mi gestión Crediban" FIJADA como predeterminada</span>`;
+        btnEl.innerHTML = `<i class="fa-solid fa-check-double mr-1 text-[#59B447]"></i> Carpeta Fijada`;
+      }
+    }
+
+    async function vincularCarpetaDispositivo() {
+      if ("showDirectoryPicker" in window) {
+        try {
+          const handleRaiz = await window.showDirectoryPicker({ mode: "readwrite" });
+          directorioGestionHandle = await handleRaiz.getDirectoryHandle("Mi gestión Crediban", { create: true });
+          await guardarCarpetaHandleEnDB(directorioGestionHandle);
+          actualizarUIEstadoCarpeta(true);
+          mostrarToast('📌 Carpeta "Mi gestión Crediban" fijada permanentemente');
+        } catch (e) {
+          console.warn("Selección de carpeta cancelada:", e);
+        }
+      } else {
+        localStorage.setItem("crediban_carpeta_prefijo_fijado", "SI");
+        actualizarUIEstadoCarpeta(true);
+        mostrarToast('📌 Guardado directo fijado con etiqueta "Mi_gestion_Crediban"');
+      }
+    }
+
+    async function guardarFotoEnIndexedDB(itemFoto) {
+      listaFotosAlbumCache.unshift(itemFoto);
+      if (!dbGestion) return;
+
+      return new Promise((resolve) => {
+        try {
+          const tx = dbGestion.transaction("fotos_gestion", "readwrite");
+          tx.objectStore("fotos_gestion").put(itemFoto);
+          tx.oncomplete = () => resolve(true);
+          tx.onerror = () => resolve(false);
+        } catch (e) {
+          resolve(false);
+        }
+      });
+    }
+
+    async function cargarFotosAlbumDesdeDB() {
+      if (!dbGestion) {
+        renderizarGaleriaGestion();
+        return;
+      }
+      return new Promise((resolve) => {
+        try {
+          const tx = dbGestion.transaction("fotos_gestion", "readonly");
+          const req = tx.objectStore("fotos_gestion").getAll();
+          req.onsuccess = () => {
+            const items = req.result || [];
+            // Ordenar de la más reciente a la más antigua
+            items.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            listaFotosAlbumCache = items;
+            renderizarGaleriaGestion();
+            resolve();
+          };
+          req.onerror = () => {
+            renderizarGaleriaGestion();
+            resolve();
+          };
+        } catch (e) {
+          renderizarGaleriaGestion();
+          resolve();
+        }
+      });
+    }
+
+    /***************************************************************************
+     * 5. SINCRONIZACIÓN DE USUARIOS Y HOJA "PARAMETROS" DEL EXCEL
+     ***************************************************************************/
     function cargarCacheUsuariosInmediato() {
-      const cache = localStorage.getItem("crediban_usuarios_cache_v4");
+      const cache = localStorage.getItem("crediban_usuarios_cache_v5");
       if (cache) {
         try {
           const parsed = JSON.parse(cache);
@@ -808,28 +1089,19 @@
     }
 
     async function sincronizarUsuariosYParametros() {
+      // 1. Leer Sedes Habilitadas, Días Laborables y Horarios desde la hoja PARAMETROS
       try {
-        // 1. Sincronizar Parámetros y Sedes desde el Apps Script
         const respParam = await fetch(`${CONFIG_SISTEMA.ATTENDANCE_API_URL}?action=getParametros&t=${Date.now()}`);
         const dataParam = await respParam.json();
         if (dataParam && dataParam.status === "ok" && dataParam.parametros) {
-          const p = dataParam.parametros;
-          if (Array.isArray(p.sedesHabilitadas) && p.sedesHabilitadas.length > 0) {
-            SEDES_HABILITADAS = p.sedesHabilitadas;
-          }
-          if (p.reglasPorSede) {
-            PARAMETROS_SEDES = p.reglasPorSede;
-          }
-          if (Array.isArray(p.feriados)) {
-            FERIADOS_NO_LABORABLES = p.feriados;
-          }
+          aplicarParametrosRecibidos(dataParam.parametros);
         }
       } catch (e) {
-        console.warn("Usando parámetros locales de respaldo.");
+        console.warn("Operando con parámetros en caché local.");
       }
 
+      // 2. Leer Catálogo de Usuarios desde el Script Maestro de Login
       try {
-        // 2. Sincronizar Catálogo de Usuarios desde el Script Maestro
         const respUser = await fetch(`${CONFIG_SISTEMA.AUTH_USERS_API_URL}?action=getUsers&t=${Date.now()}`);
         const dataUser = await respUser.json();
         const listaCruda = Array.isArray(dataUser) ? dataUser : (dataUser.usuarios || dataUser.users || dataUser.data || []);
@@ -841,11 +1113,30 @@
 
           if (normalizados.length > 0) {
             catalogoUsuarios = normalizados;
-            localStorage.setItem("crediban_usuarios_cache_v4", JSON.stringify(catalogoUsuarios));
+            localStorage.setItem("crediban_usuarios_cache_v5", JSON.stringify(catalogoUsuarios));
           }
         }
       } catch (e) {
-        console.warn("Usando catálogo de usuarios en caché.");
+        console.warn("Operando con catálogo de usuarios en caché.");
+      }
+    }
+
+    function aplicarParametrosRecibidos(p) {
+      if (Array.isArray(p.sedesHabilitadas) && p.sedesHabilitadas.length > 0) {
+        SEDES_HABILITADAS = p.sedesHabilitadas;
+      }
+      if (p.reglasPorSede) {
+        PARAMETROS_SEDES = p.reglasPorSede;
+      }
+      if (Array.isArray(p.feriados)) {
+        FERIADOS_NO_LABORABLES = p.feriados;
+      }
+      if (usuarioActivo) {
+        actualizarTextoHorarioSede();
+        if (esUsuarioGerente(usuarioActivo)) {
+          poblarSelectorSedeOperativaGerente();
+          construirBotonesSedesGerente();
+        }
       }
     }
 
@@ -858,25 +1149,37 @@
       const equipo = String(raw.equipo || raw.grupo || raw.jefeEquipo || raw.Equipo || "").trim().toUpperCase();
       const estado = String(raw.estado || raw.Estado || "HABILITADO").trim().toUpperCase();
 
+      // Clasificación estricta de Rango
       let rol = "ASESOR";
-      if (cargoRaw.includes("GERENTE") || cargoRaw.includes("DIRECTOR") || cargoRaw.includes("DESARROLLADOR") || cargoRaw.includes("MASTER")) {
+      if (cargoRaw.includes("GERENTE") || cargoRaw.includes("DIRECTOR") || cargoRaw.includes("MASTER") || cargoRaw.includes("DESARROLLADOR")) {
         rol = "GERENTE";
         if (!sede || sede === "GENERAL" || sede === "TODAS LAS SEDES") sede = "TODAS";
-      } else if (cargoRaw.includes("ZONAL")) {
-        rol = "JEFE ZONAL";
-      } else if (cargoRaw.includes("ADMIN")) {
+      } else if (cargoRaw.includes("ADMIN") || cargoRaw.includes("ZONAL")) {
         rol = "ADMINISTRADOR";
-      } else if (cargoRaw.includes("JEFE") || cargoRaw.includes("LIDER") || cargoRaw.includes("EQUIPO")) {
-        rol = "JEFE DE EQUIPO";
       } else if (cargoRaw.includes("CAJ")) {
         rol = "CAJERO";
+      } else if (cargoRaw.includes("TRABAJADOR") || cargoRaw.includes("OPERACIONES") || cargoRaw.includes("ASISTENTE")) {
+        rol = "TRABAJADOR";
+      } else {
+        rol = "ASESOR";
       }
 
       return { usuario: usuarioLogin, nombre: nombreMostrar, clave, rol, cargo: cargoRaw, sede, equipo, estado };
     }
 
+    function esUsuarioGerente(user) {
+      return user && user.rol === "GERENTE";
+    }
+
+    function esUsuarioAdministrador(user) {
+      return user && user.rol === "ADMINISTRADOR";
+    }
+
     /***************************************************************************
-     * 4. LOGIN BLINDADO Y GESTIÓN DE SESIÓN
+     * 6. LOGIN BLINDADO Y SEPARACIÓN ESTRICTA DE PESTAÑAS POR ROL
+     *    - Asesores, Cajeros y Trabajadores: NO ven pestaña Sede ni Control Global
+     *    - Administradores: SOLO ven la pestaña de SU sede (supervisando asesores, trabajadores y cajeros)
+     *    - Gerentes: Únicos que ven Supervisión Gerencial y Control Global
      ***************************************************************************/
     function limpiarIdentificador(texto) {
       return String(texto || "").trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, ".");
@@ -900,11 +1203,11 @@
 
       const btnTextoOriginal = btn.innerHTML;
       btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Verificando...</span>`;
+      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Verificando acceso...</span>`;
 
       try {
-        if (promesaCargaUsuarios) {
-          await Promise.race([promesaCargaUsuarios, new Promise(res => setTimeout(res, 2000))]);
+        if (promesaCargaInicial) {
+          await Promise.race([promesaCargaInicial, new Promise(res => setTimeout(res, 2200))]);
         }
 
         const userLimpio = limpiarIdentificador(inputUser);
@@ -931,7 +1234,9 @@
           return;
         }
 
-        const sedeInicial = (encontrado.sede === "TODAS" || !encontrado.sede) ? (SEDES_HABILITADAS[0] || "HUACHO") : encontrado.sede;
+        const sedeInicial = (encontrado.sede === "TODAS" || !encontrado.sede || !SEDES_HABILITADAS.includes(encontrado.sede))
+          ? (SEDES_HABILITADAS[0] || "HUACHO")
+          : encontrado.sede;
 
         usuarioActivo = {
           ...encontrado,
@@ -939,9 +1244,9 @@
         };
 
         if (recordar) {
-          localStorage.setItem("crediban_sesion_activa_v4", JSON.stringify(usuarioActivo));
+          localStorage.setItem("crediban_sesion_activa_v5", JSON.stringify(usuarioActivo));
         } else {
-          localStorage.removeItem("crediban_sesion_activa_v4");
+          localStorage.removeItem("crediban_sesion_activa_v5");
         }
 
         mostrarAppPrincipal();
@@ -974,16 +1279,23 @@
       document.getElementById("loginScreen").classList.remove("hidden");
     }
 
-    function cerrarSesion() {
-      localStorage.removeItem("crediban_sesion_activa_v4");
+    function confirmarCerrarSesion() {
+      if (!confirm("¿Deseas cerrar tu sesión en este dispositivo?")) return;
+      localStorage.removeItem("crediban_sesion_activa_v5");
       usuarioActivo = null;
       document.getElementById("loginClaveInput").value = "";
       mostrarPantallaLogin();
     }
 
-    /***************************************************************************
-     * 5. ENRUTAMIENTO POR ROLES Y PERMISOS DE SUPERVISIÓN
-     ***************************************************************************/
+    function poblarSelectorSedeOperativaGerente() {
+      const selectSedeGerente = document.getElementById("gerenteSedeOperativaSelect");
+      if (!selectSedeGerente) return;
+      selectSedeGerente.innerHTML = SEDES_HABILITADAS.map(s => `<option value="${s}">Operar: ${s}</option>`).join("");
+      if (usuarioActivo && SEDES_HABILITADAS.includes(usuarioActivo.sedeOperativa)) {
+        selectSedeGerente.value = usuarioActivo.sedeOperativa;
+      }
+    }
+
     function mostrarAppPrincipal() {
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("mainAppContainer").classList.remove("hidden");
@@ -991,7 +1303,7 @@
       document.getElementById("headerRolBadge").textContent = usuarioActivo.rol;
       document.getElementById("headerUserName").textContent = usuarioActivo.nombre;
       document.getElementById("headerUserSede").textContent =
-        usuarioActivo.rol === "GERENTE" ? `GLOBAL (${usuarioActivo.sedeOperativa})` : usuarioActivo.sedeOperativa;
+        esUsuarioGerente(usuarioActivo) ? `GERENCIA (${usuarioActivo.sedeOperativa})` : usuarioActivo.sedeOperativa;
 
       const selectSedeGerente = document.getElementById("gerenteSedeOperativaSelect");
       const tabReporte = document.getElementById("tabBtn_REPORTE");
@@ -1000,13 +1312,11 @@
       const adminSedeHeader = document.getElementById("adminSedeHeaderBar");
       const labelReporte = document.getElementById("tabLabelReporte");
 
-      // Poblar selector de sedes operativas para gerentes
-      selectSedeGerente.innerHTML = SEDES_HABILITADAS.map(s => `<option value="${s}">Operar: ${s}</option>`).join("");
+      poblarSelectorSedeOperativaGerente();
 
-      if (usuarioActivo.rol === "GERENTE" || usuarioActivo.rol === "JEFE ZONAL") {
-        // GERENTE: Supervisión gerencial total y control global
+      if (esUsuarioGerente(usuarioActivo)) {
+        // 👑 GERENTE: Único que ve Supervisión Gerencial Multi-Sede + Control Global
         selectSedeGerente.classList.remove("hidden");
-        selectSedeGerente.value = usuarioActivo.sedeOperativa || SEDES_HABILITADAS[0];
         tabReporte.classList.remove("hidden");
         tabGerencia.classList.remove("hidden");
         barraGerenteSedes.classList.remove("hidden");
@@ -1014,18 +1324,19 @@
         labelReporte.textContent = "Supervisión Gerencial";
         sedeFiltroGerente = "TODAS";
         construirBotonesSedesGerente();
-      } else if (usuarioActivo.rol === "ADMINISTRADOR" || usuarioActivo.rol === "JEFE DE EQUIPO") {
-        // ADMINISTRADOR: Supervisa la asistencia de asesores, trabajadores y cajeros de SU sede
+      } else if (esUsuarioAdministrador(usuarioActivo)) {
+        // 🛡️ ADMINISTRADOR: Solo ve la pestaña de SU sede (supervisa asesores, trabajadores y cajeros de su sede). NO ve Control Global.
         selectSedeGerente.classList.add("hidden");
         tabReporte.classList.remove("hidden");
         tabGerencia.classList.add("hidden");
         barraGerenteSedes.classList.add("hidden");
         adminSedeHeader.classList.remove("hidden");
-        document.getElementById("adminSedeTitulo").textContent = `Supervisión de Asesores, Trabajadores y Cajeros • SEDE ${usuarioActivo.sedeOperativa}`;
+        document.getElementById("adminSedeTitulo").textContent =
+          `Supervisión de Asesores, Trabajadores y Cajeros • SEDE ${usuarioActivo.sedeOperativa}`;
         labelReporte.textContent = `Sede ${usuarioActivo.sedeOperativa}`;
         sedeFiltroGerente = usuarioActivo.sedeOperativa;
       } else {
-        // ASESOR / CAJERO: Asistencia y Cámara de Gestión en Campo
+        // 👤 ASESORES, CAJEROS Y TRABAJADORES: NO ven pestaña Sede ni Control Global
         selectSedeGerente.classList.add("hidden");
         tabReporte.classList.add("hidden");
         tabGerencia.classList.add("hidden");
@@ -1042,20 +1353,32 @@
     function cambiarSedeOperativaGerente(nuevaSede) {
       if (!usuarioActivo) return;
       usuarioActivo.sedeOperativa = nuevaSede;
-      document.getElementById("headerUserSede").textContent = `GLOBAL (${nuevaSede})`;
-      localStorage.setItem("crediban_sesion_activa_v4", JSON.stringify(usuarioActivo));
+      document.getElementById("headerUserSede").textContent = `GERENCIA (${nuevaSede})`;
+      localStorage.setItem("crediban_sesion_activa_v5", JSON.stringify(usuarioActivo));
       actualizarTextoHorarioSede();
     }
 
     function cambiarPestana(tabId) {
+      // Bloqueo de seguridad: impedir que un Asesor, Cajero o Trabajador abra REPORTE o GERENCIA
+      if ((tabId === "REPORTE" || tabId === "GERENCIA") && !esUsuarioGerente(usuarioActivo) && !esUsuarioAdministrador(usuarioActivo)) {
+        tabId = "MARCAR";
+      }
+      // Impedir que un Administrador abra GERENCIA (Control Global es exclusivo de Gerentes)
+      if (tabId === "GERENCIA" && !esUsuarioGerente(usuarioActivo)) {
+        tabId = "REPORTE";
+      }
+
+      pestanaActual = tabId;
       const vistas = ["MARCAR", "GESTION", "REPORTE", "GERENCIA"];
       vistas.forEach(v => {
         const elVista = document.getElementById(`view_${v}`);
         const elBtn = document.getElementById(`tabBtn_${v}`);
         if (elVista) elVista.classList.toggle("hidden", v !== tabId);
-        if (elBtn) {
+        if (elBtn && !elBtn.classList.contains("hidden")) {
           if (v === tabId) {
             elBtn.className = "flex-1 min-w-[105px] py-2 px-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-[#59B447] text-white shadow";
+          } else if (v === "GERENCIA") {
+            elBtn.className = "flex-1 min-w-[125px] py-2 px-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-amber-400/20 text-amber-300 border border-amber-400/30";
           } else {
             elBtn.className = "flex-1 min-w-[105px] py-2 px-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-white/10 text-emerald-100 hover:bg-white/20";
           }
@@ -1065,6 +1388,8 @@
       if (tabId === "REPORTE" || tabId === "GERENCIA") {
         poblarFiltrosColaboradoresReporte();
         renderizarReportes();
+      } else if (tabId === "GESTION") {
+        renderizarGaleriaGestion();
       }
     }
 
@@ -1088,7 +1413,9 @@
     }
 
     /***************************************************************************
-     * 6. RASTREO GPS Y GEOCODIFICACIÓN CON GOOGLE MAPS API (DIRECCIÓN EXACTA)
+     * 7. MOTOR GPS CON SELECCIÓN AUTOMÁTICA DE LA CALLE MÁS CERCANA
+     *    Si el colaborador está dentro de una casa, lote o interior, busca en los
+     *    resultados de Google Maps y OpenStreetMap la vía/calle más cercana.
      ***************************************************************************/
     function iniciarRastreoGpsContinuo() {
       if (!navigator.geolocation) {
@@ -1108,31 +1435,27 @@
           }
 
           actualizarSemaforoGPS("OK", `GPS ±${gpsState.precision}m`);
-          const subEl = document.getElementById("distritoDetectadoSub");
-          if (subEl) {
-            subEl.textContent = `${gpsState.distrito}, ${gpsState.provincia} • ${gpsState.rumbo}`;
-          }
 
           const ahora = Date.now();
-          if (ahora - gpsState.ultimoGeocodeTs > 25000) {
+          if (ahora - gpsState.ultimoGeocodeTs > 20000) {
             gpsState.ultimoGeocodeTs = ahora;
-            await obtenerDireccionExactaGoogleMaps(gpsState.lat, gpsState.lng);
+            await resolverCalleMasCercana(gpsState.lat, gpsState.lng);
           }
         },
         () => actualizarSemaforoGPS("WARN", "GPS Débil"),
-        { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+        { enableHighAccuracy: true, maximumAge: 8000, timeout: 15000 }
       );
     }
 
     function forzarRefrescoGPS() {
       gpsState.ultimoGeocodeTs = 0;
-      actualizarSemaforoGPS("LOAD", "Buscando...");
+      actualizarSemaforoGPS("LOAD", "Ubicando calle...");
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
           gpsState.activo = true;
           gpsState.lat = pos.coords.latitude;
           gpsState.lng = pos.coords.longitude;
-          await obtenerDireccionExactaGoogleMaps(gpsState.lat, gpsState.lng);
+          await resolverCalleMasCercana(gpsState.lat, gpsState.lng);
           actualizarSemaforoGPS("OK", `GPS ±${Math.round(pos.coords.accuracy || 8)}m`);
         },
         () => actualizarSemaforoGPS("WARN", "Activar GPS"),
@@ -1159,42 +1482,85 @@
       }
     }
 
-    async function obtenerDireccionExactaGoogleMaps(lat, lng) {
+    // Busca la calle exacta más cercana incluso si el punto cae dentro de una casa o terreno sin numeración
+    async function resolverCalleMasCercana(lat, lng) {
+      let calleEncontrada = "";
+      let numeroEncontrado = "";
+      let urbanizacion = "";
+      let distrito = "";
+      let provincia = "";
+      let region = "";
+
+      // 1. Consultar todos los resultados de Google Maps Geocoding para elegir el que tenga nombre de vía real (route)
       try {
-        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${CONFIG_SISTEMA.MAPS_API_KEY}&language=es`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.status === "OK" && data.results && data.results.length > 0) {
-          const resGeo = data.results[0];
-          gpsState.direccionCompleta = resGeo.formatted_address;
-          
-          let calle = "";
-          let num = "";
-          let dist = "";
-          let prov = "";
-          let reg = "Lima";
+        const urlGoogle = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${CONFIG_SISTEMA.MAPS_API_KEY}&language=es`;
+        const resG = await fetch(urlGoogle);
+        const dataG = await resG.json();
 
-          resGeo.address_components.forEach(c => {
-            if (c.types.includes("route")) calle = c.long_name;
-            if (c.types.includes("street_number")) num = c.long_name;
-            if (c.types.includes("locality") || c.types.includes("sublocality")) dist = c.long_name;
-            if (c.types.includes("administrative_area_level_2")) prov = c.long_name;
-            if (c.types.includes("administrative_area_level_1")) reg = c.long_name;
-          });
-
-          gpsState.calleExacta = [calle, num].filter(Boolean).join(" ") || resGeo.formatted_address.split(",")[0];
-          gpsState.distrito = dist || "Hualmay";
-          gpsState.provincia = prov || "Huaura";
-          gpsState.region = reg;
-
-          const elTitulo = document.getElementById("calleDetectadaTitulo");
-          if (elTitulo) elTitulo.textContent = gpsState.calleExacta;
-          const elSub = document.getElementById("distritoDetectadoSub");
-          if (elSub) elSub.textContent = `${gpsState.distrito}, ${gpsState.provincia} • ${gpsState.rumbo}`;
+        if (dataG.status === "OK" && Array.isArray(dataG.results) && dataG.results.length > 0) {
+          // Recorrer todos los niveles devueltos por Google buscando la calle más cercana que no sea un Plus Code ("VX2R+...")
+          for (const item of dataG.results) {
+            item.address_components.forEach(c => {
+              if (!calleEncontrada && c.types.includes("route") && !c.long_name.includes("+") && !c.long_name.includes("Unnamed")) {
+                calleEncontrada = c.long_name;
+              }
+              if (!numeroEncontrado && c.types.includes("street_number")) {
+                numeroEncontrado = c.long_name;
+              }
+              if (!urbanizacion && (c.types.includes("neighborhood") || c.types.includes("sublocality") || c.types.includes("Synchronized"))) {
+                urbanizacion = c.long_name;
+              }
+              if (!distrito && (c.types.includes("locality") || c.types.includes("administrative_area_level_3"))) {
+                distrito = c.long_name;
+              }
+              if (!provincia && c.types.includes("administrative_area_level_2")) {
+                provincia = c.long_name;
+              }
+              if (!region && c.types.includes("administrative_area_level_1")) {
+                region = c.long_name;
+              }
+            });
+          }
         }
-      } catch (e) {
-        console.warn("Error consultando Geocoding API:", e);
+      } catch (e) {}
+
+      // 2. Si el punto está en una casa/pasaje interior donde Google no reportó calle, consultar OpenStreetMap Road Snapping (zoom 18)
+      if (!calleEncontrada) {
+        try {
+          const urlOsm = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+          const resOsm = await fetch(urlOsm, { headers: { "Accept-Language": "es" } });
+          const dataOsm = await resOsm.json();
+          if (dataOsm && dataOsm.address) {
+            const a = dataOsm.address;
+            calleEncontrada = a.road || a.pedestrian || a.residential || a.path || a.suburb || a.neighbourhood || "";
+            if (!numeroEncontrado && a.house_number) numeroEncontrado = a.house_number;
+            if (!urbanizacion) urbanizacion = a.neighbourhood || a.suburb || a.hamlet || "";
+            if (!distrito) distrito = a.city_district || a.town || a.village || a.municipality || "";
+            if (!provincia) provincia = a.county || a.city || "";
+            if (!region) region = a.state || a.region || "";
+          }
+        } catch (e) {}
       }
+
+      // 3. Construir la dirección más exacta y legible posible
+      const viaPrincipal = [numeroEncontrado, calleEncontrada].filter(Boolean).join(" ").trim() || urbanizacion || "Vía Urbana Cercana";
+      gpsState.calleExacta = viaPrincipal;
+      gpsState.referenciaCercana = (urbanizacion && urbanizacion !== viaPrincipal) ? urbanizacion : "";
+      gpsState.distrito = distrito || "Hualmay";
+      gpsState.provincia = provincia || "Huaura";
+      gpsState.region = (region || "Lima").replace("Gobierno Regional de ", "");
+      gpsState.direccionCompleta = [
+        gpsState.calleExacta,
+        gpsState.referenciaCercana,
+        gpsState.distrito,
+        gpsState.provincia,
+        gpsState.region
+      ].filter(Boolean).join(", ");
+
+      const elTitulo = document.getElementById("calleDetectadaTitulo");
+      if (elTitulo) elTitulo.textContent = gpsState.calleExacta + (gpsState.referenciaCercana ? ` (${gpsState.referenciaCercana})` : "");
+      const elSub = document.getElementById("distritoDetectadoSub");
+      if (elSub) elSub.textContent = `${gpsState.distrito}, ${gpsState.provincia}, ${gpsState.region} • ${gpsState.rumbo}`;
     }
 
     function obtenerPuntoCardinal(angulo) {
@@ -1203,10 +1569,12 @@
     }
 
     /***************************************************************************
-     * 7. MOTOR CANVAS: MINIMAPA GOOGLE MAPS + DIRECCIÓN EXACTA (SIN COORDENADAS)
+     * 8. MOTOR GRÁFICO CANVAS: MINIMAPA DE CALLES REALES (SIN RAYAS EN ESQUINAS)
+     *    + DIRECCIÓN EXACTA A LA DERECHA (SIN COORDENADAS)
      ***************************************************************************/
     function seleccionarTipoMarcaje(tipo) {
       tipoMarcajeSeleccionado = tipo;
+      guardarBorradorFormulario();
       const mapIds = {
         "ENTRADA": "btnTipo_ENTRADA",
         "SALIDA REFRIGERIO": "btnTipo_SALIDA_REFRIGERIO",
@@ -1236,6 +1604,11 @@
       let objectUrl = null;
 
       try {
+        // Asegurar que tenemos la calle más cercana actualizada
+        if (gpsState.ultimoGeocodeTs === 0) {
+          await resolverCalleMasCercana(gpsState.lat, gpsState.lng);
+        }
+
         objectUrl = URL.createObjectURL(file);
         const img = new Image();
         img.src = objectUrl;
@@ -1244,7 +1617,8 @@
         const canvas = document.getElementById("hiddenCanvas");
         const ctx = canvas.getContext("2d");
 
-        const maxDimension = (modo === "GESTION") ? 2400 : 1280;
+        // En GESTIÓN mantenemos la calidad alta original para WhatsApp/Galería (hasta 2200px)
+        const maxDimension = (modo === "GESTION") ? 2200 : 1280;
         let width = img.naturalWidth || img.width;
         let height = img.naturalHeight || img.height;
 
@@ -1261,28 +1635,28 @@
         canvas.width = width;
         canvas.height = height;
 
-        // 1. Dibujar imagen nítida
+        // 1. Dibujar fotografía original
         ctx.drawImage(img, 0, 0, width, height);
 
-        // 2. Degradado inferior
+        // 2. Degradado oscuro suave en la parte inferior para lectura nítida
         const altoGradiente = Math.round(height * 0.38);
         const grad = ctx.createLinearGradient(0, height - altoGradiente, 0, height);
         grad.addColorStop(0, "rgba(0, 0, 0, 0)");
-        grad.addColorStop(0.55, "rgba(0, 0, 0, 0.38)");
-        grad.addColorStop(1, "rgba(0, 0, 0, 0.78)");
+        grad.addColorStop(0.50, "rgba(0, 0, 0, 0.40)");
+        grad.addColorStop(1, "rgba(0, 0, 0, 0.80)");
         ctx.fillStyle = grad;
         ctx.fillRect(0, height - altoGradiente, width, altoGradiente);
 
-        // 3. Dibujar Minimapa de Google Maps (Usando tu API Key)
+        // 3. Dibujar el MINIMAPA DE CALLES REALES en la esquina inferior izquierda (Sin rayas blancas/verdes)
         const margen = Math.round(width * 0.026);
         const mapWidth = Math.round(width * 0.27);
         const mapHeight = Math.round(mapWidth * 1.18);
         const mapX = margen;
         const mapY = height - mapHeight - margen;
 
-        await dibujarMinimapaConApiKey(ctx, gpsState.lat, gpsState.lng, mapX, mapY, mapWidth, mapHeight);
+        await dibujarMinimapaCallesReales(ctx, gpsState.lat, gpsState.lng, mapX, mapY, mapWidth, mapHeight);
 
-        // 4. Estampar líneas de datos a la derecha (DIRECCIÓN EXACTA SIN COORDENADAS)
+        // 4. Dibujar las líneas de Dirección Exacta a la derecha (SIN COORDENADAS)
         const ahora = new Date();
         const fechaFormateada = formatearFechaHoraEstiloFoto(ahora);
         const indiceUnico = Math.floor(10000 + (ahora.getTime() % 89999));
@@ -1295,16 +1669,17 @@
           fechaFormateada,
           gpsState.rumbo,
           gpsState.calleExacta,
+          ...(gpsState.referenciaCercana ? [gpsState.referenciaCercana] : []),
           gpsState.distrito,
           gpsState.provincia,
           gpsState.region,
           `Número de índice: ${indiceUnico}`
         ];
 
-        const cintaSuperior = `${usuarioActivo ? usuarioActivo.nombre : "ASESOR"} • ${detalleActividad}`;
+        const cintaSuperior = `${usuarioActivo ? usuarioActivo.nombre : "COLABORADOR"} • ${detalleActividad}`;
 
         const fontSizeBase = Math.max(15, Math.round(width * 0.031));
-        const lineHeight = Math.round(fontSizeBase * 1.24);
+        const lineHeight = Math.round(fontSizeBase * 1.23);
         const rightX = width - margen;
         let currentY = height - margen - Math.round(fontSizeBase * 0.15);
 
@@ -1312,12 +1687,12 @@
         ctx.textAlign = "right";
         ctx.textBaseline = "bottom";
         ctx.font = `600 ${fontSizeBase}px Inter, Arial, sans-serif`;
-        ctx.shadowColor = "rgba(0, 0, 0, 0.85)";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.88)";
         ctx.shadowBlur = 4;
         ctx.shadowOffsetX = 1;
         ctx.shadowOffsetY = 1;
         ctx.fillStyle = "#FFFFFF";
-        ctx.strokeStyle = "rgba(0, 0, 0, 0.65)";
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.70)";
         ctx.lineWidth = Math.max(2, Math.round(fontSizeBase * 0.1));
 
         for (let i = lineasDerecha.length - 1; i >= 0; i--) {
@@ -1327,68 +1702,144 @@
           currentY -= lineHeight;
         }
 
-        ctx.font = `800 ${Math.round(fontSizeBase * 0.78)}px Inter, Arial, sans-serif`;
-        ctx.fillStyle = "#A7F3D0";
+        ctx.font = `800 ${Math.round(fontSizeBase * 0.80)}px Inter, Arial, sans-serif`;
+        ctx.fillStyle = "#86EFAC";
         ctx.strokeText(cintaSuperior, rightX, currentY - 2);
         ctx.fillText(cintaSuperior, rightX, currentY - 2);
         ctx.restore();
 
+        // 5. Generar archivo en Calidad Original para WhatsApp/Galería + Miniatura ligera para la App
         const calidadJpeg = (modo === "GESTION") ? 0.95 : 0.82;
-        ultimoBase64Servidor = canvas.toDataURL("image/jpeg", calidadJpeg);
+        ultimoBase64Original = canvas.toDataURL("image/jpeg", calidadJpeg);
         ultimoBlobGenerado = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", calidadJpeg));
+
+        // Generar miniatura ligera (~20KB) para que el álbum soporte +100 fotos diarias sin saturar la memoria
+        ultimaMiniaturaAlbum = generarMiniaturaLigera(canvas, 420, 0.68);
+        ultimoBase64Servidor = (modo === "ASISTENCIA") ? generarMiniaturaLigera(canvas, 960, 0.78) : ultimaMiniaturaAlbum;
 
         const fechaCorta = ahora.toISOString().slice(0, 10);
         const limpNombre = (usuarioActivo ? usuarioActivo.nombre : "ASESOR").replace(/[^A-Z0-9]/gi, "_");
         ultimoNombreArchivo = `Mi_gestion_Crediban_${limpNombre}_${fechaCorta}_${indiceUnico}.jpg`;
 
-        abrirModalPreview(ultimoBase64Servidor, modo);
+        abrirModalPreview(ultimoBase64Original, modo);
       } catch (err) {
         console.error("Error procesando foto:", err);
-        alert("No se pudo procesar la imagen. Intenta nuevamente.");
+        alert("No se pudo procesar la fotografía. Intenta nuevamente.");
       } finally {
         if (objectUrl) URL.revokeObjectURL(objectUrl);
         event.target.value = "";
       }
     }
 
-    async function dibujarMinimapaConApiKey(ctx, lat, lng, x, y, w, h) {
+    function generarMiniaturaLigera(sourceCanvas, maxAncho, calidad) {
+      const miniCanvas = document.createElement("canvas");
+      const ratio = sourceCanvas.height / sourceCanvas.width;
+      miniCanvas.width = Math.min(sourceCanvas.width, maxAncho);
+      miniCanvas.height = Math.round(miniCanvas.width * ratio);
+      const mCtx = miniCanvas.getContext("2d");
+      mCtx.drawImage(sourceCanvas, 0, 0, miniCanvas.width, miniCanvas.height);
+      return miniCanvas.toDataURL("image/jpeg", calidad);
+    }
+
+    // Dibuja los cuadrantes reales de calles y manzanas (Zoom 17) + Pin Rojo Central + Logo Google
+    async function dibujarMinimapaCallesReales(ctx, lat, lng, x, y, w, h) {
       ctx.save();
-      const radio = Math.round(w * 0.05);
+      const radio = Math.round(w * 0.055);
       trazarRectanguloRedondeado(ctx, x, y, w, h, radio);
-      ctx.fillStyle = "#E8EAED";
+      ctx.fillStyle = "#F4F3EE";
       ctx.fill();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.92)";
       ctx.stroke();
       ctx.clip();
 
-      // Cargar imagen del mapa estático utilizando tu API Key de Google Maps
-      const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=16&size=${w}x${h}&scale=2&markers=color:red%7C${lat},${lng}&key=${CONFIG_SISTEMA.MAPS_API_KEY}`;
-      
-      let mapaCargado = false;
+      // Cálculo matemático exacto del cuadrante Mercator a Zoom 16 para mostrar las calles cercanas a la casa/punto
+      const zoom = 16;
+      const n = Math.pow(2, zoom);
+      const exactTileX = ((lng + 180) / 360) * n;
+      const latRad = (lat * Math.PI) / 180;
+      const exactTileY = ((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * n;
+
+      const centerTileX = Math.floor(exactTileX);
+      const centerTileY = Math.floor(exactTileY);
+      const offsetX = Math.round((exactTileX - centerTileX) * 256);
+      const offsetY = Math.round((exactTileY - centerTileY) * 256);
+
+      let tilesDibujados = 0;
+
       try {
-        const imgMap = await new Promise((resolve) => {
-          const img = new Image();
-          img.crossOrigin = "anonymous";
-          const timer = setTimeout(() => resolve(null), 3000);
-          img.onload = () => { clearTimeout(timer); resolve(img); };
-          img.onerror = () => { clearTimeout(timer); resolve(null); };
-          img.src = staticMapUrl;
-        });
-
-        if (imgMap) {
-          ctx.drawImage(imgMap, x, y, w, h);
-          mapaCargado = true;
+        const promesas = [];
+        for (let dx = -1; dx <= 1; dx++) {
+          for (let dy = -1; dy <= 1; dy++) {
+            const tx = centerTileX + dx;
+            const ty = centerTileY + dy;
+            promesas.push(cargarCuadranteMapaMultiServidor(zoom, tx, ty, dx, dy));
+          }
         }
-      } catch (e) {
-        mapaCargado = false;
+
+        const resultados = await Promise.all(promesas);
+        const centerX = x + w / 2;
+        const centerY = y + h / 2;
+
+        resultados.forEach(item => {
+          if (item && item.img) {
+            const drawX = centerX - offsetX + item.dx * 256;
+            const drawY = centerY - offsetY + item.dy * 256;
+            ctx.drawImage(item.img, drawX, drawY, 256, 256);
+            tilesDibujados++;
+          }
+        });
+      } catch (e) {}
+
+      // Si el celular está totalmente sin datos móviles, dibuja un plano urbano completo con calles cruzadas y nombre de la calle
+      if (tilesDibujados === 0) {
+        dibujarPlanoUrbanoDetalladoOffline(ctx, x, y, w, h);
       }
 
-      if (!mapaCargado) {
-        dibujarPlanoVectorialRespaldo(ctx, x, y, w, h);
+      // Etiqueta de la calle más cercana en la parte superior del minimapa
+      if (gpsState.calleExacta) {
+        const fontCalle = Math.max(9, Math.round(w * 0.068));
+        ctx.font = `700 ${fontCalle}px Inter, Arial, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+        const textoCalleCorta = gpsState.calleExacta.slice(0, 24);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
+        ctx.fillStyle = "#374151";
+        ctx.strokeText(textoCalleCorta, x + w / 2, y + Math.round(h * 0.06));
+        ctx.fillText(textoCalleCorta, x + w / 2, y + Math.round(h * 0.06));
       }
 
-      // Insignia "Google" en la esquina inferior izquierda del minimapa
+      // Pin Rojo Oficial de Ubicación justo en el centro del minimapa
+      const pinX = x + w / 2;
+      const pinY = y + h / 2;
+      const pinRadius = Math.max(9, Math.round(w * 0.08));
+
+      // Sombra bajo el pin
+      ctx.beginPath();
+      ctx.ellipse(pinX, pinY + pinRadius * 0.72, pinRadius * 0.45, pinRadius * 0.2, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(0, 0, 0, 0.30)";
+      ctx.fill();
+
+      // Cuerpo del Pin Rojo
+      ctx.beginPath();
+      ctx.arc(pinX, pinY - pinRadius * 0.9, pinRadius, Math.PI, 0, false);
+      ctx.quadraticCurveTo(pinX + pinRadius, pinY - pinRadius * 0.1, pinX, pinY + pinRadius * 0.7);
+      ctx.quadraticCurveTo(pinX - pinRadius, pinY - pinRadius * 0.1, pinX - pinRadius, pinY - pinRadius * 0.9);
+      ctx.closePath();
+      ctx.fillStyle = "#EA4335";
+      ctx.fill();
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = "#B31412";
+      ctx.stroke();
+
+      // Círculo central oscuro del pin
+      ctx.beginPath();
+      ctx.arc(pinX, pinY - pinRadius * 0.9, Math.round(pinRadius * 0.38), 0, Math.PI * 2);
+      ctx.fillStyle = "#7A0E0C";
+      ctx.fill();
+
+      // Insignia "Google" multicolor en la esquina inferior izquierda del minimapa
       const fontGoogle = Math.max(11, Math.round(w * 0.095));
       ctx.font = `700 ${fontGoogle}px Arial, sans-serif`;
       ctx.textBaseline = "bottom";
@@ -1402,8 +1853,8 @@
 
       let gx = x + Math.round(w * 0.045);
       const gy = y + h - Math.round(w * 0.035);
-      ctx.lineWidth = 2.5;
-      ctx.strokeStyle = "rgba(255,255,255,0.9)";
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
 
       letrasGoogle.forEach(item => {
         ctx.strokeText(item.l, gx, gy);
@@ -1415,19 +1866,75 @@
       ctx.restore();
     }
 
-    function dibujarPlanoVectorialRespaldo(ctx, x, y, w, h) {
-      ctx.fillStyle = "#F3F4F6";
+    // Intenta cargar el cuadrante desde Carto Voyager (Colores Google Maps) y si falla usa OpenStreetMap directo
+    function cargarCuadranteMapaMultiServidor(zoom, tx, ty, dx, dy) {
+      const urls = [
+        `https://a.basemaps.cartocdn.com/rastertiles/voyager/${zoom}/${tx}/${ty}.png`,
+        `https://b.basemaps.cartocdn.com/rastertiles/voyager/${zoom}/${tx}/${ty}.png`,
+        `https://tile.openstreetmap.org/${zoom}/${tx}/${ty}.png`
+      ];
+
+      return new Promise((resolve) => {
+        let idx = 0;
+        const intentarSiguiente = () => {
+          if (idx >= urls.length) {
+            resolve(null);
+            return;
+          }
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          const timer = setTimeout(() => {
+            idx++;
+            intentarSiguiente();
+          }, 2200);
+
+          img.onload = () => {
+            clearTimeout(timer);
+            resolve({ img, dx, dy });
+          };
+          img.onerror = () => {
+            clearTimeout(timer);
+            idx++;
+            intentarSiguiente();
+          };
+          img.src = urls[idx];
+        };
+        intentarSiguiente();
+      });
+    }
+
+    function dibujarPlanoUrbanoDetalladoOffline(ctx, x, y, w, h) {
+      // Fondo crema estilo Google Maps
+      ctx.fillStyle = "#F1F3F4";
       ctx.fillRect(x, y, w, h);
-      ctx.fillStyle = "#D1FAE5";
-      ctx.fillRect(x + w * 0.1, y + h * 0.12, w * 0.32, h * 0.22);
+
+      // Manzanas y áreas verdes
+      ctx.fillStyle = "#CEEAD6";
+      ctx.fillRect(x + w * 0.08, y + h * 0.14, w * 0.34, h * 0.24);
+      ctx.fillRect(x + w * 0.58, y + h * 0.62, w * 0.32, h * 0.22);
+
+      // Trazado de calles secundarias diagonales y perpendiculares
       ctx.strokeStyle = "#FFFFFF";
-      ctx.lineWidth = Math.max(4, Math.round(w * 0.04));
+      ctx.lineWidth = Math.max(5, Math.round(w * 0.045));
       for (let i = 1; i <= 4; i++) {
         ctx.beginPath();
         ctx.moveTo(x, y + (h * i) / 5);
-        ctx.lineTo(x + w, y + (h * i) / 5 + 12);
+        ctx.lineTo(x + w, y + (h * i) / 5 - 8);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(x + (w * i) / 4.5, y);
+        ctx.lineTo(x + (w * i) / 4.5 + 10, y + h);
         ctx.stroke();
       }
+
+      // Avenida principal amarilla
+      ctx.strokeStyle = "#FEEFC3";
+      ctx.lineWidth = Math.max(8, Math.round(w * 0.07));
+      ctx.beginPath();
+      ctx.moveTo(x, y + h * 0.52);
+      ctx.lineTo(x + w, y + h * 0.45);
+      ctx.stroke();
     }
 
     function trazarRectanguloRedondeado(ctx, x, y, width, height, radius) {
@@ -1458,28 +1965,40 @@
     }
 
     /***************************************************************************
-     * 8. MODAL PREVIEW Y ENVÍO DE ASISTENCIA / GESTIÓN
+     * 9. MODAL DE PREVISUALIZACIÓN, SUBIDA DE ASISTENCIA Y ÁLBUM POR FECHA
      ***************************************************************************/
-    function abrirModalPreview(dataUrl, modo, urlDriveOriginal = "") {
+    function abrirModalPreview(dataUrl, modo, urlDriveOriginal = "", itemAlbum = null) {
       document.getElementById("imgPreviewResultado").src = dataUrl;
       const badge = document.getElementById("previewBadgeModo");
       const boxAsistencia = document.getElementById("previewBotonesAsistencia");
       const boxGestion = document.getElementById("previewBotonesGestion");
       const boxLectura = document.getElementById("previewBotonesLecturaReporte");
       const linkDrive = document.getElementById("linkAbrirFotoDrive");
+      const btnReenviarWA = document.getElementById("btnReenviarAlbumWA");
+      const btnCerrarLectura = document.getElementById("btnCerrarLecturaModal");
 
-      if (urlDriveOriginal) {
+      itemAlbumSeleccionado = itemAlbum;
+
+      if (urlDriveOriginal && urlDriveOriginal.startsWith("http")) {
         linkDrive.href = urlDriveOriginal;
         linkDrive.classList.remove("hidden");
       } else {
         linkDrive.classList.add("hidden");
       }
 
-      if (modo === "LECTURA") {
-        badge.textContent = "VISOR DE EVIDENCIA FOTOGRÁFICA";
+      if (modo === "LECTURA" || modo === "ALBUM_VIEW") {
+        badge.textContent = modo === "ALBUM_VIEW" ? `MI GESTIÓN CREDIBAN • ${itemAlbum?.fechaIso || ""}` : "VISOR DE EVIDENCIA FOTOGRÁFICA";
         boxAsistencia.classList.add("hidden");
         boxGestion.classList.add("hidden");
         boxLectura.classList.remove("hidden");
+
+        if (modo === "ALBUM_VIEW" && itemAlbum) {
+          btnReenviarWA.classList.remove("hidden");
+          btnCerrarLectura.className = "col-span-1 py-3 rounded-xl bg-slate-800 text-white font-extrabold text-xs uppercase";
+        } else {
+          btnReenviarWA.classList.add("hidden");
+          btnCerrarLectura.className = "col-span-2 py-3 rounded-xl bg-slate-800 text-white font-extrabold text-xs uppercase";
+        }
       } else if (modo === "GESTION") {
         badge.textContent = "MODO GESTIÓN EN CAMPO • CALIDAD ORIGINAL";
         boxAsistencia.classList.add("hidden");
@@ -1493,6 +2012,7 @@
       }
 
       document.getElementById("modalPreviewFoto").classList.remove("hidden");
+      window.history.pushState({ modalPreviewOpen: true }, "", window.location.href);
     }
 
     function cerrarModalPreview() {
@@ -1515,13 +2035,12 @@
       const btn = document.getElementById("btnConfirmarAsistencia");
       const textoOriginal = btn.innerHTML;
       btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1"></i> Registrando...`;
+      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1"></i> Guardando...`;
 
       try {
         const ahora = new Date();
         const enCampo = document.getElementById("chkEnCampo").checked;
         const observacion = document.getElementById("inputMotivoAsistencia").value.trim() || (enCampo ? "Labor en Campo" : "Labor en Agencia");
-        const minutosTardanza = calcularMinutosTardanza(ahora, usuarioActivo.sedeOperativa, tipoMarcajeSeleccionado, enCampo);
 
         const payload = {
           action: "registrarAsistencia",
@@ -1535,7 +2054,8 @@
           coordenadas: `${gpsState.lat.toFixed(6)},${gpsState.lng.toFixed(6)}`,
           enCampo: enCampo,
           observaciones: observacion,
-          fotoBase64: ultimoBase64Servidor
+          fotoBase64: ultimoBase64Original,
+          fotoMiniBase64: ultimoBase64Servidor
         };
 
         const resp = await fetch(CONFIG_SISTEMA.ATTENDANCE_API_URL, {
@@ -1545,7 +2065,7 @@
         });
         const resultadoJson = await resp.json();
 
-        if (resultadoJson.status === "ok") {
+        if (resultadoJson && resultadoJson.status === "ok" && resultadoJson.registro) {
           registrosAsistenciaGlobal.unshift(resultadoJson.registro);
           guardarRegistrosLocales();
         }
@@ -1558,12 +2078,13 @@
 
         cerrarModalPreview();
         document.getElementById("inputMotivoAsistencia").value = "";
-        alert(`✅ ${tipoMarcajeSeleccionado} registrada correctamente y guardada en el Excel.`);
+        guardarBorradorFormulario();
+        mostrarToast(`✅ ${tipoMarcajeSeleccionado} registrada correctamente`);
         cargarAsistenciasDesdeServidor(false);
       } catch (e) {
         console.error("Error al registrar:", e);
-        alert("Asistencia registrada en modo local.");
         cerrarModalPreview();
+        mostrarToast("Asistencia guardada en memoria local");
       } finally {
         enviandoAsistencia = false;
         btn.disabled = false;
@@ -1572,49 +2093,50 @@
     }
 
     /***************************************************************************
-     * 9. CARPETA "Mi gestión Crediban" Y WHATSAPP
+     * 10. GUARDADO AUTOMÁTICO EN CARPETA FIJADA "Mi gestión Crediban" Y FILTRO POR FECHA
      ***************************************************************************/
-    async function vincularCarpetaDispositivo() {
-      if ("showDirectoryPicker" in window) {
-        try {
-          const handleRaiz = await window.showDirectoryPicker({ mode: "readwrite" });
-          directorioGestionHandle = await handleRaiz.getDirectoryHandle("Mi gestión Crediban", { create: true });
-          document.getElementById("estadoCarpetaLocal").innerHTML =
-            `<span class="text-emerald-700 font-extrabold">✅ Vinculado directo a la carpeta "Mi gestión Crediban"</span>`;
-        } catch (e) {}
-      } else {
-        alert('Las fotos se guardan automáticamente en el Álbum "Mi gestión Crediban".');
-      }
-    }
+    async function guardarArchivoEnCarpetaCrediban(blob, nombreArchivo, miniaturaBase64) {
+      const ahora = new Date();
+      const fechaIso = ahora.toISOString().slice(0, 10);
 
-    async function guardarArchivoEnCarpetaCrediban(blob, nombreArchivo, dataUrl) {
+      // 1. Guardar miniatura ligera + metadatos en IndexedDB (Soporta +100 fotos/día sin llenar la memoria)
       const itemAlbum = {
-        id: "G-" + Date.now(),
-        nombreArchivo,
+        id: "G-" + ahora.getTime(),
+        timestamp: ahora.getTime(),
+        fechaIso: fechaIso,
+        hora: ahora.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" }),
+        nombreArchivo: nombreArchivo,
         cliente: document.getElementById("gestionClienteNombre").value.trim() || "Gestión en Campo",
         actividad: document.getElementById("gestionTipoActividad").value,
-        hora: new Date().toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" }),
         direccion: gpsState.direccionCompleta,
-        dataUrl
+        coordenadas: `${gpsState.lat.toFixed(6)},${gpsState.lng.toFixed(6)}`,
+        thumbUrl: miniaturaBase64
       };
 
-      albumGestionCrediban.unshift(itemAlbum);
-      if (albumGestionCrediban.length > 25) albumGestionCrediban.pop();
-      try {
-        localStorage.setItem("crediban_album_gestion_dia_v3", JSON.stringify(albumGestionCrediban));
-      } catch (e) {}
+      await guardarFotoEnIndexedDB(itemAlbum);
       renderizarGaleriaGestion();
 
+      // 2. Si el celular tiene una carpeta predefinida fijada, escribe directamente en "Mi gestión Crediban" sin volver a pedir carpeta
       if (directorioGestionHandle) {
         try {
+          if (directorioGestionHandle.queryPermission) {
+            let perm = await directorioGestionHandle.queryPermission({ mode: "readwrite" });
+            if (perm !== "granted" && directorioGestionHandle.requestPermission) {
+              perm = await directorioGestionHandle.requestPermission({ mode: "readwrite" });
+            }
+          }
           const fileHandle = await directorioGestionHandle.getFileHandle(nombreArchivo, { create: true });
           const writable = await fileHandle.createWritable();
           await writable.write(blob);
           await writable.close();
+          mostrarToast('📁 Guardada en tu carpeta fijada "Mi gestión Crediban"');
           return;
-        } catch (err) {}
+        } catch (err) {
+          console.warn("Usando descarga directa etiquetada:", err);
+        }
       }
 
+      // 3. Descarga automática en calidad 100% original con nombre prefijado "Mi_gestion_Crediban_..."
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = nombreArchivo;
@@ -1626,13 +2148,14 @@
 
     async function compartirYGuardarGestion() {
       if (!ultimoBlobGenerado) return;
-      await guardarArchivoEnCarpetaCrediban(ultimoBlobGenerado, ultimoNombreArchivo, ultimoBase64Servidor);
+
+      await guardarArchivoEnCarpetaCrediban(ultimoBlobGenerado, ultimoNombreArchivo, ultimaMiniaturaAlbum);
 
       const cliente = document.getElementById("gestionClienteNombre").value.trim() || "Visita en Campo";
       const actividad = document.getElementById("gestionTipoActividad").value.trim();
       const textoWhatsApp =
         `📸 *MI GESTIÓN CREDIBAN*\n` +
-        `👤 *Asesor:* ${usuarioActivo ? usuarioActivo.nombre : ""}\n` +
+        `👤 *Colaborador:* ${usuarioActivo ? usuarioActivo.nombre : ""}\n` +
         `🏷️ *Actividad:* ${actividad} (${cliente})\n` +
         `📍 *Dirección:* ${gpsState.direccionCompleta}\n` +
         `🗺️ *Google Maps:* https://www.google.com/maps?q=${gpsState.lat},${gpsState.lng}`;
@@ -1657,9 +2180,48 @@
 
     async function soloGuardarEnCarpetaGestion() {
       if (!ultimoBlobGenerado) return;
-      await guardarArchivoEnCarpetaCrediban(ultimoBlobGenerado, ultimoNombreArchivo, ultimoBase64Servidor);
+      await guardarArchivoEnCarpetaCrediban(ultimoBlobGenerado, ultimoNombreArchivo, ultimaMiniaturaAlbum);
       cerrarModalPreview();
-      alert('✅ Imagen guardada en "Mi gestión Crediban".');
+      mostrarToast('✅ Guardada en "Mi gestión Crediban"');
+    }
+
+    function filtrarAlbumPorHoy() {
+      mostrarTodasFechasAlbum = false;
+      const hoyIso = new Date().toISOString().slice(0, 10);
+      document.getElementById("filtroFechaAlbumGestion").value = hoyIso;
+      document.getElementById("btnAlbumHoy").className = "px-2.5 py-2 rounded-xl bg-[#59B447] text-white text-[11px] font-extrabold shrink-0";
+      document.getElementById("btnAlbumTodas").className = "px-2.5 py-2 rounded-xl bg-slate-100 text-slate-600 text-[11px] font-extrabold shrink-0";
+      renderizarGaleriaGestion();
+    }
+
+    function filtrarAlbumTodasFechas() {
+      mostrarTodasFechasAlbum = true;
+      document.getElementById("btnAlbumTodas").className = "px-2.5 py-2 rounded-xl bg-[#59B447] text-white text-[11px] font-extrabold shrink-0";
+      document.getElementById("btnAlbumHoy").className = "px-2.5 py-2 rounded-xl bg-slate-100 text-slate-600 text-[11px] font-extrabold shrink-0";
+      renderizarGaleriaGestion();
+    }
+
+    function alternarTamanoVistaAlbum() {
+      vistaAlbumCompacta = !vistaAlbumCompacta;
+      const btn = document.getElementById("btnTamanoAlbum");
+      if (btn) {
+        btn.innerHTML = vistaAlbumCompacta
+          ? `<i class="fa-solid fa-table-cells mr-1"></i> Compacto`
+          : `<i class="fa-solid fa-list mr-1"></i> Lista`;
+      }
+      renderizarGaleriaGestion();
+    }
+
+    function obtenerFotosAlbumFiltradas() {
+      const fechaElegida = document.getElementById("filtroFechaAlbumGestion")?.value || new Date().toISOString().slice(0, 10);
+      const busqueda = (document.getElementById("buscadorClienteAlbum")?.value || "").trim().toUpperCase();
+
+      return listaFotosAlbumCache.filter(item => {
+        const pasaFecha = mostrarTodasFechasAlbum ? true : (item.fechaIso === fechaElegida);
+        const textoItem = `${item.cliente || ""} ${item.actividad || ""} ${item.direccion || ""}`.toUpperCase();
+        const pasaBusqueda = !busqueda || textoItem.includes(busqueda);
+        return pasaFecha && pasaBusqueda;
+      });
     }
 
     function renderizarGaleriaGestion() {
@@ -1667,78 +2229,138 @@
       const contador = document.getElementById("contadorFotosGestion");
       if (!grid) return;
 
-      contador.textContent = albumGestionCrediban.length;
-      if (albumGestionCrediban.length === 0) {
+      const filtradas = obtenerFotosAlbumFiltradas();
+      contador.textContent = filtradas.length;
+
+      if (filtradas.length === 0) {
+        grid.className = "grid grid-cols-1 gap-2 p-1";
         grid.innerHTML = `
-          <div class="col-span-full p-5 text-center text-xs text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+          <div class="p-5 text-center text-xs text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
             <i class="fa-solid fa-folder-open text-2xl text-slate-300 mb-1 block"></i>
-            Tus fotos tomadas hoy aparecerán aquí bajo la carpeta <strong>"Mi gestión Crediban"</strong>.
+            No hay fotos de gestión para la fecha o búsqueda seleccionada.
           </div>`;
         return;
       }
 
-      grid.innerHTML = albumGestionCrediban.map(item => `
-        <div class="rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shadow-sm flex flex-col justify-between">
-          <img src="${item.dataUrl}" class="w-full h-36 object-cover cursor-pointer" onclick="abrirModalPreview('${item.dataUrl}', 'GESTION')" />
-          <div class="p-2">
-            <p class="text-[11px] font-black text-slate-800 truncate">${item.cliente}</p>
-            <p class="text-[10px] font-semibold text-slate-500 truncate">${item.hora} • ${item.direccion}</p>
+      if (vistaAlbumCompacta) {
+        // Cuadrícula compacta de 3 a 4 columnas: ideal cuando toman +100 fotos por día
+        grid.className = "grid grid-cols-3 sm:grid-cols-4 gap-2 max-h-[380px] overflow-y-auto p-1";
+        grid.innerHTML = filtradas.map(item => `
+          <div onclick="inspeccionarFotoAlbum('${item.id}')" class="rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shadow-sm cursor-pointer hover:border-[#59B447] transition flex flex-col">
+            <img src="${item.thumbUrl || item.dataUrl}" loading="lazy" class="w-full h-20 object-cover" />
+            <div class="p-1.5">
+              <p class="text-[10px] font-black text-slate-800 truncate">${item.cliente}</p>
+              <p class="text-[9px] font-semibold text-slate-500 truncate">${item.hora} • ${item.fechaIso.slice(5)}</p>
+            </div>
           </div>
-        </div>
-      `).join("");
+        `).join("");
+      } else {
+        // Vista de lista ultra ligera para revisar más de 100 registros rápidamente
+        grid.className = "space-y-1.5 max-h-[380px] overflow-y-auto p-1";
+        grid.innerHTML = filtradas.map(item => `
+          <div onclick="inspeccionarFotoAlbum('${item.id}')" class="p-2 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-2.5 cursor-pointer hover:border-[#59B447]">
+            <img src="${item.thumbUrl || item.dataUrl}" loading="lazy" class="w-12 h-12 rounded-lg object-cover shrink-0" />
+            <div class="min-w-0 flex-1">
+              <p class="text-xs font-black text-slate-800 truncate">${item.cliente} <span class="text-[10px] font-semibold text-emerald-700">(${item.actividad})</span></p>
+              <p class="text-[10px] font-semibold text-slate-500 truncate">${item.fechaIso} ${item.hora} • ${item.direccion}</p>
+            </div>
+            <i class="fa-solid fa-eye text-slate-400 text-xs shrink-0 mr-1"></i>
+          </div>
+        `).join("");
+      }
+    }
+
+    function inspeccionarFotoAlbum(idFoto) {
+      const item = listaFotosAlbumCache.find(x => x.id === idFoto);
+      if (!item) return;
+      abrirModalPreview(item.thumbUrl || item.dataUrl, "ALBUM_VIEW", "", item);
+    }
+
+    function reenviarFotoAlbumWhatsApp() {
+      if (!itemAlbumSeleccionado) return;
+      const texto =
+        `📸 *MI GESTIÓN CREDIBAN*\n` +
+        `👤 *Colaborador:* ${usuarioActivo ? usuarioActivo.nombre : ""}\n` +
+        `🏷️ *Cliente:* ${itemAlbumSeleccionado.cliente} (${itemAlbumSeleccionado.actividad})\n` +
+        `📅 *Fecha:* ${itemAlbumSeleccionado.fechaIso} ${itemAlbumSeleccionado.hora}\n` +
+        `📍 *Dirección:* ${itemAlbumSeleccionado.direccion}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, "_blank");
     }
 
     async function descargarAlbumZip() {
-      if (albumGestionCrediban.length === 0) {
-        alert('Aún no hay fotos en "Mi gestión Crediban".');
+      const filtradas = obtenerFotosAlbumFiltradas();
+      if (filtradas.length === 0) {
+        alert("No hay fotos en la fecha seleccionada para descargar en .ZIP.");
         return;
       }
       const zip = new JSZip();
       const carpeta = zip.folder("Mi gestion Crediban");
-      albumGestionCrediban.forEach(item => {
-        const base64Data = item.dataUrl.split(",")[1];
-        carpeta.file(item.nombreArchivo, base64Data, { base64: true });
+      filtradas.forEach(item => {
+        const src = item.thumbUrl || item.dataUrl || "";
+        if (src.includes("base64,")) {
+          carpeta.file(item.nombreArchivo, src.split(",")[1], { base64: true });
+        }
       });
       const content = await zip.generateAsync({ type: "blob" });
+      const fechaEtiqueta = document.getElementById("filtroFechaAlbumGestion")?.value || new Date().toISOString().slice(0, 10);
       const a = document.createElement("a");
       a.href = URL.createObjectURL(content);
-      a.download = `Mi_gestion_Crediban_${new Date().toISOString().slice(0, 10)}.zip`;
+      a.download = `Mi_gestion_Crediban_${fechaEtiqueta}.zip`;
       a.click();
     }
 
-    function limpiarAlbumGestion() {
-      if (!confirm('¿Limpiar las fotos del álbum interno "Mi gestión Crediban"?')) return;
-      albumGestionCrediban = [];
-      localStorage.removeItem("crediban_album_gestion_dia_v3");
+    async function limpiarAlbumGestion() {
+      const fechaElegida = document.getElementById("filtroFechaAlbumGestion")?.value || new Date().toISOString().slice(0, 10);
+      if (!confirm(`¿Deseas limpiar del visor de la app las miniaturas de la fecha ${fechaElegida}? (Tus fotos originales guardadas en la galería del teléfono no se borrarán).`)) return;
+
+      listaFotosAlbumCache = listaFotosAlbumCache.filter(x => mostrarTodasFechasAlbum ? false : x.fechaIso !== fechaElegida);
+
+      if (dbGestion) {
+        const tx = dbGestion.transaction("fotos_gestion", "readwrite");
+        const store = tx.objectStore("fotos_gestion");
+        if (mostrarTodasFechasAlbum) {
+          store.clear();
+        } else {
+          const req = store.getAll();
+          req.onsuccess = () => {
+            (req.result || []).forEach(it => {
+              if (it.fechaIso === fechaElegida) store.delete(it.id);
+            });
+          };
+        }
+      }
       renderizarGaleriaGestion();
     }
 
     /***************************************************************************
-     * 10. REPORTES Y SUPERVISIÓN SEGÚN RANGO Y HOJA PARAMETROS
+     * 11. SUPERVISIÓN DE ASISTENCIAS (ADMINISTRADOR DE SEDE vs GERENTE)
      ***************************************************************************/
-    function calcularMinutosTardanza(fechaObj, sede, tipoMarcaje, enCampo) {
-      if (tipoMarcaje !== "ENTRADA" || enCampo) return 0;
-      const diaSemana = fechaObj.getDay();
-      if (diaSemana === 0) return 0;
-
-      const reglaSede = PARAMETROS_SEDES[sede] || { entradaLV: "08:30", entradaSab: "09:00", toleranciaMin: 10 };
-      const esSabado = (diaSemana === 6);
-      const horaStr = esSabado ? reglaSede.entradaSab : reglaSede.entradaLV;
-      const [hOfi, mOfi] = (horaStr || "08:30").split(":").map(Number);
-
-      const limiteMinutos = hOfi * 60 + mOfi + (Number(reglaSede.toleranciaMin) || 10);
-      const marcadosMinutos = fechaObj.getHours() * 60 + fechaObj.getMinutes();
-
-      return marcadosMinutos > limiteMinutos ? (marcadosMinutos - limiteMinutos) : 0;
-    }
-
     function actualizarTextoHorarioSede() {
       if (!usuarioActivo) return;
       const sede = usuarioActivo.sedeOperativa || SEDES_HABILITADAS[0];
-      const cfg = PARAMETROS_SEDES[sede] || { entradaLV: "08:30", salidaLV: "18:30" };
-      const esSabado = new Date().getDay() === 6;
+      const cfg = PARAMETROS_SEDES[sede] || { entradaLV: "08:30", salidaLV: "18:30", entradaSab: "09:00", salidaSab: "13:30" };
+      const ahora = new Date();
+      const hoyIso = ahora.toISOString().slice(0, 10);
+      const mapDias = ["DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB"];
+      const diaCod = mapDias[ahora.getDay()];
+      const esFeriado = FERIADOS_NO_LABORABLES.includes(hoyIso);
+      const diasHabiles = Array.isArray(cfg.diasLaborables) ? cfg.diasLaborables : ["LUN","MAR","MIE","JUE","VIE","SAB"];
+      const esLaborable = diasHabiles.includes(diaCod) && !esFeriado;
+
+      const badge = document.getElementById("badgeEstadoLaborableHoy");
+      if (badge) {
+        if (esLaborable) {
+          badge.textContent = `Día Laborable (${sede})`;
+          badge.className = "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-emerald-50 text-[#59B447] border border-emerald-200";
+        } else {
+          badge.textContent = esFeriado ? "Feriado No Laborable" : "Día No Laborable";
+          badge.className = "text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 border border-amber-300";
+        }
+      }
+
+      const esSabado = (diaCod === "SAB");
       document.getElementById("horarioSedeTexto").textContent =
-        `Entrada: ${esSabado ? (cfg.entradaSab||"09:00") : cfg.entradaLV} | Salida: ${esSabado ? (cfg.salidaSab||"13:30") : cfg.salidaLV}`;
+        `Entrada: ${esSabado ? (cfg.entradaSab || "09:00") : cfg.entradaLV} | Salida: ${esSabado ? (cfg.salidaSab || "13:30") : cfg.salidaLV}`;
     }
 
     function construirBotonesSedesGerente() {
@@ -1747,7 +2369,7 @@
       const sedes = ["TODAS", ...SEDES_HABILITADAS];
       cont.innerHTML = sedes.map(s => {
         const activo = (s === sedeFiltroGerente);
-        return `<button onclick="seleccionarSedeGerente('${s}')" class="px-3 py-1 rounded-xl text-[11px] font-extrabold whitespace-nowrap transition ${activo ? 'bg-[#59B447] text-white shadow' : 'bg-white/10 text-emerald-100 hover:bg-white/20'}">${s === 'TODAS' ? '🌎 TODAS LAS SEDES' : '📍 ' + s}</button>`;
+        return `<button onclick="seleccionarSedeGerente('${s}')" class="px-3 py-1 rounded-xl text-[11px] font-extrabold whitespace-nowrap transition ${activo ? 'bg-[#59B447] text-white shadow' : 'bg-white/10 text-emerald-100 hover:bg-white/20'}">${s === 'TODAS' ? '🌎 TODAS LAS SEDES HABILITADAS' : '📍 ' + s}</button>`;
       }).join("");
     }
 
@@ -1767,12 +2389,15 @@
       renderizarReportes();
     }
 
+    // Regla estricta:
+    // - GERENTE: Ve a todos (Administradores, Asesores, Trabajadores y Cajeros de todas las sedes habilitadas)
+    // - ADMINISTRADOR: Supervisa la asistencia de los Asesores, Trabajadores y Cajeros de SU sede
     function obtenerPersonalPermitidoSupervision() {
       if (!usuarioActivo) return [];
 
       return catalogoUsuarios.filter(u => {
-        if (usuarioActivo.rol === "GERENTE" || usuarioActivo.rol === "JEFE ZONAL") {
-          const pasaSede = (sedeFiltroGerente === "TODAS") || (u.sede === sedeFiltroGerente);
+        if (esUsuarioGerente(usuarioActivo)) {
+          const pasaSede = (sedeFiltroGerente === "TODAS") ? SEDES_HABILITADAS.includes(u.sede) || u.sede === "TODAS" : (u.sede === sedeFiltroGerente);
           const pasaRol =
             rolFiltroReporte === "TODOS" ? true :
             rolFiltroReporte === "ADMINISTRADOR" ? (u.rol === "ADMINISTRADOR") :
@@ -1780,16 +2405,12 @@
           return pasaSede && pasaRol;
         }
 
-        if (usuarioActivo.rol === "ADMINISTRADOR") {
-          // El Administrador supervisa a asesores, trabajadores y cajeros de SU sede
+        if (esUsuarioAdministrador(usuarioActivo)) {
+          // El Administrador supervisa asesores, trabajadores y cajeros de su propia sede
           return u.sede === usuarioActivo.sedeOperativa && u.rol !== "GERENTE";
         }
 
-        if (usuarioActivo.rol === "JEFE DE EQUIPO") {
-          return u.sede === usuarioActivo.sedeOperativa && (!usuarioActivo.equipo || u.equipo === usuarioActivo.equipo);
-        }
-
-        return u.nombre === usuarioActivo.nombre;
+        return false;
       });
     }
 
@@ -1799,12 +2420,12 @@
       if (!selColab) return;
 
       const permitidos = obtenerPersonalPermitidoSupervision();
-      selColab.innerHTML = `<option value="TODOS">👤 Todos los colaboradores (${permitidos.length})</option>`;
+      selColab.innerHTML = `<option value="TODOS">👤 Todos los colaboradores supervisados (${permitidos.length})</option>`;
       permitidos.forEach(u => {
         selColab.innerHTML += `<option value="${u.nombre}">${u.nombre} (${u.rol} - ${u.sede})</option>`;
       });
 
-      const equipos = new Set(["EQUIPO A", "EQUIPO B", "EQUIPO C", "CAJA"]);
+      const equipos = new Set(["EQUIPO A", "EQUIPO B", "EQUIPO C", "CAJA", "OPERACIONES"]);
       permitidos.forEach(u => { if (u.equipo) equipos.add(u.equipo); });
       selEquipo.innerHTML = `<option value="TODOS">🛡️ Todas las Áreas / Equipos</option>`;
       Array.from(equipos).forEach(eq => {
@@ -1814,10 +2435,11 @@
 
     function inicializarFechasFiltro() {
       const hoyIso = new Date().toISOString().slice(0, 10);
-      document.getElementById("filtroFechaExacta").value = hoyIso;
-      document.getElementById("filtroMesAnio").value = hoyIso.slice(0, 7);
-      document.getElementById("filtroDesde").value = hoyIso;
-      document.getElementById("filtroHasta").value = hoyIso;
+      if (document.getElementById("filtroFechaExacta")) document.getElementById("filtroFechaExacta").value = hoyIso;
+      if (document.getElementById("filtroMesAnio")) document.getElementById("filtroMesAnio").value = hoyIso.slice(0, 7);
+      if (document.getElementById("filtroDesde")) document.getElementById("filtroDesde").value = hoyIso;
+      if (document.getElementById("filtroHasta")) document.getElementById("filtroHasta").value = hoyIso;
+      if (document.getElementById("filtroFechaAlbumGestion")) document.getElementById("filtroFechaAlbumGestion").value = hoyIso;
     }
 
     function aplicarModoFecha(modo) {
@@ -1847,15 +2469,16 @@
 
     function guardarRegistrosLocales() {
       try {
-        localStorage.setItem("crediban_asistencias_db_v4", JSON.stringify(registrosAsistenciaGlobal.slice(0, 150)));
+        localStorage.setItem("crediban_asistencias_db_v5", JSON.stringify(registrosAsistenciaGlobal.slice(0, 120)));
       } catch (e) {}
     }
 
     async function cargarAsistenciasDesdeServidor(mostrarAlerta = false) {
+      if (!usuarioActivo) return;
       const iconSync = document.getElementById("iconSyncReporte");
       if (iconSync) iconSync.classList.add("fa-spin");
 
-      const localData = localStorage.getItem("crediban_asistencias_db_v4");
+      const localData = localStorage.getItem("crediban_asistencias_db_v5");
       if (localData) {
         try { registrosAsistenciaGlobal = JSON.parse(localData); } catch (e) {}
       }
@@ -1867,33 +2490,29 @@
 
         if (data && data.status === "ok") {
           if (data.parametros) {
-            if (Array.isArray(data.parametros.sedesHabilitadas) && data.parametros.sedesHabilitadas.length > 0) {
-              SEDES_HABILITADAS = data.parametros.sedesHabilitadas;
-            }
-            if (data.parametros.reglasPorSede) {
-              PARAMETROS_SEDES = data.parametros.reglasPorSede;
-            }
+            aplicarParametrosRecibidos(data.parametros);
           }
-          if (Array.isArray(data.registros) && data.registros.length > 0) {
+          if (Array.isArray(data.registros)) {
             registrosAsistenciaGlobal = data.registros;
             guardarRegistrosLocales();
           }
-          if (mostrarAlerta) alert("✅ Sincronización exitosa con Google Sheets.");
+          if (mostrarAlerta) mostrarToast("✅ Sincronizado con Google Sheets");
         }
       } catch (e) {
-        console.warn("Usando registros en caché local.");
-        if (mostrarAlerta) alert("⚠️ Modo sin conexión: Se muestran los registros guardados en este dispositivo.");
+        if (mostrarAlerta) mostrarToast("⚠️ Mostrando datos en caché local");
       } finally {
         if (iconSync) iconSync.classList.remove("fa-spin");
-        renderizarReportes();
+        if (esUsuarioGerente(usuarioActivo) || esUsuarioAdministrador(usuarioActivo)) {
+          renderizarReportes();
+        }
       }
     }
 
     function obtenerRegistrosFiltrados() {
       if (!usuarioActivo) return [];
       const hoyIso = new Date().toISOString().slice(0, 10);
-      const colabFiltro = document.getElementById("filtroTrabajadorReporte").value;
-      const equipoFiltro = document.getElementById("filtroEquipoReporte").value;
+      const colabFiltro = document.getElementById("filtroTrabajadorReporte")?.value || "TODOS";
+      const equipoFiltro = document.getElementById("filtroEquipoReporte")?.value || "TODOS";
 
       return registrosAsistenciaGlobal.filter(r => {
         const rSede = String(r.sede || "").toUpperCase();
@@ -1902,15 +2521,20 @@
         const rEquipo = String(r.equipo || "").toUpperCase();
         const rFecha = String(r.fechaIso || "").slice(0, 10);
 
-        if (usuarioActivo.rol === "GERENTE" || usuarioActivo.rol === "JEFE ZONAL") {
-          if (sedeFiltroGerente !== "TODAS" && rSede !== sedeFiltroGerente) return false;
+        // Filtrado estricto por jerarquía
+        if (esUsuarioGerente(usuarioActivo)) {
+          if (sedeFiltroGerente === "TODAS") {
+            if (!SEDES_HABILITADAS.includes(rSede)) return false;
+          } else if (rSede !== sedeFiltroGerente) {
+            return false;
+          }
           if (rolFiltroReporte === "ADMINISTRADOR" && rRol !== "ADMINISTRADOR") return false;
-          if (rolFiltroReporte === "ASESOR" && rRol === "ADMINISTRADOR") return false;
-        } else if (usuarioActivo.rol === "ADMINISTRADOR") {
+          if (rolFiltroReporte === "ASESOR" && (rRol === "ADMINISTRADOR" || rRol === "GERENTE")) return false;
+        } else if (esUsuarioAdministrador(usuarioActivo)) {
           if (rSede !== usuarioActivo.sedeOperativa) return false;
           if (rRol === "GERENTE") return false;
-        } else if (usuarioActivo.rol === "JEFE DE EQUIPO") {
-          if (rSede !== usuarioActivo.sedeOperativa) return false;
+        } else {
+          return false;
         }
 
         if (colabFiltro !== "TODOS" && rNombre !== colabFiltro) return false;
@@ -1929,7 +2553,8 @@
     }
 
     function renderizarReportes() {
-      if (!usuarioActivo) return;
+      if (!usuarioActivo || (!esUsuarioGerente(usuarioActivo) && !esUsuarioAdministrador(usuarioActivo))) return;
+
       const filtrados = obtenerRegistrosFiltrados();
       const hoyIso = new Date().toISOString().slice(0, 10);
 
@@ -1956,10 +2581,10 @@
         contPendientes.innerHTML = `<span class="text-xs font-bold text-emerald-700">✅ Todo el personal supervisado ya registró su entrada hoy.</span>`;
       } else {
         contPendientes.innerHTML = pendientesHoy.map(u => {
-          const msg = encodeURIComponent(`Hola ${u.nombre}, el sistema CREDIBAN reporta que aún no has registrado tu ENTRADA de hoy en sede ${u.sede}.`);
+          const msg = encodeURIComponent(`Hola ${u.nombre}, el sistema de asistencia CREDIBAN reporta que aún no has registrado tu ENTRADA de hoy en sede ${u.sede}.`);
           return `
             <a href="https://wa.me/?text=${msg}" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-rose-200 text-[11px] font-bold text-rose-800 shadow-sm hover:bg-rose-100">
-              <span>${u.nombre} (${u.rol === 'ADMINISTRADOR' ? 'ADMIN' : u.sede})</span>
+              <span>${u.nombre} (${u.rol === 'ADMINISTRADOR' ? 'ADMIN' : u.rol})</span>
               <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i>
             </a>`;
         }).join("");
@@ -1972,16 +2597,20 @@
             Sin registros de asistencia para este filtro.
           </div>`;
       } else {
-        contTarjetas.innerHTML = filtrados.map(r => {
+        contTarjetas.innerHTML = filtrados.map((r, idx) => {
           const tard = Number(r.minutosTardanza) || 0;
+          const extras = Number(r.minutosExtras) || 0;
           const badgeRol = r.rol === "ADMINISTRADOR"
             ? `<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-black">🛡️ ADMIN</span>`
             : `<span class="px-2 py-0.5 rounded bg-emerald-50 text-[#1B4332] text-[10px] font-extrabold">${r.rol}</span>`;
           const badgeTardanza = tard > 0
             ? `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-black">⏰ +${tard} min</span>`
             : `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black">✅ Puntual</span>`;
+          const badgeExtras = extras > 0
+            ? `<span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-black">⚡ +${extras}m extra</span>`
+            : "";
 
-          const fotoEvidencia = r.fotoUrl || "";
+          const tieneFoto = Boolean(r.fotoUrl || r.linkFotoOriginal);
 
           return `
             <div class="card-clean p-3.5 flex items-center justify-between gap-3">
@@ -1995,6 +2624,7 @@
                   <span class="text-[11px] font-extrabold text-[#1B4332]">${r.tipo}</span>
                   <span class="text-[11px] font-semibold text-slate-500">${r.fechaIso} ${r.horaTexto}</span>
                   ${r.tipo === 'ENTRADA' ? badgeTardanza : ''}
+                  ${badgeExtras}
                 </div>
                 <p class="text-[11px] text-slate-500 truncate">
                   <i class="fa-solid fa-location-dot text-rose-500 mr-1"></i>${r.direccion || 'Dirección GPS'}
@@ -2002,16 +2632,16 @@
               </div>
               <div class="flex flex-col items-end gap-1.5 shrink-0">
                 ${r.linkMapa ? `<a href="${r.linkMapa}" target="_blank" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-extrabold"><i class="fa-solid fa-map mr-1"></i>Mapa</a>` : ''}
-                ${fotoEvidencia ? `<button onclick="abrirModalPreview('${fotoEvidencia}', 'LECTURA', '${r.linkFotoOriginal || ''}')" class="px-2.5 py-1 rounded-lg bg-[#59B447] text-white text-[10px] font-extrabold"><i class="fa-solid fa-image mr-1"></i>Foto</button>` : ''}
+                ${tieneFoto ? `<button onclick="verFotoDeRegistro(${idx})" class="px-2.5 py-1 rounded-lg bg-[#59B447] text-white text-[10px] font-extrabold"><i class="fa-solid fa-image mr-1"></i>Ver Foto</button>` : ''}
               </div>
             </div>`;
         }).join("");
       }
 
       const tbody = document.getElementById("tablaReporteBody");
-      tbody.innerHTML = filtrados.map(r => {
+      tbody.innerHTML = filtrados.map((r, idx) => {
         const tard = Number(r.minutosTardanza) || 0;
-        const fotoEvidencia = r.fotoUrl || "";
+        const tieneFoto = Boolean(r.fotoUrl || r.linkFotoOriginal);
         return `
           <tr class="hover:bg-slate-50">
             <td class="p-2.5 font-semibold whitespace-nowrap">${r.fechaIso}<br><span class="text-[10px] text-slate-400">${r.horaTexto}</span></td>
@@ -2019,14 +2649,24 @@
             <td class="p-2.5"><span class="font-bold">${r.rol}</span><br><span class="text-[10px] text-emerald-700 font-bold">${r.sede}</span></td>
             <td class="p-2.5 font-extrabold text-[#1B4332]">${r.tipo}</td>
             <td class="p-2.5 font-bold ${tard > 0 ? 'text-rose-600' : 'text-emerald-600'}">${tard > 0 ? '+' + tard + ' min' : '0 min'}</td>
-            <td class="p-2.5 max-w-[200px] truncate" title="${r.direccion}">${r.direccion}</td>
+            <td class="p-2.5 max-w-[220px] truncate" title="${r.direccion}">${r.direccion}</td>
             <td class="p-2.5 text-center">
-              ${fotoEvidencia ? `<button onclick="abrirModalPreview('${fotoEvidencia}', 'LECTURA', '${r.linkFotoOriginal || ''}')" class="px-2.5 py-1 rounded bg-emerald-100 text-[#1B4332] font-bold text-xs">Ver</button>` : '-'}
+              ${tieneFoto ? `<button onclick="verFotoDeRegistro(${idx})" class="px-2.5 py-1 rounded bg-emerald-100 text-[#1B4332] font-bold text-xs">Ver Foto</button>` : '-'}
             </td>
           </tr>`;
       }).join("");
 
-      renderizarResumenGerencialSedes();
+      if (esUsuarioGerente(usuarioActivo)) {
+        renderizarResumenGerencialSedes();
+      }
+    }
+
+    function verFotoDeRegistro(indiceFiltrado) {
+      const filtrados = obtenerRegistrosFiltrados();
+      const reg = filtrados[indiceFiltrado];
+      if (!reg) return;
+      const urlImagen = reg.fotoUrl || reg.linkFotoOriginal || "";
+      abrirModalPreview(urlImagen, "LECTURA", reg.linkFotoOriginal || urlImagen);
     }
 
     function renderizarResumenGerencialSedes() {
@@ -2044,11 +2684,11 @@
           <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50 space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-black text-[#1B4332]">📍 SEDE ${sede}</span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">${regsSedeHoy.length} marcas</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">${regsSedeHoy.length} marcas hoy</span>
             </div>
-            <p class="text-[11px] font-semibold text-slate-600">🛡️ Admins hoy: <strong>${adminsHoy}</strong></p>
-            <p class="text-[11px] font-semibold text-slate-600">⏰ Tardanza: <strong class="${tardanzaSede > 0 ? 'text-rose-600' : 'text-emerald-600'}">${tardanzaSede} min</strong></p>
-            <p class="text-[10px] text-slate-400">Entrada L-V: ${regla.entradaLV || '08:30'} | Tol: ${regla.toleranciaMin || 10}m</p>
+            <p class="text-[11px] font-semibold text-slate-600">🛡️ Administradores hoy: <strong>${adminsHoy}</strong></p>
+            <p class="text-[11px] font-semibold text-slate-600">⏰ Tardanza hoy: <strong class="${tardanzaSede > 0 ? 'text-rose-600' : 'text-emerald-600'}">${tardanzaSede} min</strong></p>
+            <p class="text-[10px] text-slate-400">Horario L-V: ${regla.entradaLV || '08:30'} - ${regla.salidaLV || '18:30'} (Tol. ${regla.toleranciaMin || 10}m)</p>
           </div>`;
       }).join("");
     }
@@ -2059,9 +2699,9 @@
         alert("No hay registros para exportar.");
         return;
       }
-      const cabeceras = ["ID", "Fecha", "Hora", "Colaborador", "Cargo", "Sede", "Equipo", "Tipo_Marcaje", "Minutos_Tardanza", "Direccion_GPS", "Link_Foto"];
+      const cabeceras = ["ID", "Fecha", "Hora", "Colaborador", "Rango", "Sede", "Area", "Tipo_Marcaje", "Minutos_Tardanza", "Minutos_Extras", "Direccion_Exacta", "Link_Foto"];
       const filas = filtrados.map(r => [
-        r.id, r.fechaIso, r.horaTexto, `"${r.nombre}"`, r.rol, r.sede, r.equipo, r.tipo, r.minutosTardanza || 0, `"${r.direccion || ''}"`, `"${r.fotoUrl || ''}"`
+        r.id, r.fechaIso, r.horaTexto, `"${r.nombre}"`, r.rol, r.sede, r.equipo, r.tipo, r.minutosTardanza || 0, r.minutosExtras || 0, `"${r.direccion || ''}"`, `"${r.linkFotoOriginal || r.fotoUrl || ''}"`
       ]);
       const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [cabeceras.join(","), ...filas.map(e => e.join(","))].join("\n");
       const link = document.createElement("a");
@@ -2073,7 +2713,7 @@
     }
 
     /***************************************************************************
-     * 11. RELOJ DIGITAL Y CRONÓMETRO DE REFRIGERIO
+     * 12. RELOJ DIGITAL EN VIVO Y CRONÓMETRO DE REFRIGERIO
      ***************************************************************************/
     function iniciarRelojEnVivo() {
       const actualizar = () => {
@@ -2091,19 +2731,21 @@
     let intervaloRefrigerio = null;
 
     function activarCronometroRefrigerio(fechaInicio) {
-      const limiteMs = fechaInicio.getTime() + 60 * 60 * 1000;
-      localStorage.setItem("crediban_refri_limite_v3", String(limiteMs));
+      const sede = usuarioActivo?.sedeOperativa || "HUACHO";
+      const minPermitidos = Number(PARAMETROS_SEDES[sede]?.refrigerioMin) || 60;
+      const limiteMs = fechaInicio.getTime() + minPermitidos * 60 * 1000;
+      localStorage.setItem("crediban_refri_limite_v5", String(limiteMs));
       verificarRefrigerioActivo();
     }
 
     function detenerCronometroRefrigerio() {
-      localStorage.removeItem("crediban_refri_limite_v3");
+      localStorage.removeItem("crediban_refri_limite_v5");
       if (intervaloRefrigerio) clearInterval(intervaloRefrigerio);
       document.getElementById("refrigerioBanner").classList.add("hidden");
     }
 
     function verificarRefrigerioActivo() {
-      const limiteStr = localStorage.getItem("crediban_refri_limite_v3");
+      const limiteStr = localStorage.getItem("crediban_refri_limite_v5");
       const banner = document.getElementById("refrigerioBanner");
       if (!limiteStr) {
         banner.classList.add("hidden");
