@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>CREDIBAN | Asistencia y Gestión en Campo</title>
+  <title>CREDIBAN | Asistencia, RR.HH. y Gestión en Campo</title>
 
   <!-- Tailwind CSS & Librerías Oficiales -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -107,15 +107,15 @@
           lg.classList.remove("hidden");
         }
       }
-    }, 1200);
+    }, 1000);
   </script>
 
-  <!-- BANNER FLOTANTE DE ENVÍO EN SEGUNDO PLANO -->
+  <!-- BANNER FLOTANTE DE ENVÍO EN SEGUNDO PLANO A GOOGLE DRIVE -->
   <div id="backgroundSyncBanner" onclick="forzarReintentoColaSegundoPlano()" class="hidden fixed top-2 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-md px-3.5 py-2.5 rounded-2xl bg-slate-950/95 text-white shadow-2xl border border-emerald-400/50 flex items-center justify-between gap-2.5 cursor-pointer">
     <div class="flex items-center gap-2.5 min-w-0">
       <div class="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin shrink-0"></div>
       <div class="min-w-0">
-        <p id="bgSyncTitulo" class="text-[11px] font-black text-emerald-300 truncate">☁️ Subiendo asistencia a Google Sheets...</p>
+        <p id="bgSyncTitulo" class="text-[11px] font-black text-emerald-300 truncate">☁️ Guardando evidencia en Google Drive...</p>
         <p class="text-[10px] font-semibold text-slate-300 truncate">Puedes apagar tu pantalla o salir (Toca aquí para forzar envío)</p>
       </div>
     </div>
@@ -129,7 +129,7 @@
   </div>
 
   <!-- ==========================================================================
-       2. PANTALLA DE LOGIN BLINDADA (100% EN VIVO CONTRA SCRIPT DE USUARIOS)
+       2. PANTALLA DE LOGIN BLINDADA (CONECTADA AL SCRIPT DE USUARIOS Y PARÁMETROS)
        ========================================================================== -->
   <div id="loginScreen" class="hidden min-h-screen flex flex-col justify-center items-center p-4 bg-gradient-to-br from-[#0F291E] via-[#1B4332] to-slate-900">
     <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/20 border-t-8 border-t-[#59B447]">
@@ -156,7 +156,7 @@
         </div>
 
         <h1 class="text-lg font-black text-slate-800 tracking-tight">Acceso Corporativo</h1>
-        <p class="text-xs font-semibold text-slate-500 mt-0.5">Control de Asistencia y Gestión en Campo</p>
+        <p class="text-xs font-semibold text-slate-500 mt-0.5">Control de Asistencia, RR.HH. y Gestión en Campo</p>
       </div>
 
       <form onsubmit="iniciarSesion(event)" class="p-6 space-y-4">
@@ -265,6 +265,7 @@
           <span id="headerRolBadge" class="px-2 py-0.5 rounded-md bg-[#59B447] text-white font-black uppercase text-[10px]">ASESOR</span>
           <span id="headerUserName" class="font-bold text-white truncate">USUARIO</span>
           <span id="headerPermisoBadge" class="hidden px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 text-[9px] font-black uppercase">Permiso Especial</span>
+          <span id="headerDelegadoBadge" class="hidden px-1.5 py-0.5 rounded bg-teal-400/20 text-teal-200 text-[9px] font-black uppercase">Control Sede</span>
         </div>
         <div class="flex items-center gap-2 shrink-0 text-emerald-300 font-bold">
           <span><i class="fa-solid fa-location-dot mr-1"></i><span id="headerUserSede">SEDE</span></span>
@@ -277,26 +278,31 @@
         </div>
       </div>
 
-      <!-- Barra de Navegación Principal (Protegida por Rol) -->
+      <!-- Barra de Navegación Principal (Protegida por Rol y Delegación de Sede) -->
       <nav class="bg-[#0F291E] px-2 py-1.5 flex flex-wrap sm:flex-nowrap gap-1 overflow-x-auto no-scrollbar border-t border-emerald-900">
-        <button type="button" onclick="cambiarPestana('MARCAR')" id="tabBtn_MARCAR" class="flex-1 min-w-[95px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-[#59B447] text-white shadow">
+        <button type="button" onclick="cambiarPestana('MARCAR')" id="tabBtn_MARCAR" class="flex-1 min-w-[90px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-[#59B447] text-white shadow">
           <i class="fa-solid fa-clock mr-1"></i> Asistencia
         </button>
 
-        <button type="button" onclick="cambiarPestana('GESTION')" id="tabBtn_GESTION" class="flex-1 min-w-[110px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-white/10 text-emerald-100 hover:bg-white/20">
+        <button type="button" onclick="cambiarPestana('GESTION')" id="tabBtn_GESTION" class="flex-1 min-w-[105px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-white/10 text-emerald-100 hover:bg-white/20">
           <i class="fa-solid fa-camera-retro mr-1"></i> Fotos Gestión
         </button>
 
-        <button type="button" onclick="cambiarPestana('REPORTE')" id="tabBtn_REPORTE" class="hidden flex-1 min-w-[115px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-white/10 text-emerald-100 hover:bg-white/20">
+        <button type="button" onclick="cambiarPestana('REPORTE')" id="tabBtn_REPORTE" class="hidden flex-1 min-w-[105px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-white/10 text-emerald-100 hover:bg-white/20">
           <i class="fa-solid fa-clipboard-user mr-1"></i> <span id="tabLabelReporte">Mi Sede</span>
         </button>
 
-        <button type="button" onclick="cambiarPestana('GERENCIA')" id="tabBtn_GERENCIA" class="hidden flex-1 min-w-[115px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-amber-400/20 text-amber-300 border border-amber-400/30">
+        <!-- NUEVA PESTAÑA: RR.HH. / WHATSAPP Y RESUMEN DE SEDE -->
+        <button type="button" onclick="cambiarPestana('RRHH')" id="tabBtn_RRHH" class="hidden flex-1 min-w-[120px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-teal-500/20 text-teal-200 border border-teal-400/30">
+          <i class="fa-brands fa-whatsapp mr-1 text-[#25D366]"></i> RR.HH. / Avisos
+        </button>
+
+        <button type="button" onclick="cambiarPestana('GERENCIA')" id="tabBtn_GERENCIA" class="hidden flex-1 min-w-[110px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-amber-400/20 text-amber-300 border border-amber-400/30">
           <i class="fa-solid fa-crown mr-1"></i> Control Global
         </button>
 
-        <button type="button" onclick="cambiarPestana('PERMISOS')" id="tabBtn_PERMISOS" class="hidden flex-1 min-w-[125px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-emerald-400/20 text-emerald-200 border border-emerald-400/30">
-          <i class="fa-solid fa-sliders mr-1"></i> Quién Marca / Fotos
+        <button type="button" onclick="cambiarPestana('PERMISOS')" id="tabBtn_PERMISOS" class="hidden flex-1 min-w-[120px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-emerald-400/20 text-emerald-200 border border-emerald-400/30">
+          <i class="fa-solid fa-sliders mr-1"></i> Permisos / Sedes
         </button>
       </nav>
     </header>
@@ -321,7 +327,7 @@
       <div class="card-clean p-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div>
-            <p id="relojFecha" class="text-[11px] font-bold uppercase text-slate-400">Viernes, 6 de Noviembre</p>
+            <p id="relojFecha" class="text-[11px] font-bold uppercase text-slate-400">Martes, 17 de Noviembre</p>
             <p id="relojHora" class="text-2xl font-black text-[#1B4332] tracking-tight">08:30:00 AM</p>
           </div>
           <div class="text-right">
@@ -422,7 +428,7 @@
         <div id="notaObligatoriaFotoBox" class="p-2.5 rounded-xl bg-amber-50 border border-amber-300/80 flex items-center gap-2.5">
           <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base shrink-0"></i>
           <p id="notaObligatoriaFotoTexto" class="text-[11px] font-bold text-amber-900 leading-snug">
-            <strong>NOTA OBLIGATORIA:</strong> Fotografía en tiempo real (bloqueada la subida desde galería o almacenamiento interno).
+            <strong>NOTA OBLIGATORIA:</strong> Fotografía en tiempo real (bloqueada la subida desde galería o almacenamiento interno). Se guarda directo en Google Drive.
           </p>
         </div>
 
@@ -439,14 +445,14 @@
         </button>
       </div>
 
-      <!-- SECCIÓN DEBAJO DEL BOTÓN: "MIS MARCAJES DE HOY" -->
+      <!-- SECCIÓN DEBAJO DEL BOTÓN: "MIS MARCAJES DE HOY" (CARGA INSTANTÁNEA 0.01s) -->
       <div class="card-clean p-4 space-y-3 border-l-4 border-l-[#59B447]">
         <div class="flex items-center justify-between">
           <div>
             <h3 class="text-xs font-black uppercase text-[#1B4332]">
               <i class="fa-solid fa-list-check mr-1.5 text-[#59B447]"></i> Mis Marcajes de Hoy (<span id="fechaLocalMisRegistros">--/--/----</span>)
             </h3>
-            <p class="text-[10px] font-semibold text-slate-500">Se actualiza al instante • Envío automático en 2do plano</p>
+            <p class="text-[10px] font-semibold text-slate-500">Lectura instantánea en 0.01s • Fotos alojadas en Google Drive</p>
           </div>
           <span id="badgeProgresoDiaUsuario" class="px-2.5 py-1 rounded-full bg-emerald-100 text-[#1B4332] text-[10px] font-black">0 / 4</span>
         </div>
@@ -455,8 +461,7 @@
         <div id="listaDetalleMisRegistrosHoy" class="space-y-1.5 pt-1 border-t border-slate-100"></div>
       </div>
     </main>
-
-    <!-- ========================================================================
+<!-- FIN DE LA PARTE 1 DE 5 — PEGA LA PARTE 2 JUSTO DEBAJO DE ESTA LÍNEA --><!-- ========================================================================
          PESTAÑA 2: FOTOS DE GESTIÓN EN CAMPO (SOLO CÁMARA EN VIVO + WHATSAPP)
          ======================================================================== -->
     <section id="view_GESTION" class="hidden p-3 space-y-3">
@@ -553,13 +558,13 @@
     </section>
 
     <!-- ========================================================================
-         PESTAÑA 3: SUPERVISIÓN DE SEDE Y EXPORTACIÓN PDF CON ANÁLISIS EJECUTIVO
+         PESTAÑA 3: SUPERVISIÓN DE SEDE Y EXPORTACIÓN PDF (RESUMEN O DETALLADO POR ASESOR)
          ======================================================================== -->
     <section id="view_REPORTE" class="hidden p-3 space-y-3">
       
       <div id="adminSedeHeaderBar" class="hidden card-clean p-3 bg-emerald-950 text-white flex items-center justify-between">
         <div>
-          <span class="text-[10px] font-black uppercase text-emerald-300">🛡️ Panel de Administración de Agencia</span>
+          <span class="text-[10px] font-black uppercase text-emerald-300">🛡️ Panel de Supervisión de Agencia</span>
           <h3 id="adminSedeTitulo" class="text-xs font-black">Supervisión de Asesores, Trabajadores y Cajeros • SEDE HUACHO</h3>
         </div>
         <span class="px-2.5 py-1 rounded-lg bg-[#59B447] text-white text-[10px] font-black uppercase">Solo Mi Sede</span>
@@ -613,9 +618,9 @@
           </div>
 
           <div class="flex items-center gap-1.5 flex-wrap">
-            <button type="button" id="btnExportarPdfReporte" onclick="exportarReporteAsistenciaPDF()" class="px-3 py-1.5 rounded-xl bg-[#1B4332] hover:bg-[#0F291E] text-white text-xs font-extrabold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
-              <i class="fa-solid fa-file-pdf text-rose-400"></i>
-              <span>Exportar PDF + Análisis</span>
+            <button type="button" onclick="cambiarPestana('RRHH')" class="px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#1ebe5d] text-white text-xs font-extrabold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+              <i class="fa-brands fa-whatsapp"></i>
+              <span>Avisos RR.HH.</span>
             </button>
 
             <button type="button" onclick="alternarFormatoReporte()" id="btnFormatoReporte" class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-[#1B4332] border border-emerald-200 text-xs font-extrabold transition">
@@ -627,6 +632,28 @@
               <i id="iconSyncReporte" class="fa-solid fa-rotate"></i>
             </button>
           </div>
+        </div>
+
+        <!-- PANEL DE CONFIGURACIÓN DEL REPORTE PDF (RESUMEN VS DETALLADO POR ASESOR + HORAS EXTRAS SÍ/NO) -->
+        <div class="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/90 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-[10px] font-black uppercase text-[#1B4332]">
+              <i class="fa-solid fa-file-pdf text-rose-600 mr-1"></i> Opciones de Exportación PDF:
+            </span>
+            <select id="selectPdfModoDetalle" class="px-2.5 py-1.5 rounded-lg border border-emerald-300 bg-white text-[11px] font-extrabold text-slate-800 outline-none">
+              <option value="DETALLADO_POR_ASESOR">📑 Detallado (Resumen Global + Cada Asesor por Día)</option>
+              <option value="RESUMEN">📊 Solo Resumen Ejecutivo Consolidado</option>
+            </select>
+            <label class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-extrabold text-slate-700 cursor-pointer">
+              <input id="chkPdfIncluirExtras" type="checkbox" checked class="w-3.5 h-3.5 accent-[#59B447] rounded" />
+              <span>⚡ Considerar Horas Extras en PDF</span>
+            </label>
+          </div>
+
+          <button type="button" id="btnExportarPdfReporte" onclick="exportarReporteAsistenciaPDF()" class="px-3.5 py-1.5 rounded-xl bg-[#1B4332] hover:bg-[#0F291E] text-white text-xs font-extrabold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-file-pdf text-rose-400"></i>
+            <span>Descargar PDF Ahora</span>
+          </button>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
@@ -653,7 +680,7 @@
           </select>
 
           <select id="filtroObligacionReporte" onchange="renderizarReportes()" class="w-full px-3 py-2 rounded-xl border border-emerald-200 bg-emerald-50/50 text-xs font-extrabold text-[#1B4332]">
-            <option value="OBLIGADOS">✅ Solo Personal que Debe Marcar</option>
+            <option value="OBLIGADOS">✅ Solo Personal Supervisado</option>
             <option value="TODOS">🌐 Todos (Incluye Permisos Especiales)</option>
             <option value="EXONERADOS">🛡️ Solo Con Permiso Especial / Exonerados</option>
           </select>
@@ -674,7 +701,7 @@
 
       <details class="card-clean p-3 bg-rose-50/50 border-rose-200">
         <summary class="text-xs font-black text-rose-800 cursor-pointer flex items-center justify-between">
-          <span><i class="fa-solid fa-user-clock mr-1.5 text-rose-600"></i> Personal Obligado Pendiente de Marcar Hoy (<span id="badgePendientesCount">0</span>)</span>
+          <span><i class="fa-solid fa-user-clock mr-1.5 text-rose-600"></i> Personal Supervisado Pendiente de Marcar Hoy (<span id="badgePendientesCount">0</span>)</span>
           <span class="text-[10px] font-bold underline">Desplegar</span>
         </summary>
         <div id="listaPendientesHoy" class="mt-2.5 flex flex-wrap gap-1.5"></div>
@@ -703,6 +730,159 @@
     </section>
 
     <!-- ========================================================================
+         NUEVA PESTAÑA: ÁREA DE RECURSOS HUMANOS (RR.HH.) Y COMUNICACIONES WHATSAPP
+         (Para Gerentes, Administradores y Personal Delegado por Gerencia)
+         ======================================================================== -->
+    <section id="view_RRHH" class="hidden p-3 space-y-3">
+      
+      <!-- Encabezado y Resumen Básico de la Sede -->
+      <div class="card-clean p-4 space-y-3 border-l-4 border-l-[#25D366]">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="px-2 py-0.5 rounded-md bg-emerald-100 text-[#1B4332] font-black text-[10px] uppercase">
+                <i class="fa-brands fa-whatsapp mr-1 text-[#25D366]"></i> Área de Recursos Humanos • CREDIBAN
+              </span>
+              <span id="badgeRolControlRRHH" class="px-2 py-0.5 rounded-md bg-teal-100 text-teal-900 font-black text-[10px] uppercase">
+                Control de Asistencia de Sede
+              </span>
+            </div>
+            <h2 class="text-base font-black text-slate-800 mt-1">📲 Centro de Avisos RR.HH., Resumen de Sede y Reportes WhatsApp</h2>
+            <p class="text-xs text-slate-500">Envía recordatorios de llegada/tardanza al celular de cada asesor (leído desde el Script de Usuarios), genera el reporte global de la sede en un solo mensaje o envía el reporte privado a cada colaborador.</p>
+          </div>
+
+          <div class="w-full sm:w-auto">
+            <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Sede Supervisada:</label>
+            <select id="rrhhSedeSelect" onchange="renderizarModuloRRHH()" class="w-full sm:w-52 px-3 py-2 rounded-xl border-2 border-[#59B447] bg-white text-xs font-black text-[#1B4332] outline-none">
+              <option value="HUACHO">📍 SEDE HUACHO</option>
+              <option value="HUARAZ">📍 SEDE HUARAZ</option>
+              <option value="ICA">📍 SEDE ICA</option>
+              <option value="HUANUCO">📍 SEDE HUANUCO</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- RESUMEN GLOBAL BÁSICO DE LA SEDE (HOY) -->
+        <div>
+          <span class="block text-[10px] font-extrabold uppercase text-slate-400 mb-1.5">📊 Resumen Global Básico de la Sede (Hoy):</span>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center">
+              <span class="block text-[10px] font-extrabold uppercase text-slate-500">Personal Supervisado</span>
+              <span id="rrhhKpiTotalPersonal" class="text-xl font-black text-slate-800">0</span>
+            </div>
+            <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
+              <span class="block text-[10px] font-extrabold uppercase text-emerald-700">✅ Ya Marcaron Hoy</span>
+              <span id="rrhhKpiPresentesHoy" class="text-xl font-black text-emerald-700">0</span>
+            </div>
+            <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-center">
+              <span class="block text-[10px] font-extrabold uppercase text-amber-700">⏰ Llegaron Tarde Hoy</span>
+              <span id="rrhhKpiTardanzasHoy" class="text-xl font-black text-amber-700">0</span>
+            </div>
+            <div class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-center">
+              <span class="block text-[10px] font-extrabold uppercase text-rose-700">🚨 Pendientes de Llegar</span>
+              <span id="rrhhKpiPendientesHoy" class="text-xl font-black text-rose-700">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOQUE 1: ALERTAS INSTANTÁNEAS DE LLEGADA / TARDANZA DE PARTE DE RECURSOS HUMANOS -->
+      <div class="card-clean p-4 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+          <div>
+            <h3 class="text-xs font-black uppercase text-[#1B4332]">
+              <i class="fa-solid fa-bell text-amber-500 mr-1"></i> 1. Avisos Directos de Recursos Humanos (Hoy)
+            </h3>
+            <p class="text-[10px] font-semibold text-slate-500">Conectado automáticamente al número de celular registrado en el Script de Usuarios</p>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <label class="text-[10px] font-extrabold uppercase text-slate-500">Plantilla RR.HH.:</label>
+            <select id="rrhhPlantillaAvisoSelect" onchange="renderizarModuloRRHH()" class="px-2.5 py-1.5 rounded-xl border border-emerald-300 bg-emerald-50/60 text-[11px] font-extrabold text-[#1B4332]">
+              <option value="AUTO">🤖 Automática según estado (Por llegar / Tardanza / Felicitación)</option>
+              <option value="POR_LLEGAR">⏳ Aviso: Hora de ingreso próxima / Debe llegar y registrar asistencia</option>
+              <option value="TARDE_SIN_MARCAR">🚨 Alerta: Ya pasó la hora de ingreso / Está llegando tarde, registrar ahora</option>
+              <option value="REFRIGERIO_RETORNO">🍽️ Recordatorio: Registrar Salida o Retorno de Refrigerio</option>
+              <option value="SALIDA_FINAL">🏁 Recordatorio: Registrar Salida Final de jornada</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="rrhhListaAsesoresHoy" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[360px] overflow-y-auto pr-1"></div>
+      </div>
+
+      <!-- BLOQUE 2: GENERADOR DE REPORTE GLOBAL DE SEDE EN UN SOLO MENSAJE (SEMANA / RANGO) + ENVÍO PRIVADO A CADA ASESOR -->
+      <div class="card-clean p-4 space-y-3 border-l-4 border-l-[#1B4332]">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+          <div>
+            <span class="px-2 py-0.5 rounded bg-emerald-100 text-[#1B4332] text-[10px] font-black uppercase">Plantilla con Emojis • Global y Privado</span>
+            <h3 class="text-xs font-black uppercase text-slate-800 mt-1">
+              <i class="fa-solid fa-clipboard-list text-[#59B447] mr-1"></i> 2. Reporte Semanal / Por Rango (Mensaje Global de Sede y Envío Privado por Asesor)
+            </h3>
+          </div>
+
+          <div class="flex flex-wrap gap-1 bg-slate-100 p-1 rounded-xl">
+            <button type="button" onclick="cambiarModoPeriodoRRHH('SEMANA')" id="btnRrhhPer_SEMANA" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-[#59B447] text-white">📆 Por Semana</button>
+            <button type="button" onclick="cambiarModoPeriodoRRHH('RANGO')" id="btnRrhhPer_RANGO" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-slate-600">↔️ Seleccionar Rango</button>
+            <button type="button" onclick="cambiarModoPeriodoRRHH('HOY')" id="btnRrhhPer_HOY" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-slate-600">📍 Solo Hoy</button>
+          </div>
+        </div>
+
+        <!-- Controles de Semana o Rango para el Reporte WhatsApp -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
+          <div id="rrhhBoxSemana">
+            <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Fecha de la Semana a Reportar:</label>
+            <input id="rrhhSemanaInput" type="date" onchange="generarReportesTextoRRHH()" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold" />
+          </div>
+
+          <div id="rrhhBoxRango" class="hidden sm:col-span-2 grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Desde Fecha:</label>
+              <input id="rrhhDesdeInput" type="date" onchange="generarReportesTextoRRHH()" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Hasta Fecha:</label>
+              <input id="rrhhHastaInput" type="date" onchange="generarReportesTextoRRHH()" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold" />
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <label class="inline-flex items-center gap-1.5 text-xs font-extrabold text-slate-700 cursor-pointer">
+              <input id="chkRrhhIncluirExtrasTexto" type="checkbox" checked onchange="generarReportesTextoRRHH()" class="w-4 h-4 accent-[#59B447] rounded" />
+              <span>⚡ Incluir H. Extras en el texto</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Vista previa del Mensaje Global Unificado de la Sede -->
+        <div class="space-y-2 pt-1">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <label class="text-[11px] font-black uppercase text-[#1B4332]">
+              📢 A. Mensaje Global de la Sede (Todos los asesores en un solo mensaje):
+            </label>
+            <div class="flex gap-1.5">
+              <button type="button" onclick="copiarReporteGlobalRRHH()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-extrabold">
+                <i class="fa-solid fa-copy mr-1"></i> Copiar Texto
+              </button>
+              <button type="button" onclick="enviarReporteGlobalWhatsApp()" class="px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#1ebe5d] text-white text-[11px] font-extrabold shadow-sm">
+                <i class="fa-brands fa-whatsapp mr-1"></i> Enviar al Grupo / WhatsApp
+              </button>
+            </div>
+          </div>
+          <textarea id="rrhhTextoReporteGlobal" rows="7" readonly class="w-full p-3 rounded-2xl border border-slate-200 bg-slate-50 font-mono text-[11px] text-slate-800 focus:outline-none"></textarea>
+        </div>
+
+        <!-- Envío Privado a Cada Asesor de su propio reporte en texto -->
+        <div class="space-y-2 pt-2 border-t border-slate-100">
+          <span class="block text-[11px] font-black uppercase text-[#1B4332]">
+            🔒 B. Enviar Reporte Individual por Privado a cada Asesor (1 Clic a su Celular):
+          </span>
+          <div id="rrhhListaReportePrivadoAsesores" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[320px] overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
          PESTAÑA 4: CONTROL GLOBAL (EXCLUSIVO PARA GERENTES)
          ======================================================================== -->
     <section id="view_GERENCIA" class="hidden p-3 space-y-3">
@@ -710,11 +890,14 @@
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div>
             <h2 class="text-sm font-black uppercase text-[#1B4332]"><i class="fa-solid fa-crown text-amber-500 mr-1.5"></i> Control Global Gerencial</h2>
-            <p class="text-xs text-slate-500">Consolidado de Sedes Habilitadas en <strong>PARAMETROS</strong> (Cierre de día: 23:59)</p>
+            <p class="text-xs text-slate-500">Consolidado de Sedes Habilitadas en el <strong>Script de Usuarios y Parámetros</strong> (Cierre de día: 23:59)</p>
           </div>
           <div class="flex gap-1.5 flex-wrap">
+            <button type="button" onclick="cambiarPestana('RRHH')" class="px-3 py-2 rounded-xl bg-[#25D366] hover:bg-[#1ebe5d] text-white text-xs font-extrabold shadow">
+              <i class="fa-brands fa-whatsapp mr-1"></i> Centro RR.HH. WhatsApp
+            </button>
             <button type="button" onclick="cambiarPestana('PERMISOS')" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow">
-              <i class="fa-solid fa-sliders mr-1"></i> Configurar Fotos y Permisos
+              <i class="fa-solid fa-sliders mr-1"></i> Configurar Fotos, Permisos y Delegados
             </button>
             <button type="button" onclick="exportarReporteAsistenciaPDF()" class="px-3 py-2 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs font-extrabold shadow">
               <i class="fa-solid fa-file-pdf mr-1"></i> Exportar PDF Global
@@ -730,7 +913,7 @@
     </section>
 
     <!-- ========================================================================
-         PESTAÑA 5: CONFIGURADOR GERENCIAL DE FOTOS POR REGISTRO + QUIÉN MARCA
+         PESTAÑA 5: CONFIGURADOR GERENCIAL DE FOTOS + QUIÉN MARCA + DELEGAR CONTROL SEDE
          ======================================================================== -->
     <section id="view_PERMISOS" class="hidden p-3 space-y-3">
 
@@ -744,7 +927,7 @@
               </span>
             </div>
             <h2 class="text-base font-black text-slate-800 mt-1">📷 ¿Qué Registros Llevan Foto y Cuáles Solo Hora + GPS?</h2>
-            <p class="text-xs text-slate-500">Evalúa las 4 opciones de registro y define si todas llevan foto o si desactivas la solicitud de foto en <strong>Refrigerio (Salida y Retorno)</strong> o <strong>Salida Final</strong>.</p>
+            <p class="text-xs text-slate-500">Todas las fotografías se alojan de forma ligera en <strong>Google Drive</strong> para máxima velocidad de lectura.</p>
           </div>
 
           <div class="w-full sm:w-auto">
@@ -789,13 +972,13 @@
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <div class="flex items-center gap-1.5 flex-wrap">
-              <span class="px-2 py-0.5 rounded-md bg-emerald-100 text-[#1B4332] font-black text-[10px] uppercase">Exclusivo Gerencia • Por Defecto Todos Activos</span>
-              <span class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 font-black text-[10px] uppercase">
-                <i class="fa-solid fa-users-gear mr-1"></i>Sincronizado entre todos los Gerentes y Dispositivos
+              <span class="px-2 py-0.5 rounded-md bg-emerald-100 text-[#1B4332] font-black text-[10px] uppercase">Exclusivo Gerencia • Supervisados y Delegados</span>
+              <span class="px-2 py-0.5 rounded-md bg-teal-100 text-teal-800 font-black text-[10px] uppercase">
+                <i class="fa-solid fa-user-check mr-1"></i>Incluye Delegación de Control de Sede (Pestaña RR.HH.)
               </span>
             </div>
-            <h2 class="text-base font-black text-slate-800 mt-1">🛡️ Control de Quién Debe Marcar Asistencia y Permisos Especiales</h2>
-            <p class="text-xs text-slate-500">Todo cambio se guarda en la nube para que en ningún otro celular o PC aparezca en falta quien tenga permiso especial.</p>
+            <h2 class="text-base font-black text-slate-800 mt-1">🛡️ Control de Personal Supervisado, Permisos Especiales y Delegados de Sede</h2>
+            <p class="text-xs text-slate-500">Define quién está <strong>Supervisado</strong> (o con Permiso Especial) y activa el botón <strong>"📲 Control Sede"</strong> al colaborador a quien le permitas llevar el control de asistencia y avisos RR.HH. de su agencia.</p>
           </div>
           <div class="flex gap-1.5">
             <button type="button" onclick="cargarAsistenciasDesdeServidor(true)" class="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-[#1B4332] text-xs font-extrabold border border-emerald-200">
@@ -807,18 +990,22 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2 pt-1">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
           <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
             <span class="block text-[10px] font-extrabold uppercase text-slate-400">Total Personal</span>
             <span id="permKpiTotal" class="text-lg font-black text-slate-800">0</span>
           </div>
           <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
-            <span class="block text-[10px] font-extrabold uppercase text-emerald-700">✅ Deben Marcar</span>
+            <span class="block text-[10px] font-extrabold uppercase text-emerald-700">✅ Supervisados</span>
             <span id="permKpiObligados" class="text-lg font-black text-emerald-700">0</span>
           </div>
           <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-center">
-            <span class="block text-[10px] font-extrabold uppercase text-amber-700">🛡️ Con Permiso / Exonerados</span>
+            <span class="block text-[10px] font-extrabold uppercase text-amber-700">🛡️ Con Permiso Especial</span>
             <span id="permKpiExonerados" class="text-lg font-black text-amber-700">0</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-teal-50 border border-teal-200 text-center">
+            <span class="block text-[10px] font-extrabold uppercase text-teal-800">📲 Delegados Control Sede</span>
+            <span id="permKpiDelegados" class="text-lg font-black text-teal-800">0</span>
           </div>
         </div>
 
@@ -836,14 +1023,15 @@
           </select>
 
           <select id="permFiltroEstado" onchange="renderizarPanelPermisos()" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700">
-            <option value="TODOS">📋 Ver Todos (Activos y Exonerados)</option>
-            <option value="OBLIGADO">✅ Solo Quienes Deben Marcar</option>
-            <option value="EXONERADO">🛡️ Solo Exonerados / Permiso Especial</option>
+            <option value="TODOS">📋 Ver Todos</option>
+            <option value="OBLIGADO">✅ Solo Supervisados</option>
+            <option value="EXONERADO">🛡️ Solo Con Permiso Especial</option>
+            <option value="DELEGADO">📲 Solo Delegados de Control Sede</option>
           </select>
 
           <div class="relative">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-            <input id="permBuscadorNombre" type="text" oninput="renderizarPanelPermisos()" placeholder="Buscar por nombre..." class="w-full pl-8 pr-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 focus:outline-none focus:border-[#59B447]" />
+            <input id="permBuscadorNombre" type="text" oninput="renderizarPanelPermisos()" placeholder="Buscar por nombre o celular..." class="w-full pl-8 pr-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 focus:outline-none focus:border-[#59B447]" />
           </div>
         </div>
 
@@ -918,7 +1106,7 @@
       <div class="p-3 bg-slate-900 flex flex-col items-center justify-center min-h-[260px]">
         <img id="imgPreviewResultado" src="" alt="Evidencia Fotográfica CREDIBAN" class="max-h-[62vh] w-auto rounded-xl shadow-lg border border-white/15 object-contain" />
         <a id="linkAbrirFotoDrive" href="#" target="_blank" class="hidden mt-2 text-[11px] font-extrabold text-emerald-300 underline">
-          <i class="fa-solid fa-up-right-from-square mr-1"></i> Abrir imagen original en alta resolución
+          <i class="fa-solid fa-up-right-from-square mr-1"></i> Abrir imagen alojada en Google Drive
         </a>
       </div>
 
@@ -928,7 +1116,7 @@
             <i class="fa-solid fa-camera-rotate mr-1"></i> Volver a Tomar
           </button>
           <button type="button" id="btnConfirmarAsistencia" onclick="confirmarYSubirAsistencia()" class="py-3 rounded-xl bg-[#59B447] hover:bg-[#4ea33d] text-white font-black text-xs uppercase shadow-lg shadow-[#59B447]/30">
-            <i class="fa-solid fa-bolt mr-1"></i> Confirmar (Envío 2do Plano)
+            <i class="fa-solid fa-bolt mr-1"></i> Confirmar (Subir a Drive)
           </button>
         </div>
 
@@ -960,10 +1148,10 @@
 
   <!-- Lienzo oculto para renderizado de alta precisión -->
   <canvas id="hiddenCanvas" class="hidden"></canvas>
-<!-- FIN DE LA PARTE 1 DE 3 — PEGA LA PARTE 2 JUSTO DEBAJO DE ESTA LÍNEA --><!-- ============================================================================
-     SISTEMA INTEGRAL DE ASISTENCIA Y FOTOS DE GESTIÓN EN CAMPO - CREDIBAN PERÚ S.A.C.
-     PARTE 2 DE 3: Núcleo JavaScript, Estado GPS Neutro (Sin "Hualmay" pregrabado),
-     Envío en 2do Plano, Checklist Diario y Sincronización Multi-Dispositivo en Nube
+<!-- FIN DE LA PARTE 2 DE 5 — PEGA LA PARTE 3 JUSTO DEBAJO DE ESTA LÍNEA --><!-- ============================================================================
+     SISTEMA INTEGRAL DE ASISTENCIA, RR.HH. Y FOTOS DE GESTIÓN - CREDIBAN PERÚ S.A.C.
+     PARTE 3 DE 5: Núcleo JavaScript, Parámetros y Celulares desde Script de Usuarios,
+     Lectura Instantánea 0.01s (Fotos 100% en Drive sin Base64 en Sheets) y Delegación de Sede
      ============================================================================ -->
   <script>
     /***************************************************************************
@@ -985,6 +1173,17 @@
       "HUANUCO": { estado: "HABILITADO", diasLaborables: ["LUN","MAR","MIE","JUE","VIE","SAB"], entradaLV: "08:30", salidaLV: "18:30", entradaSab: "09:00", salidaSab: "13:30", toleranciaMin: 10, refrigerioMin: 60, salidaCajaLV: "19:00", salidaCajaSab: "14:00" }
     };
     let FERIADOS_NO_LABORABLES = [];
+
+    // Recuperar caché local de parámetros del Script de Usuarios para arranque en 0.01s
+    try {
+      const cacheParam = localStorage.getItem("crediban_parametros_usuarios_v12");
+      if (cacheParam) {
+        const p = JSON.parse(cacheParam);
+        if (Array.isArray(p.sedesHabilitadas) && p.sedesHabilitadas.length > 0) SEDES_HABILITADAS = p.sedesHabilitadas;
+        if (p.reglasPorSede && Object.keys(p.reglasPorSede).length > 0) PARAMETROS_SEDES = p.reglasPorSede;
+        if (Array.isArray(p.feriados)) FERIADOS_NO_LABORABLES = p.feriados;
+      }
+    } catch (e) {}
 
     /***************************************************************************
      * 2. MOTOR DE FECHA LOCAL PERÚ (CIERRE DE DÍA ESTRICTO A LAS 23:59:59)
@@ -1015,20 +1214,38 @@
     }
 
     /***************************************************************************
-     * 3. VARIABLES DE ESTADO GLOBAL, PERMISOS EN NUBE Y COLA EN 2DO PLANO
+     * 3. VARIABLES DE ESTADO GLOBAL, PERMISOS, DELEGADOS Y COLA EN 2DO PLANO
      ***************************************************************************/
     let catalogoUsuarios = [];
+    try {
+      const uCache = localStorage.getItem("crediban_catalogo_usuarios_v12");
+      if (uCache) catalogoUsuarios = JSON.parse(uCache);
+    } catch (e) { catalogoUsuarios = []; }
+
     let promesaCargaInicial = null;
     let usuarioActivo = null;
     let pestanaActual = "MARCAR";
     let tipoMarcajeSeleccionado = "ENTRADA";
     let modoCapturaActual = "ASISTENCIA";
+    let modoPeriodoRRHH = "SEMANA";
 
+    // Mapa de Personal Supervisado vs Exonerado
     let mapaPermisosAsistencia = {};
     try {
-      mapaPermisosAsistencia = JSON.parse(localStorage.getItem("crediban_permisos_asistencia_v11") || localStorage.getItem("crediban_permisos_asistencia_v10") || "{}");
+      mapaPermisosAsistencia = JSON.parse(
+        localStorage.getItem("crediban_permisos_asistencia_v12") ||
+        localStorage.getItem("crediban_permisos_asistencia_v11") ||
+        "{}"
+      );
     } catch (e) { mapaPermisosAsistencia = {}; }
 
+    // Nuevo Mapa de Delegados de Control de Asistencia por Sede (Definido por Gerentes)
+    let mapaDelegadosSede = {};
+    try {
+      mapaDelegadosSede = JSON.parse(localStorage.getItem("crediban_delegados_sede_v12") || "{}");
+    } catch (e) { mapaDelegadosSede = {}; }
+
+    // Mapa de Configuración de Fotos por Sede
     let mapaConfigFotosPorSede = {
       "GLOBAL": {
         "ENTRADA": true,
@@ -1038,25 +1255,25 @@
       }
     };
     try {
-      const savedFotos = localStorage.getItem("crediban_config_fotos_sede_v11") || localStorage.getItem("crediban_config_fotos_sede_v10");
+      const savedFotos = localStorage.getItem("crediban_config_fotos_sede_v12") || localStorage.getItem("crediban_config_fotos_sede_v11");
       if (savedFotos) mapaConfigFotosPorSede = JSON.parse(savedFotos);
     } catch (e) {}
 
-    let ultimoTimestampConfigNube = Number(localStorage.getItem("crediban_config_ts_v11") || localStorage.getItem("crediban_config_ts_v10") || 0);
+    let ultimoTimestampConfigNube = Number(localStorage.getItem("crediban_config_ts_v12") || localStorage.getItem("crediban_config_ts_v11") || 0);
 
-    // Limpiar colas antiguas
-    localStorage.removeItem("crediban_cola_bg_v8");
-    localStorage.removeItem("crediban_cola_bg_v9");
+    // Limpiar cachés antiguas con Base64 pesado para liberar memoria y acelerar la app
+    localStorage.removeItem("crediban_asistencias_db_v10");
+    localStorage.removeItem("crediban_asistencias_db_v11");
 
     let colaEnvioSegundoPlano = [];
     try {
-      colaEnvioSegundoPlano = JSON.parse(localStorage.getItem("crediban_cola_bg_v11") || localStorage.getItem("crediban_cola_bg_v10") || "[]");
+      colaEnvioSegundoPlano = JSON.parse(localStorage.getItem("crediban_cola_bg_v12") || localStorage.getItem("crediban_cola_bg_v11") || "[]");
     } catch (e) { colaEnvioSegundoPlano = []; }
     let procesandoColaBg = false;
 
     let ultimoBlobGenerado = null;
     let ultimoBase64Original = "";
-    let ultimoBase64Servidor = "";
+    let ultimoBase64DriveLigero = "";
     let ultimaMiniaturaAlbum = "";
     let ultimoNombreArchivo = "";
     let itemAlbumSeleccionado = null;
@@ -1074,7 +1291,7 @@
     let directorioGestionHandle = null;
     let listaFotosAlbumCache = [];
 
-    // ESTADO GPS NEUTRO (Cero valores "Hualmay 15136" pregrabados + Control de Precisión Anti-Salto 2km)
+    // ESTADO GPS NEUTRO INTACTO (Filtro Anti-Salto de 2 km)
     let gpsState = {
       activo: false,
       fijadoPorSatelite: false,
@@ -1101,7 +1318,7 @@
     };
 
     /***************************************************************************
-     * 4. ARRANQUE DIRECTO EN LÍNEA E INDEXEDDB
+     * 4. ARRANQUE INSTANTÁNEO (0.01s) CON CACHÉ LIGERA SIN BASE64
      ***************************************************************************/
     window.addEventListener("DOMContentLoaded", async () => {
       try {
@@ -1110,6 +1327,9 @@
         restaurarBorradorFormulario();
         configurarEscudoBotonRetroceso();
 
+        // Cargar de inmediato los registros ligeros en memoria antes de llamar al servidor
+        cargarRegistrosLigerosInstantaneos();
+
         window.addEventListener("online", () => procesarColaSegundoPlano());
         document.addEventListener("visibilitychange", () => {
           if (document.visibilityState === "visible") {
@@ -1117,13 +1337,13 @@
           }
         });
 
-        const sesionGuardada = localStorage.getItem("crediban_sesion_activa_v11") || localStorage.getItem("crediban_sesion_activa_v10");
+        const sesionGuardada = localStorage.getItem("crediban_sesion_activa_v12") || localStorage.getItem("crediban_sesion_activa_v11");
         if (sesionGuardada) {
           try {
             usuarioActivo = JSON.parse(sesionGuardada);
             mostrarAppPrincipal();
           } catch (e) {
-            localStorage.removeItem("crediban_sesion_activa_v11");
+            localStorage.removeItem("crediban_sesion_activa_v12");
             mostrarPantallaLogin();
           }
         } else {
@@ -1133,7 +1353,7 @@
         const overlay = document.getElementById("loadingOverlay");
         if (overlay) {
           overlay.classList.add("opacity-0");
-          setTimeout(() => overlay.classList.add("hidden"), 150);
+          setTimeout(() => overlay.classList.add("hidden"), 120);
         }
 
         iniciarRastreoGpsContinuo();
@@ -1151,6 +1371,54 @@
         mostrarPantallaLogin();
       }
     });
+
+    function cargarRegistrosLigerosInstantaneos() {
+      const hoyIso = obtenerFechaLocalIso();
+      let listaInicial = [];
+      try {
+        const rawGeneral = localStorage.getItem("crediban_asistencias_ligeras_v12");
+        if (rawGeneral) listaInicial = JSON.parse(rawGeneral);
+      } catch (e) {}
+
+      try {
+        const rawMisHoy = localStorage.getItem("crediban_mis_marcas_hoy_v12");
+        if (rawMisHoy) {
+          const misHoy = JSON.parse(rawMisHoy).filter(r => String(r.fechaIso || "").slice(0, 10) === hoyIso);
+          const ids = new Set(listaInicial.map(x => x.id));
+          misHoy.forEach(m => {
+            if (!ids.has(m.id)) listaInicial.unshift(m);
+          });
+        }
+      } catch (e) {}
+
+      registrosAsistenciaGlobal = listaInicial;
+    }
+
+    function guardarRegistrosLocales() {
+      try {
+        const hoyIso = obtenerFechaLocalIso();
+        // Limpiar cualquier cadena Base64 residual para que el guardado y lectura duren < 1 milisegundo
+        const limpiosSinBase64 = registrosAsistenciaGlobal.slice(0, 220).map(r => {
+          const linkDrive = (r.linkFotoOriginal && r.linkFotoOriginal.startsWith("http"))
+            ? r.linkFotoOriginal
+            : (r.fotoUrl && r.fotoUrl.startsWith("http") ? r.fotoUrl : "");
+          return {
+            ...r,
+            fotoUrl: linkDrive,
+            linkFotoOriginal: linkDrive
+          };
+        });
+        localStorage.setItem("crediban_asistencias_ligeras_v12", JSON.stringify(limpiosSinBase64));
+
+        if (usuarioActivo) {
+          const misHoy = limpiosSinBase64.filter(r =>
+            String(r.nombre || "").trim().toUpperCase() === usuarioActivo.nombre &&
+            String(r.fechaIso || "").slice(0, 10) === hoyIso
+          );
+          localStorage.setItem("crediban_mis_marcas_hoy_v12", JSON.stringify(misHoy));
+        }
+      } catch (e) {}
+    }
 
     function configurarEscudoBotonRetroceso() {
       window.history.pushState({ credibanApp: true }, "", window.location.href);
@@ -1205,12 +1473,12 @@
         tipoActividadGestion: document.getElementById("gestionTipoActividad")?.value || "Evaluación / Visita de Campo",
         tipoMarcaje: tipoMarcajeSeleccionado
       };
-      localStorage.setItem("crediban_borrador_form_v11", JSON.stringify(borrador));
+      localStorage.setItem("crediban_borrador_form_v12", JSON.stringify(borrador));
     }
 
     function restaurarBorradorFormulario() {
       try {
-        const raw = localStorage.getItem("crediban_borrador_form_v11") || localStorage.getItem("crediban_borrador_form_v10");
+        const raw = localStorage.getItem("crediban_borrador_form_v12") || localStorage.getItem("crediban_borrador_form_v11");
         if (!raw) return;
         const b = JSON.parse(raw);
         if (document.getElementById("chkEnCampo")) document.getElementById("chkEnCampo").checked = !!b.chkEnCampo;
@@ -1375,43 +1643,176 @@
     }
 
     /***************************************************************************
-     * 6. SINCRONIZACIÓN EN LÍNEA DE USUARIOS, PARAMETROS Y PERMISOS EN NUBE
+     * 6. SINCRONIZACIÓN DE USUARIOS, CELULARES Y PARÁMETROS DESDE EL SCRIPT DE USUARIOS
      ***************************************************************************/
     async function sincronizarUsuariosYParametros() {
-      const promParams = fetch(`${CONFIG_SISTEMA.ATTENDANCE_API_URL}?action=getParametros&t=${Date.now()}`)
-        .then(r => r.json())
-        .then(dataParam => {
-          if (dataParam && dataParam.status === "ok" && dataParam.parametros) {
-            aplicarParametrosRecibidos(dataParam.parametros);
-          }
-        })
-        .catch(() => {});
+      let parametrosDesdeUsuariosAplicados = false;
 
+      // 1. Consultar el Script Maestro de Usuarios (Trae Usuarios + Celulares + Parámetros/Horarios/Sedes)
       const promUsers = fetch(`${CONFIG_SISTEMA.AUTH_USERS_API_URL}?action=getUsers&t=${Date.now()}`)
         .then(r => r.json())
         .then(dataUser => {
-          const listaCruda = Array.isArray(dataUser) ? dataUser : (dataUser.usuarios || dataUser.users || dataUser.data || []);
+          // A. Extraer lista de usuarios y sus números de celular
+          const listaCruda = Array.isArray(dataUser)
+            ? dataUser
+            : (dataUser.usuarios || dataUser.users || dataUser.data || dataUser.personal || []);
+
           if (listaCruda.length > 0) {
+            // Si las filas del Script de Usuarios incluyen columnas o bloques de parámetros de sede, extraerlos también
+            extraerParametrosEmbebidosEnScriptUsuarios(dataUser, listaCruda);
+
             catalogoUsuarios = listaCruda
               .map(u => normalizarUsuarioScript(u))
               .filter(u => u.nombre && u.estado !== "DESHABILITADO" && u.estado !== "INACTIVO");
+
+            try {
+              localStorage.setItem("crediban_catalogo_usuarios_v12", JSON.stringify(catalogoUsuarios));
+            } catch (e) {}
+          }
+
+          // B. Si el Script de Usuarios devuelve un objeto parametros/config/horarios directo
+          const paramObj = dataUser.parametros || dataUser.config || dataUser.configuracion || dataUser.horarios || null;
+          if (paramObj) {
+            aplicarParametrosRecibidos(paramObj);
+            parametrosDesdeUsuariosAplicados = true;
           }
         })
         .catch(() => {});
 
-      await Promise.all([promParams, promUsers]);
+      // 2. Intentar también ?action=getParametros en el Script de Usuarios por si está expuesto en esa acción
+      const promParamsUsuarios = fetch(`${CONFIG_SISTEMA.AUTH_USERS_API_URL}?action=getParametros&t=${Date.now()}`)
+        .then(r => r.json())
+        .then(d => {
+          const p = (d && (d.parametros || d.config || (d.sedesHabilitadas ? d : null)));
+          if (p && (p.sedesHabilitadas || p.reglasPorSede)) {
+            aplicarParametrosRecibidos(p);
+            parametrosDesdeUsuariosAplicados = true;
+          }
+        })
+        .catch(() => {});
+
+      // 3. Respaldo en el servidor de asistencias si algún parámetro adicional (ej. feriados) estuviera allí
+      const promParamsAsistencia = fetch(`${CONFIG_SISTEMA.ATTENDANCE_API_URL}?action=getParametros&t=${Date.now()}`)
+        .then(r => r.json())
+        .then(dataParam => {
+          if (!parametrosDesdeUsuariosAplicados && dataParam && dataParam.status === "ok" && dataParam.parametros) {
+            aplicarParametrosRecibidos(dataParam.parametros);
+          } else if (dataParam?.parametros?.feriados?.length > 0 && FERIADOS_NO_LABORABLES.length === 0) {
+            FERIADOS_NO_LABORABLES = dataParam.parametros.feriados;
+          }
+        })
+        .catch(() => {});
+
+      await Promise.all([promUsers, promParamsUsuarios, promParamsAsistencia]);
+
+      if (usuarioActivo) {
+        // Actualizar teléfono o datos del usuario activo si cambiaron en el Script de Usuarios
+        const actualizado = catalogoUsuarios.find(u => u.nombre === usuarioActivo.nombre || u.usuario === usuarioActivo.usuario);
+        if (actualizado) {
+          usuarioActivo = { ...actualizado, sedeOperativa: usuarioActivo.sedeOperativa || actualizado.sede };
+        }
+        actualizarVisibilidadPestanasPorRol();
+        if (pestanaActual === "RRHH") renderizarModuloRRHH();
+      }
+    }
+
+    function extraerParametrosEmbebidosEnScriptUsuarios(dataRoot, listaUsuarios) {
+      const reglasDetectadas = {};
+      const sedesHab = [];
+      let feriadosDetectados = [];
+
+      // Verificar si vienen arreglos de sedes/reglas en la raíz del JSON del Script de Usuarios
+      const listaSedesRoot = dataRoot.sedes || dataRoot.reglasSedes || dataRoot.parametrosSedes || [];
+      if (Array.isArray(listaSedesRoot) && listaSedesRoot.length > 0) {
+        listaSedesRoot.forEach(item => {
+          const nombreSede = String(item.sede || item.Sede_Regla || item.Sede || item.nombre || "").trim().toUpperCase();
+          if (!nombreSede) return;
+          const estado = String(item.estado || item.Estado_Sede || item.Estado || "HABILITADO").trim().toUpperCase();
+          const diasRaw = item.diasLaborables || item.Dias_Laborables || "LUN,MAR,MIE,JUE,VIE,SAB";
+          const diasArray = Array.isArray(diasRaw) ? diasRaw : String(diasRaw).toUpperCase().split(/[,;\s]+/).filter(Boolean);
+
+          reglasDetectadas[nombreSede] = {
+            sede: nombreSede,
+            estado: estado,
+            diasLaborables: diasArray,
+            entradaLV: normalizarHoraTexto(item.entradaLV || item.Hora_Entrada_LV || item.horaEntrada || "08:30", "08:30"),
+            salidaLV: normalizarHoraTexto(item.salidaLV || item.Hora_Salida_LV || item.horaSalida || "18:30", "18:30"),
+            entradaSab: normalizarHoraTexto(item.entradaSab || item.Hora_Entrada_Sab || "09:00", "09:00"),
+            salidaSab: normalizarHoraTexto(item.salidaSab || item.Hora_Salida_Sab || "13:30", "13:30"),
+            toleranciaMin: Number(item.toleranciaMin ?? item.Tolerancia_Min ?? item.tolerancia ?? 10) || 10,
+            refrigerioMin: Number(item.refrigerioMin ?? item.Refrigerio_Min ?? item.refrigerio ?? 60) || 60,
+            salidaCajaLV: normalizarHoraTexto(item.salidaCajaLV || item.Salida_Caja_LV || "19:00", "19:00"),
+            salidaCajaSab: normalizarHoraTexto(item.salidaCajaSab || item.Salida_Caja_Sab || "14:00", "14:00")
+          };
+          if (estado === "HABILITADO") sedesHab.push(nombreSede);
+        });
+      }
+
+      // Verificar también si cada fila de usuario en el Script de Usuarios trae columnas de parámetros (Sede_Regla, Hora_Entrada_LV, etc.)
+      if (Array.isArray(listaUsuarios)) {
+        listaUsuarios.forEach(row => {
+          const sedeRegla = String(row.Sede_Regla || row.sede_regla || "").trim().toUpperCase();
+          if (sedeRegla) {
+            const est = String(row.Estado_Sede || row.estado_sede || "HABILITADO").trim().toUpperCase();
+            const diasR = row.Dias_Laborables || row.dias_laborables || "LUN,MAR,MIE,JUE,VIE,SAB";
+            reglasDetectadas[sedeRegla] = {
+              sede: sedeRegla,
+              estado: est,
+              diasLaborables: Array.isArray(diasR) ? diasR : String(diasR).toUpperCase().split(/[,;\s]+/).filter(Boolean),
+              entradaLV: normalizarHoraTexto(row.Hora_Entrada_LV || row.entradaLV || "08:30", "08:30"),
+              salidaLV: normalizarHoraTexto(row.Hora_Salida_LV || row.salidaLV || "18:30", "18:30"),
+              entradaSab: normalizarHoraTexto(row.Hora_Entrada_Sab || row.entradaSab || "09:00", "09:00"),
+              salidaSab: normalizarHoraTexto(row.Hora_Salida_Sab || row.salidaSab || "13:30", "13:30"),
+              toleranciaMin: Number(row.Tolerancia_Min ?? row.toleranciaMin ?? 10) || 10,
+              refrigerioMin: Number(row.Refrigerio_Min ?? row.refrigerioMin ?? 60) || 60,
+              salidaCajaLV: normalizarHoraTexto(row.Salida_Caja_LV || row.salidaCajaLV || "19:00", "19:00"),
+              salidaCajaSab: normalizarHoraTexto(row.Salida_Caja_Sab || row.salidaCajaSab || "14:00", "14:00")
+            };
+            if (est === "HABILITADO" && !sedesHab.includes(sedeRegla)) sedesHab.push(sedeRegla);
+          }
+          if (row.Feriados_No_Laborables || row.feriado) {
+            const f = String(row.Feriados_No_Laborables || row.feriado).trim().slice(0, 10);
+            if (f && !feriadosDetectados.includes(f)) feriadosDetectados.push(f);
+          }
+        });
+      }
+
+      if (sedesHab.length > 0 && Object.keys(reglasDetectadas).length > 0) {
+        aplicarParametrosRecibidos({
+          sedesHabilitadas: sedesHab,
+          reglasPorSede: reglasDetectadas,
+          feriados: feriadosDetectados
+        });
+      }
+    }
+
+    function normalizarHoraTexto(val, defecto) {
+      if (!val) return defecto;
+      const str = String(val).trim();
+      const m = str.match(/(\d{1,2}):(\d{2})/);
+      if (m) return m[1].padStart(2, "0") + ":" + m[2];
+      return defecto;
     }
 
     function aplicarParametrosRecibidos(p) {
       if (Array.isArray(p.sedesHabilitadas) && p.sedesHabilitadas.length > 0) {
-        SEDES_HABILITADAS = p.sedesHabilitadas;
+        SEDES_HABILITADAS = p.sedesHabilitadas.map(s => String(s).trim().toUpperCase());
       }
-      if (p.reglasPorSede) {
+      if (p.reglasPorSede && Object.keys(p.reglasPorSede).length > 0) {
         PARAMETROS_SEDES = p.reglasPorSede;
       }
-      if (Array.isArray(p.feriados)) {
+      if (Array.isArray(p.feriados) && p.feriados.length > 0) {
         FERIADOS_NO_LABORABLES = p.feriados;
       }
+
+      try {
+        localStorage.setItem("crediban_parametros_usuarios_v12", JSON.stringify({
+          sedesHabilitadas: SEDES_HABILITADAS,
+          reglasPorSede: PARAMETROS_SEDES,
+          feriados: FERIADOS_NO_LABORABLES
+        }));
+      } catch (e) {}
+
       poblarSelectoresFiltroPermisos();
       if (usuarioActivo) {
         actualizarTextoHorarioSede();
@@ -1423,11 +1824,80 @@
       }
     }
 
+    function limpiarTelefonoPeru(rawTel) {
+      const soloDigitos = String(rawTel || "").replace(/\D/g, "");
+      if (!soloDigitos) return "";
+      if (soloDigitos.length === 9 && soloDigitos.startsWith("9")) {
+        return "51" + soloDigitos;
+      }
+      if (soloDigitos.length === 11 && soloDigitos.startsWith("519")) {
+        return soloDigitos;
+      }
+      return soloDigitos;
+    }
+
+    function normalizarUsuarioScript(raw) {
+      const usuarioLogin = String(raw.usuario || raw.Usuario || raw.user || raw.nombre || raw.Nombre_Completo || "").trim().toUpperCase();
+      const nombreMostrar = String(raw.nombre || raw.Nombre_Completo || raw.usuario || raw.Usuario || "").trim().toUpperCase();
+      const clave = String(raw.clave || raw.password || raw.contraseña || raw.Contraseña || "").trim();
+      const cargoRaw = String(raw.cargo || raw.rol || raw.rango || raw.Cargo || raw.Rol || "ASESOR").trim().toUpperCase();
+      let sede = String(raw.sede || raw.agencia || raw.filial || raw.Sede || "HUACHO").trim().toUpperCase();
+      const equipo = String(raw.equipo || raw.grupo || raw.jefeEquipo || raw.Equipo || "").trim().toUpperCase();
+      const estado = String(raw.estado || raw.Estado || "HABILITADO").trim().toUpperCase();
+
+      // Extracción automática del número de celular desde el Script de Usuarios actualizado
+      const celularRaw = raw.celular || raw.Celular || raw.telefono || raw.Telefono || raw.whatsapp || raw.WhatsApp || raw.movil || raw.Movil || raw.numero || raw.Numero_Celular || "";
+      const celular = limpiarTelefonoPeru(celularRaw);
+
+      // Si el Script de Usuarios incluye una columna de permiso de control de sede
+      const controlSedeScript = String(raw.controlSede || raw.Control_Sede || raw.delegadoAsistencia || "").trim().toUpperCase();
+      if (controlSedeScript === "SI" || controlSedeScript === "TRUE" || controlSedeScript === "ACTIVO") {
+        mapaDelegadosSede[nombreMostrar] = true;
+      }
+
+      let rol = "ASESOR";
+      if (cargoRaw.includes("GERENTE") || cargoRaw.includes("DIRECTOR") || cargoRaw.includes("MASTER") || cargoRaw.includes("DESARROLLADOR")) {
+        rol = "GERENTE";
+        if (!sede || sede === "GENERAL" || sede === "TODAS LAS SEDES") sede = "TODAS";
+      } else if (cargoRaw.includes("ADMIN") || cargoRaw.includes("ZONAL")) {
+        rol = "ADMINISTRADOR";
+      } else if (cargoRaw.includes("CAJ")) {
+        rol = "CAJERO";
+      } else if (cargoRaw.includes("TRABAJADOR") || cargoRaw.includes("OPERACIONES") || cargoRaw.includes("ASISTENTE")) {
+        rol = "TRABAJADOR";
+      } else {
+        rol = "ASESOR";
+      }
+
+      return { usuario: usuarioLogin, nombre: nombreMostrar, clave, rol, cargo: cargoRaw, sede, equipo, estado, celular };
+    }
+
+    function esUsuarioGerente(user) {
+      return Boolean(user && user.rol === "GERENTE");
+    }
+
+    function esUsuarioAdministrador(user) {
+      return Boolean(user && user.rol === "ADMINISTRADOR");
+    }
+
+    function colaboradorEsDelegadoSede(nombreColaborador) {
+      const clave = String(nombreColaborador || "").trim().toUpperCase();
+      return Boolean(mapaDelegadosSede[clave]);
+    }
+
+    function usuarioPuedeVerModuloRRHH(user) {
+      if (!user) return false;
+      return esUsuarioGerente(user) || esUsuarioAdministrador(user) || colaboradorEsDelegadoSede(user.nombre);
+    }
+
+    /***************************************************************************
+     * 7. SINCRONIZACIÓN EN NUBE DE PERMISOS, FOTOS Y DELEGADOS DE CONTROL DE SEDE
+     ***************************************************************************/
     async function sincronizarConfigGerencialEnNube() {
       if (!esUsuarioGerente(usuarioActivo)) return;
       const tsAhora = Date.now();
       ultimoTimestampConfigNube = tsAhora;
-      localStorage.setItem("crediban_config_ts_v11", String(tsAhora));
+      localStorage.setItem("crediban_config_ts_v12", String(tsAhora));
 
       const badge = document.getElementById("badgeSyncConfigNube");
       if (badge) {
@@ -1438,7 +1908,8 @@
         ts: tsAhora,
         autor: usuarioActivo.nombre,
         permisos: mapaPermisosAsistencia,
-        fotos: mapaConfigFotosPorSede
+        fotos: mapaConfigFotosPorSede,
+        delegados: mapaDelegadosSede
       };
 
       const sedeAncla = SEDES_HABILITADAS[0] || "HUACHO";
@@ -1495,63 +1966,43 @@
             }
           } catch (e) {}
         } else {
-          registrosNormales.push(r);
+          // Limpiar cualquier cadena Base64 pesada que venga de registros antiguos de la hoja
+          const linkLimpio = (r.linkFotoOriginal && String(r.linkFotoOriginal).startsWith("http"))
+            ? r.linkFotoOriginal
+            : (r.fotoUrl && String(r.fotoUrl).startsWith("http") ? r.fotoUrl : "");
+          registrosNormales.push({
+            ...r,
+            fotoUrl: linkLimpio || r.fotoUrl || "",
+            linkFotoOriginal: linkLimpio || ""
+          });
         }
       });
 
       if (configMasReciente && mayorTs >= ultimoTimestampConfigNube) {
         ultimoTimestampConfigNube = mayorTs;
-        localStorage.setItem("crediban_config_ts_v11", String(mayorTs));
+        localStorage.setItem("crediban_config_ts_v12", String(mayorTs));
 
         if (configMasReciente.permisos && typeof configMasReciente.permisos === "object") {
           mapaPermisosAsistencia = configMasReciente.permisos;
-          localStorage.setItem("crediban_permisos_asistencia_v11", JSON.stringify(mapaPermisosAsistencia));
+          localStorage.setItem("crediban_permisos_asistencia_v12", JSON.stringify(mapaPermisosAsistencia));
         }
         if (configMasReciente.fotos && typeof configMasReciente.fotos === "object") {
           mapaConfigFotosPorSede = configMasReciente.fotos;
-          localStorage.setItem("crediban_config_fotos_sede_v11", JSON.stringify(mapaConfigFotosPorSede));
+          localStorage.setItem("crediban_config_fotos_sede_v12", JSON.stringify(mapaConfigFotosPorSede));
         }
+        if (configMasReciente.delegados && typeof configMasReciente.delegados === "object") {
+          mapaDelegadosSede = configMasReciente.delegados;
+          localStorage.setItem("crediban_delegados_sede_v12", JSON.stringify(mapaDelegadosSede));
+        }
+
         actualizarBotonAccionSegunConfigFoto();
+        actualizarVisibilidadPestanasPorRol();
         if (esUsuarioGerente(usuarioActivo) && pestanaActual === "PERMISOS") {
           renderizarPanelPermisos();
         }
       }
 
       return registrosNormales;
-    }
-
-    function normalizarUsuarioScript(raw) {
-      const usuarioLogin = String(raw.usuario || raw.Usuario || raw.user || raw.nombre || raw.Nombre_Completo || "").trim().toUpperCase();
-      const nombreMostrar = String(raw.nombre || raw.Nombre_Completo || raw.usuario || raw.Usuario || "").trim().toUpperCase();
-      const clave = String(raw.clave || raw.password || raw.contraseña || raw.Contraseña || "").trim();
-      const cargoRaw = String(raw.cargo || raw.rol || raw.rango || raw.Cargo || raw.Rol || "ASESOR").trim().toUpperCase();
-      let sede = String(raw.sede || raw.agencia || raw.filial || raw.Sede || "HUACHO").trim().toUpperCase();
-      const equipo = String(raw.equipo || raw.grupo || raw.jefeEquipo || raw.Equipo || "").trim().toUpperCase();
-      const estado = String(raw.estado || raw.Estado || "HABILITADO").trim().toUpperCase();
-
-      let rol = "ASESOR";
-      if (cargoRaw.includes("GERENTE") || cargoRaw.includes("DIRECTOR") || cargoRaw.includes("MASTER") || cargoRaw.includes("DESARROLLADOR")) {
-        rol = "GERENTE";
-        if (!sede || sede === "GENERAL" || sede === "TODAS LAS SEDES") sede = "TODAS";
-      } else if (cargoRaw.includes("ADMIN") || cargoRaw.includes("ZONAL")) {
-        rol = "ADMINISTRADOR";
-      } else if (cargoRaw.includes("CAJ")) {
-        rol = "CAJERO";
-      } else if (cargoRaw.includes("TRABAJADOR") || cargoRaw.includes("OPERACIONES") || cargoRaw.includes("ASISTENTE")) {
-        rol = "TRABAJADOR";
-      } else {
-        rol = "ASESOR";
-      }
-
-      return { usuario: usuarioLogin, nombre: nombreMostrar, clave, rol, cargo: cargoRaw, sede, equipo, estado };
-    }
-
-    function esUsuarioGerente(user) {
-      return Boolean(user && user.rol === "GERENTE");
-    }
-
-    function esUsuarioAdministrador(user) {
-      return Boolean(user && user.rol === "ADMINISTRADOR");
     }
 
     function aplicaHorasExtrasPorRol(rolTexto) {
@@ -1598,7 +2049,7 @@
     }
 
     /***************************************************************************
-     * 7. CONFIGURADOR GERENCIAL DE FOTOS POR MARCAJE + COLA EN 2DO PLANO
+     * 8. CONFIGURADOR DE FOTOS + COLA EN 2DO PLANO HACIA GOOGLE DRIVE (SIN BASE64 EN SHEETS)
      ***************************************************************************/
     function marcajeRequiereFoto(sede, tipoMarcaje) {
       const sedeKey = String(sede || "HUACHO").trim().toUpperCase();
@@ -1648,7 +2099,7 @@
         });
       }
 
-      localStorage.setItem("crediban_config_fotos_sede_v11", JSON.stringify(mapaConfigFotosPorSede));
+      localStorage.setItem("crediban_config_fotos_sede_v12", JSON.stringify(mapaConfigFotosPorSede));
       renderizarPanelConfigFotos();
       actualizarBotonAccionSegunConfigFoto();
       sincronizarConfigGerencialEnNube();
@@ -1678,12 +2129,12 @@
         });
       }
 
-      localStorage.setItem("crediban_config_fotos_sede_v11", JSON.stringify(mapaConfigFotosPorSede));
+      localStorage.setItem("crediban_config_fotos_sede_v12", JSON.stringify(mapaConfigFotosPorSede));
       renderizarPanelConfigFotos();
       actualizarBotonAccionSegunConfigFoto();
       sincronizarConfigGerencialEnNube();
 
-      const nuevoEstadoTxt = nuevoValor ? "📸 Con Foto Obligatoria" : "⚡ Solo Hora + Ubicación GPS (Sin Foto)";
+      const nuevoEstadoTxt = nuevoValor ? "📸 Con Foto en Drive" : "⚡ Solo Hora + Ubicación GPS (Sin Foto)";
       mostrarToast(`${ambitoSede} • ${tipoMarcaje}: ${nuevoEstadoTxt}`);
     }
 
@@ -1707,11 +2158,11 @@
             <div>
               <div class="flex items-center justify-between gap-1 mb-1">
                 <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${pideFoto ? 'bg-[#59B447] text-white' : 'bg-amber-500 text-slate-950'}">
-                  ${pideFoto ? '📸 CON FOTO' : '⚡ SIN FOTO (SOLO GPS)'}
+                  ${pideFoto ? '📸 CON FOTO (DRIVE)' : '⚡ SIN FOTO (SOLO GPS)'}
                 </span>
               </div>
               <h4 class="text-xs font-black text-slate-900 mt-1"><i class="fa-solid ${t.icono} mr-1 text-[#1B4332]"></i>${t.titulo}</h4>
-              <p class="text-[10px] font-semibold text-slate-600 mt-0.5">${pideFoto ? 'Solicita cámara en vivo con minimapa' : 'Registra al instante Hora + Dirección Exacta'}</p>
+              <p class="text-[10px] font-semibold text-slate-600 mt-0.5">${pideFoto ? 'Sube foto ligera a Google Drive' : 'Registra al instante Hora + Dirección Exacta'}</p>
             </div>
 
             <button
@@ -1739,10 +2190,10 @@
       if (!badge || !btnCamViva || !btnSinFoto) return;
 
       if (pideFoto) {
-        badge.textContent = "📸 Cámara en Vivo";
+        badge.textContent = "📸 Cámara en Vivo (Drive)";
         badge.className = "px-2 py-0.5 rounded-md bg-emerald-50 text-[#1B4332] border border-emerald-200 text-[10px] font-black uppercase";
         notaBox.className = "p-2.5 rounded-xl bg-amber-50 border border-amber-300/80 flex items-center gap-2.5";
-        notaTxt.innerHTML = `<strong>NOTA OBLIGATORIA:</strong> Fotografía en tiempo real (bloqueada la subida desde galería o almacenamiento interno).`;
+        notaTxt.innerHTML = `<strong>NOTA OBLIGATORIA:</strong> Fotografía en tiempo real (bloqueada la subida desde galería). Se aloja en Google Drive para máxima velocidad.`;
         txtLabelFoto.textContent = `Tomar Foto en Vivo (${tipoMarcajeSeleccionado})`;
         btnCamViva.classList.remove("hidden");
         btnSinFoto.classList.add("hidden");
@@ -1776,6 +2227,7 @@
     }
 
     function encolarEnvioAsistenciaSegundoPlano(payloadServidor, registroLocal) {
+      // 1. Mostrar al instante en la pantalla del asesor (0.01s) y guardar en su caché ligera de hoy
       registrosAsistenciaGlobal.unshift(registroLocal);
       guardarRegistrosLocales();
       renderizarMisRegistrosHoyUsuario();
@@ -1784,17 +2236,21 @@
         payloadServidor.sede = SEDES_HABILITADAS[0] || "HUACHO";
       }
 
+      // 2. Asegurar que fotoMiniBase64 vaya SIEMPRE VACÍO ("") para que Google Sheets NO guarde Base64 en las celdas, solo el enlace de Google Drive
+      payloadServidor.fotoMiniBase64 = "";
+      payloadServidor.soloDrive = true;
+
       colaEnvioSegundoPlano.push({
         ...payloadServidor,
         intentos: 0
       });
 
       try {
-        localStorage.setItem("crediban_cola_bg_v11", JSON.stringify(colaEnvioSegundoPlano));
+        localStorage.setItem("crediban_cola_bg_v12", JSON.stringify(colaEnvioSegundoPlano));
       } catch (e) {}
 
       actualizarBannerSegundoPlano();
-      mostrarToast(`✅ ${registroLocal.tipo} registrada • Subiendo a Google Sheets...`);
+      mostrarToast(`✅ ${registroLocal.tipo} registrada • Subiendo foto a Google Drive...`);
 
       procesarColaSegundoPlano();
     }
@@ -1824,14 +2280,23 @@
           try { resultadoJson = JSON.parse(textResp); } catch (e) {}
 
           if (resultadoJson && resultadoJson.status === "ok" && resultadoJson.registro) {
-            resultadoJson.registro.minutosExtras = aplicaHorasExtrasPorRol(resultadoJson.registro.rol)
-              ? (Number(resultadoJson.registro.minutosExtras) || 0)
+            const regServ = resultadoJson.registro;
+            regServ.minutosExtras = aplicaHorasExtrasPorRol(regServ.rol)
+              ? (Number(regServ.minutosExtras) || 0)
               : 0;
+
+            // Conservar únicamente el enlace corto de Google Drive (Cero Base64 pesado en memoria)
+            const urlDrive = (regServ.linkFotoOriginal && regServ.linkFotoOriginal.startsWith("http"))
+              ? regServ.linkFotoOriginal
+              : (regServ.fotoUrl && regServ.fotoUrl.startsWith("http") ? regServ.fotoUrl : "");
+
             const idx = registrosAsistenciaGlobal.findIndex(r => r.id === itemActual.id);
             if (idx !== -1) {
               registrosAsistenciaGlobal[idx] = {
                 ...registrosAsistenciaGlobal[idx],
-                ...resultadoJson.registro,
+                ...regServ,
+                fotoUrl: urlDrive,
+                linkFotoOriginal: urlDrive,
                 sincronizadoNube: true
               };
             }
@@ -1844,16 +2309,13 @@
           renderizarMisRegistrosHoyUsuario();
 
           colaEnvioSegundoPlano.shift();
-          localStorage.setItem("crediban_cola_bg_v11", JSON.stringify(colaEnvioSegundoPlano));
+          localStorage.setItem("crediban_cola_bg_v12", JSON.stringify(colaEnvioSegundoPlano));
           actualizarBannerSegundoPlano();
-          mostrarToast("☁️ Asistencia sincronizada en Google Sheets");
+          mostrarToast("☁️ Asistencia y foto en Google Drive sincronizadas");
         } catch (err) {
-          if (itemActual.intentos >= 2 && itemActual.fotoBase64 && itemActual.fotoBase64.length > 35000) {
-            itemActual.fotoBase64 = itemActual.fotoMiniBase64 || "";
-          }
           if (itemActual.intentos >= 4) {
             colaEnvioSegundoPlano.shift();
-            localStorage.setItem("crediban_cola_bg_v11", JSON.stringify(colaEnvioSegundoPlano));
+            localStorage.setItem("crediban_cola_bg_v12", JSON.stringify(colaEnvioSegundoPlano));
           }
           break;
         }
@@ -1870,7 +2332,6 @@
     async function registrarAsistenciaSinFotoDirecto() {
       if (!usuarioActivo) return;
 
-      // Si aún no había terminado de resolver la calle exacta, resolverla en tiempo real antes de enviar
       if (!gpsState.calleMasCercana || gpsState.precision > 100) {
         await resolverCalleMasCercanaRapido(gpsState.lat, gpsState.lng, true);
       }
@@ -1930,7 +2391,7 @@
     }
 
     /***************************************************************************
-     * 8. PANEL "MIS MARCAJES DE HOY" DEBAJO DEL BOTÓN DE REGISTRO (VISTA ASESOR)
+     * 9. PANEL "MIS MARCAJES DE HOY" (LECTURA INSTANTÁNEA SIN ESPERAR A LA HOJA)
      ***************************************************************************/
     function renderizarMisRegistrosHoyUsuario() {
       if (!usuarioActivo) return;
@@ -1974,7 +2435,7 @@
                 <i class="fa-solid fa-circle-check text-[#59B447] text-xs"></i>
               </div>
               <p class="text-[11px] font-black text-[#1B4332] mt-1">${regEncontrado.horaTexto}</p>
-              <span class="text-[9px] font-bold text-emerald-700">${regEncontrado.sincronizadoNube === false ? '☁️ Subiendo...' : '✓ Sincronizado'}</span>
+              <span class="text-[9px] font-bold text-emerald-700">${regEncontrado.sincronizadoNube === false ? '☁️ Subiendo a Drive...' : '✓ En Drive'}</span>
             </div>`;
         } else {
           if (subBtnEl) {
@@ -2031,7 +2492,7 @@
     }
 
     /***************************************************************************
-     * 9. GESTIÓN DE QUIÉN DEBE MARCAR ASISTENCIA (CON SINCRONIZACIÓN EN NUBE)
+     * 10. GESTIÓN DE PERSONAL SUPERVISADO, PERMISOS Y DELEGADOS DE CONTROL SEDE
      ***************************************************************************/
     function colaboradorDebeMarcar(nombreColaborador) {
       const clave = String(nombreColaborador || "").trim().toUpperCase();
@@ -2063,15 +2524,31 @@
           actualizadoPor: usuarioActivo.nombre,
           fecha: obtenerFechaLocalIso()
         };
-        mostrarToast(`🛡️ ${clave}: Exonerado en todos los dispositivos (${motivoElegido})`);
+        mostrarToast(`🛡️ ${clave}: Con Permiso Especial (${motivoElegido})`);
       } else {
         delete mapaPermisosAsistencia[clave];
-        mostrarToast(`✅ ${clave}: Marcaje Obligatorio Activo en todos los dispositivos`);
+        mostrarToast(`✅ ${clave}: Configurado como SUPERVISADO`);
       }
 
-      localStorage.setItem("crediban_permisos_asistencia_v11", JSON.stringify(mapaPermisosAsistencia));
+      localStorage.setItem("crediban_permisos_asistencia_v12", JSON.stringify(mapaPermisosAsistencia));
       renderizarPanelPermisos();
       renderizarReportes();
+      sincronizarConfigGerencialEnNube();
+    }
+
+    function alternarDelegadoControlSede(nombreColaborador) {
+      if (!esUsuarioGerente(usuarioActivo)) return;
+      const clave = String(nombreColaborador || "").trim().toUpperCase();
+      if (mapaDelegadosSede[clave]) {
+        delete mapaDelegadosSede[clave];
+        mostrarToast(`🔒 Se retiró el permiso de Control de Sede a ${clave}`);
+      } else {
+        mapaDelegadosSede[clave] = true;
+        mostrarToast(`📲 ${clave} ahora puede ver la pestaña RR.HH. y llevar el control de su sede`);
+      }
+
+      localStorage.setItem("crediban_delegados_sede_v12", JSON.stringify(mapaDelegadosSede));
+      renderizarPanelPermisos();
       sincronizarConfigGerencialEnNube();
     }
 
@@ -2080,7 +2557,7 @@
       const clave = String(nombreColaborador || "").trim().toUpperCase();
       if (mapaPermisosAsistencia[clave]) {
         mapaPermisosAsistencia[clave].motivo = nuevoMotivo;
-        localStorage.setItem("crediban_permisos_asistencia_v11", JSON.stringify(mapaPermisosAsistencia));
+        localStorage.setItem("crediban_permisos_asistencia_v12", JSON.stringify(mapaPermisosAsistencia));
         mostrarToast(`Motivo sincronizado: ${nuevoMotivo}`);
         renderizarReportes();
         sincronizarConfigGerencialEnNube();
@@ -2089,13 +2566,13 @@
 
     function restaurarTodosObligados() {
       if (!esUsuarioGerente(usuarioActivo)) return;
-      if (!confirm("¿Activar nuevamente a TODOS los administradores y trabajadores para que deban marcar asistencia obligatoria?")) return;
+      if (!confirm("¿Configurar nuevamente a TODOS los colaboradores como SUPERVISADOS?")) return;
       mapaPermisosAsistencia = {};
-      localStorage.setItem("crediban_permisos_asistencia_v11", JSON.stringify(mapaPermisosAsistencia));
+      localStorage.setItem("crediban_permisos_asistencia_v12", JSON.stringify(mapaPermisosAsistencia));
       renderizarPanelPermisos();
       renderizarReportes();
       sincronizarConfigGerencialEnNube();
-      mostrarToast("✅ Todos activos y sincronizados en la nube");
+      mostrarToast("✅ Todos configurados como SUPERVISADOS");
     }
 
     function poblarSelectoresFiltroPermisos() {
@@ -2113,6 +2590,19 @@
         selConfigFoto.innerHTML = `<option value="GLOBAL">🌎 TODAS LAS SEDES (Regla General)</option>` +
           SEDES_HABILITADAS.map(s => `<option value="${s}">📍 SOLO SEDE ${s}</option>`).join("");
         selConfigFoto.value = valFoto;
+      }
+
+      const selRrhhSede = document.getElementById("rrhhSedeSelect");
+      if (selRrhhSede) {
+        const valRrhh = selRrhhSede.value || (usuarioActivo?.sedeOperativa || SEDES_HABILITADAS[0]);
+        if (esUsuarioGerente(usuarioActivo)) {
+          selRrhhSede.innerHTML = SEDES_HABILITADAS.map(s => `<option value="${s}">📍 SEDE ${s}</option>`).join("");
+          selRrhhSede.disabled = false;
+        } else if (usuarioActivo) {
+          selRrhhSede.innerHTML = `<option value="${usuarioActivo.sedeOperativa}">📍 SEDE ${usuarioActivo.sedeOperativa}</option>`;
+          selRrhhSede.disabled = true;
+        }
+        if (SEDES_HABILITADAS.includes(valRrhh)) selRrhhSede.value = valRrhh;
       }
     }
 
@@ -2132,21 +2622,28 @@
       const basePersonal = catalogoUsuarios.filter(u => u.rol !== "GERENTE");
 
       const totalPersonal = basePersonal.length;
-      const totalObligados = basePersonal.filter(u => colaboradorDebeMarcar(u.nombre)).length;
-      const totalExonerados = totalPersonal - totalObligados;
+      const totalSupervisados = basePersonal.filter(u => colaboradorDebeMarcar(u.nombre)).length;
+      const totalExonerados = totalPersonal - totalSupervisados;
+      const totalDelegados = basePersonal.filter(u => colaboradorEsDelegadoSede(u.nombre) || u.rol === "ADMINISTRADOR").length;
 
       document.getElementById("permKpiTotal").textContent = totalPersonal;
-      document.getElementById("permKpiObligados").textContent = totalObligados;
+      document.getElementById("permKpiObligados").textContent = totalSupervisados;
       document.getElementById("permKpiExonerados").textContent = totalExonerados;
+      if (document.getElementById("permKpiDelegados")) {
+        document.getElementById("permKpiDelegados").textContent = totalDelegados;
+      }
 
       const filtrados = basePersonal.filter(u => {
         const pasaSede = (sedeFiltro === "TODAS") || (u.sede === sedeFiltro);
         const pasaRol = (rolFiltro === "TODOS") || (u.rol === rolFiltro);
-        const obligado = colaboradorDebeMarcar(u.nombre);
+        const supervisado = colaboradorDebeMarcar(u.nombre);
+        const esDelegado = colaboradorEsDelegadoSede(u.nombre) || u.rol === "ADMINISTRADOR";
         const pasaEstado =
           estadoFiltro === "TODOS" ? true :
-          estadoFiltro === "OBLIGADO" ? obligado : !obligado;
-        const pasaTexto = !busqueda || `${u.nombre} ${u.usuario} ${u.sede} ${u.rol}`.toUpperCase().includes(busqueda);
+          estadoFiltro === "OBLIGADO" ? supervisado :
+          estadoFiltro === "EXONERADO" ? !supervisado :
+          esDelegado;
+        const pasaTexto = !busqueda || `${u.nombre} ${u.usuario} ${u.sede} ${u.rol} ${u.celular || ""}`.toUpperCase().includes(busqueda);
         return pasaSede && pasaRol && pasaEstado && pasaTexto;
       });
 
@@ -2168,29 +2665,47 @@
       ];
 
       cont.innerHTML = filtrados.map(u => {
-        const obligado = colaboradorDebeMarcar(u.nombre);
+        const supervisado = colaboradorDebeMarcar(u.nombre);
+        const esDelegado = colaboradorEsDelegadoSede(u.nombre);
+        const esAdmin = u.rol === "ADMINISTRADOR";
         const motivoActual = obtenerMotivoPermisoEspecial(u.nombre) || "Permiso Especial Gerencia";
         const idSafe = u.nombre.replace(/[^A-Z0-9]/g, "_");
-        const badgeRol = u.rol === "ADMINISTRADOR"
+        const badgeRol = esAdmin
           ? `<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-black">🛡️ ADMINISTRADOR</span>`
           : `<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-extrabold">${u.rol}</span>`;
+        const telInfo = u.celular
+          ? `<span class="text-[10px] font-bold text-emerald-700"><i class="fa-brands fa-whatsapp mr-0.5"></i>+${u.celular}</span>`
+          : `<span class="text-[10px] font-semibold text-slate-400">Sin celular en Script</span>`;
 
         return `
-          <div class="p-3 rounded-2xl border ${obligado ? 'border-slate-200 bg-white' : 'border-amber-300 bg-amber-50/60'} flex flex-wrap items-center justify-between gap-2.5 shadow-sm transition">
+          <div class="p-3 rounded-2xl border ${supervisado ? 'border-slate-200 bg-white' : 'border-amber-300 bg-amber-50/60'} flex flex-wrap items-center justify-between gap-2.5 shadow-sm transition">
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-1.5 flex-wrap">
                 ${badgeRol}
                 <span class="text-xs font-black text-slate-900">${u.nombre}</span>
                 <span class="text-[10px] font-bold text-emerald-700">• 📍 ${u.sede}</span>
+                ${telInfo}
               </div>
               <div class="mt-1 flex items-center gap-2 flex-wrap">
-                <span class="text-[11px] font-bold ${obligado ? 'text-emerald-700' : 'text-amber-800'}">
-                  ${obligado ? '✅ Obligado a marcar asistencia' : '🛡️ Exonerado de falta (' + motivoActual + ')'}
+                <span class="text-[11px] font-bold ${supervisado ? 'text-emerald-700' : 'text-amber-800'}">
+                  ${supervisado ? '✅ Condición: SUPERVISADO' : '🛡️ Exonerado (' + motivoActual + ')'}
                 </span>
+                ${(esAdmin || esDelegado) ? `<span class="px-2 py-0.5 rounded bg-teal-100 text-teal-900 text-[10px] font-black">📲 Acceso Control Sede / RR.HH. Activo</span>` : ''}
               </div>
             </div>
 
-            <div class="flex items-center gap-2 shrink-0">
+            <div class="flex items-center gap-1.5 flex-wrap shrink-0">
+              ${!esAdmin ? `
+                <button
+                  type="button"
+                  onclick="alternarDelegadoControlSede('${u.nombre}')"
+                  title="Permitir que este colaborador lleve el control de asistencia y avisos RR.HH. de su sede"
+                  class="px-2.5 py-2 rounded-xl text-[10px] font-black uppercase tracking-wide border transition cursor-pointer ${esDelegado ? 'bg-teal-600 text-white border-teal-700' : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-teal-50'}"
+                >
+                  <i class="fa-solid fa-user-shield mr-1"></i>${esDelegado ? 'Control Sede: SÍ' : 'Delegar Sede'}
+                </button>
+              ` : ''}
+
               <select
                 id="motivoPermiso_${idSafe}"
                 onchange="cambiarMotivoPermisoColaborador('${u.nombre}', this.value)"
@@ -2202,9 +2717,9 @@
               <button
                 type="button"
                 onclick="alternarObligacionColaborador('${u.nombre}')"
-                class="px-3 py-2 rounded-xl text-[11px] font-black uppercase tracking-wide shadow-sm transition cursor-pointer ${obligado ? 'bg-[#59B447] text-white hover:bg-[#4ea33d]' : 'bg-amber-500 text-slate-950 hover:bg-amber-400'}"
+                class="px-3 py-2 rounded-xl text-[11px] font-black uppercase tracking-wide shadow-sm transition cursor-pointer ${supervisado ? 'bg-[#59B447] text-white hover:bg-[#4ea33d]' : 'bg-amber-500 text-slate-950 hover:bg-amber-400'}"
               >
-                ${obligado ? '<i class="fa-solid fa-check mr-1"></i> Debe Marcar' : '<i class="fa-solid fa-shield-halved mr-1"></i> Con Permiso'}
+                ${supervisado ? '<i class="fa-solid fa-check mr-1"></i> Supervisado' : '<i class="fa-solid fa-shield-halved mr-1"></i> Con Permiso'}
               </button>
             </div>
           </div>`;
@@ -2212,7 +2727,7 @@
     }
 
     /***************************************************************************
-     * 10. LOGIN BLINDADO 100% EN LÍNEA Y ENRUTAMIENTO POR ROL
+     * 11. LOGIN BLINDADO Y ENRUTAMIENTO DE PESTAÑAS (INCLUYE PESTAÑA RR.HH.)
      ***************************************************************************/
     function limpiarIdentificador(texto) {
       return String(texto || "").trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, ".");
@@ -2278,9 +2793,9 @@
         };
 
         if (recordar) {
-          localStorage.setItem("crediban_sesion_activa_v11", JSON.stringify(usuarioActivo));
+          localStorage.setItem("crediban_sesion_activa_v12", JSON.stringify(usuarioActivo));
         } else {
-          localStorage.removeItem("crediban_sesion_activa_v11");
+          localStorage.removeItem("crediban_sesion_activa_v12");
         }
 
         mostrarAppPrincipal();
@@ -2315,8 +2830,8 @@
 
     function confirmarCerrarSesion() {
       if (!confirm("¿Deseas cerrar tu sesión en este dispositivo?")) return;
+      localStorage.removeItem("crediban_sesion_activa_v12");
       localStorage.removeItem("crediban_sesion_activa_v11");
-      localStorage.removeItem("crediban_sesion_activa_v10");
       usuarioActivo = null;
       document.getElementById("loginClaveInput").value = "";
       mostrarPantallaLogin();
@@ -2328,6 +2843,66 @@
       selectSedeGerente.innerHTML = SEDES_HABILITADAS.map(s => `<option value="${s}">Operar: ${s}</option>`).join("");
       if (usuarioActivo && SEDES_HABILITADAS.includes(usuarioActivo.sedeOperativa)) {
         selectSedeGerente.value = usuarioActivo.sedeOperativa;
+      }
+    }
+
+    function actualizarVisibilidadPestanasPorRol() {
+      if (!usuarioActivo) return;
+      const selectSedeGerente = document.getElementById("gerenteSedeOperativaSelect");
+      const tabReporte = document.getElementById("tabBtn_REPORTE");
+      const tabRrhh = document.getElementById("tabBtn_RRHH");
+      const tabGerencia = document.getElementById("tabBtn_GERENCIA");
+      const tabPermisos = document.getElementById("tabBtn_PERMISOS");
+      const barraGerenteSedes = document.getElementById("gerenteSedeSelectorBar");
+      const adminSedeHeader = document.getElementById("adminSedeHeaderBar");
+      const labelReporte = document.getElementById("tabLabelReporte");
+      const badgeDelegado = document.getElementById("headerDelegadoBadge");
+
+      const esDelegado = colaboradorEsDelegadoSede(usuarioActivo.nombre);
+      if (badgeDelegado) {
+        badgeDelegado.classList.toggle("hidden", !esDelegado);
+      }
+
+      if (esUsuarioGerente(usuarioActivo)) {
+        selectSedeGerente.classList.remove("hidden");
+        tabReporte.classList.remove("hidden");
+        tabRrhh.classList.remove("hidden");
+        tabGerencia.classList.remove("hidden");
+        tabPermisos.classList.remove("hidden");
+        barraGerenteSedes.classList.remove("hidden");
+        adminSedeHeader.classList.add("hidden");
+        labelReporte.textContent = "Supervisión";
+      } else if (esUsuarioAdministrador(usuarioActivo)) {
+        selectSedeGerente.classList.add("hidden");
+        tabReporte.classList.remove("hidden");
+        tabRrhh.classList.remove("hidden");
+        tabGerencia.classList.add("hidden");
+        tabPermisos.classList.add("hidden");
+        barraGerenteSedes.classList.add("hidden");
+        adminSedeHeader.classList.remove("hidden");
+        document.getElementById("adminSedeTitulo").textContent =
+          `Supervisión de Asesores, Trabajadores y Cajeros • SEDE ${usuarioActivo.sedeOperativa}`;
+        labelReporte.textContent = `Sede ${usuarioActivo.sedeOperativa}`;
+        sedeFiltroGerente = usuarioActivo.sedeOperativa;
+      } else if (esDelegado) {
+        // Colaborador delegado por el Gerente para llevar el control de asistencia de su sede:
+        // Visualiza la pestaña RR.HH. / Avisos con la versión básica de resumen global de su sede
+        selectSedeGerente.classList.add("hidden");
+        tabReporte.classList.add("hidden");
+        tabRrhh.classList.remove("hidden");
+        tabGerencia.classList.add("hidden");
+        tabPermisos.classList.add("hidden");
+        barraGerenteSedes.classList.add("hidden");
+        adminSedeHeader.classList.add("hidden");
+        sedeFiltroGerente = usuarioActivo.sedeOperativa;
+      } else {
+        selectSedeGerente.classList.add("hidden");
+        tabReporte.classList.add("hidden");
+        tabRrhh.classList.add("hidden");
+        tabGerencia.classList.add("hidden");
+        tabPermisos.classList.add("hidden");
+        barraGerenteSedes.classList.add("hidden");
+        adminSedeHeader.classList.add("hidden");
       }
     }
 
@@ -2345,50 +2920,22 @@
         badgePermiso.classList.toggle("hidden", colaboradorDebeMarcar(usuarioActivo.nombre));
       }
 
-      const selectSedeGerente = document.getElementById("gerenteSedeOperativaSelect");
-      const tabReporte = document.getElementById("tabBtn_REPORTE");
-      const tabGerencia = document.getElementById("tabBtn_GERENCIA");
-      const tabPermisos = document.getElementById("tabBtn_PERMISOS");
-      const barraGerenteSedes = document.getElementById("gerenteSedeSelectorBar");
-      const adminSedeHeader = document.getElementById("adminSedeHeaderBar");
-      const labelReporte = document.getElementById("tabLabelReporte");
-
       poblarSelectorSedeOperativaGerente();
       poblarSelectoresFiltroPermisos();
+      actualizarVisibilidadPestanasPorRol();
 
       if (esUsuarioGerente(usuarioActivo)) {
-        selectSedeGerente.classList.remove("hidden");
-        tabReporte.classList.remove("hidden");
-        tabGerencia.classList.remove("hidden");
-        tabPermisos.classList.remove("hidden");
-        barraGerenteSedes.classList.remove("hidden");
-        adminSedeHeader.classList.add("hidden");
-        labelReporte.textContent = "Supervisión Gerencial";
         sedeFiltroGerente = "TODAS";
         construirBotonesSedesGerente();
         renderizarPanelConfigFotos();
-      } else if (esUsuarioAdministrador(usuarioActivo)) {
-        selectSedeGerente.classList.add("hidden");
-        tabReporte.classList.remove("hidden");
-        tabGerencia.classList.add("hidden");
-        tabPermisos.classList.add("hidden");
-        barraGerenteSedes.classList.add("hidden");
-        adminSedeHeader.classList.remove("hidden");
-        document.getElementById("adminSedeTitulo").textContent =
-          `Supervisión de Asesores, Trabajadores y Cajeros • SEDE ${usuarioActivo.sedeOperativa}`;
-        labelReporte.textContent = `Sede ${usuarioActivo.sedeOperativa}`;
-        sedeFiltroGerente = usuarioActivo.sedeOperativa;
-      } else {
-        selectSedeGerente.classList.add("hidden");
-        tabReporte.classList.add("hidden");
-        tabGerencia.classList.add("hidden");
-        tabPermisos.classList.add("hidden");
-        barraGerenteSedes.classList.add("hidden");
-        adminSedeHeader.classList.add("hidden");
       }
 
       actualizarTextoHorarioSede();
       actualizarBotonAccionSegunConfigFoto();
+
+      // Pintar en 0.01 segundos los marcajes de hoy del asesor antes de llamar al servidor
+      renderizarMisRegistrosHoyUsuario();
+
       cambiarPestana("MARCAR");
       cargarAsistenciasDesdeServidor(false);
       verificarRefrigerioActivo();
@@ -2398,34 +2945,44 @@
       if (!usuarioActivo) return;
       usuarioActivo.sedeOperativa = nuevaSede;
       document.getElementById("headerUserSede").textContent = `GERENCIA (${nuevaSede})`;
-      localStorage.setItem("crediban_sesion_activa_v11", JSON.stringify(usuarioActivo));
+      localStorage.setItem("crediban_sesion_activa_v12", JSON.stringify(usuarioActivo));
       actualizarTextoHorarioSede();
       actualizarBotonAccionSegunConfigFoto();
+      if (pestanaActual === "RRHH") {
+        const selRrhh = document.getElementById("rrhhSedeSelect");
+        if (selRrhh) selRrhh.value = nuevaSede;
+        renderizarModuloRRHH();
+      }
     }
 
     function cambiarPestana(tabId) {
-      if ((tabId === "REPORTE" || tabId === "GERENCIA" || tabId === "PERMISOS") && !esUsuarioGerente(usuarioActivo) && !esUsuarioAdministrador(usuarioActivo)) {
+      if (tabId === "RRHH" && !usuarioPuedeVerModuloRRHH(usuarioActivo)) {
         tabId = "MARCAR";
+      }
+      if ((tabId === "REPORTE" || tabId === "GERENCIA" || tabId === "PERMISOS") && !esUsuarioGerente(usuarioActivo) && !esUsuarioAdministrador(usuarioActivo)) {
+        tabId = usuarioPuedeVerModuloRRHH(usuarioActivo) ? "RRHH" : "MARCAR";
       }
       if ((tabId === "GERENCIA" || tabId === "PERMISOS") && !esUsuarioGerente(usuarioActivo)) {
         tabId = "REPORTE";
       }
 
       pestanaActual = tabId;
-      const vistas = ["MARCAR", "GESTION", "REPORTE", "GERENCIA", "PERMISOS"];
+      const vistas = ["MARCAR", "GESTION", "REPORTE", "RRHH", "GERENCIA", "PERMISOS"];
       vistas.forEach(v => {
         const elVista = document.getElementById(`view_${v}`);
         const elBtn = document.getElementById(`tabBtn_${v}`);
         if (elVista) elVista.classList.toggle("hidden", v !== tabId);
         if (elBtn && !elBtn.classList.contains("hidden")) {
           if (v === tabId) {
-            elBtn.className = "flex-1 min-w-[95px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-[#59B447] text-white shadow";
+            elBtn.className = "flex-1 min-w-[90px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-[#59B447] text-white shadow";
+          } else if (v === "RRHH") {
+            elBtn.className = "flex-1 min-w-[120px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-teal-500/20 text-teal-200 border border-teal-400/30";
           } else if (v === "GERENCIA") {
-            elBtn.className = "flex-1 min-w-[115px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-amber-400/20 text-amber-300 border border-amber-400/30";
+            elBtn.className = "flex-1 min-w-[110px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-amber-400/20 text-amber-300 border border-amber-400/30";
           } else if (v === "PERMISOS") {
-            elBtn.className = "flex-1 min-w-[125px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-emerald-400/20 text-emerald-200 border border-emerald-400/30";
+            elBtn.className = "flex-1 min-w-[120px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-emerald-400/20 text-emerald-200 border border-emerald-400/30";
           } else {
-            elBtn.className = "flex-1 min-w-[95px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-white/10 text-emerald-100 hover:bg-white/20";
+            elBtn.className = "flex-1 min-w-[90px] py-2 px-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition bg-white/10 text-emerald-100 hover:bg-white/20";
           }
         }
       });
@@ -2435,6 +2992,9 @@
       } else if (tabId === "REPORTE" || tabId === "GERENCIA") {
         poblarFiltrosColaboradoresReporte();
         renderizarReportes();
+      } else if (tabId === "RRHH") {
+        poblarSelectoresFiltroPermisos();
+        renderizarModuloRRHH();
       } else if (tabId === "PERMISOS") {
         renderizarPanelPermisos();
       } else if (tabId === "GESTION") {
@@ -2461,14 +3021,14 @@
       }
     }
   </script>
-<!-- FIN DE LA PARTE 2 DE 3 — PEGA LA PARTE 3 JUSTO DEBAJO DE ESTA LÍNEA --><!-- ============================================================================
-     SISTEMA INTEGRAL DE ASISTENCIA Y FOTOS DE GESTIÓN EN CAMPO - CREDIBAN PERÚ S.A.C.
-     PARTE 3 DE 3: Motor GPS Anti-Salto de 2 km, Verificador Vial Exacto (Huacho vs Hualmay),
-     Cámara en Vivo Anti-Galería (WebRTC), Sello Instantáneo y Exportador PDF Ejecutivo
+<!-- FIN DE LA PARTE 3 DE 5 — PEGA LA PARTE 4 JUSTO DEBAJO DE ESTA LÍNEA --><!-- ============================================================================
+     SISTEMA INTEGRAL DE ASISTENCIA, RR.HH. Y FOTOS DE GESTIÓN - CREDIBAN PERÚ S.A.C.
+     PARTE 4 DE 5: Motor GPS Intacto (Anti-Salto 2 km + Verificador Vial Huacho/Hualmay),
+     Cámara en Vivo WebRTC, Minimapa Sólido y Subida Ligera 100% a Google Drive
      ============================================================================ -->
   <script>
     /***************************************************************************
-     * 11. MOTOR GPS DE ALTA PRECISIÓN (ANTI-SALTO DE 2 KM + UBIGEO VIAL EXACTO)
+     * 12. MOTOR GPS DE ALTA PRECISIÓN (ANTI-SALTO DE 2 KM + UBIGEO VIAL EXACTO)
      *     - Prohibe lecturas viejas en caché (maximumAge: 0)
      *     - Recalcula al instante cuando la precisión baja de antena (>65m) a satélite (<25m)
      *     - Distingue con exactitud las vías de Huacho vs Hualmay, Huaraz, Ica y Huánuco
@@ -2511,8 +3071,6 @@
         } else if (viasExclusivasHualmay.some(v => calleUpper.includes(v))) {
           dist = "Hualmay";
         } else {
-          // Si la calle no está en las listas nominales, usar el límite geográfico Norte-Sur entre Huacho y Hualmay
-          // El límite del Río Huaura / Av. Cincuentenario divide Hualmay (Norte) de Huacho (Centro/Sur)
           const distUpper = dist.toUpperCase();
           if (!dist || distUpper === "HUAURA") {
             dist = (lat < -11.1035) ? "Huacho" : "Hualmay";
@@ -2585,7 +3143,6 @@
         navigator.geolocation.clearWatch(watchIdGpsGlobal);
       }
 
-      // CONTRAMEDIDA 1: maximumAge: 0 prohibe que el celular entregue una coordenada vieja guardada a 2 km
       watchIdGpsGlobal = navigator.geolocation.watchPosition(
         (pos) => {
           procesarNuevaLecturaSatelital(pos, false);
@@ -2600,8 +3157,7 @@
       const nuevaLng = pos.coords.longitude;
       const acc = Math.round(pos.coords.accuracy || 25);
 
-      // ESCUDO ANTI-REBOTE DE ANTENA (Evita el salto a 2 km):
-      // Si ya tenemos una lectura satelital fina (<= 30m) y de pronto entra un rebote de antena celular (> 120m), lo ignoramos por completo
+      // ESCUDO ANTI-REBOTE DE ANTENA (Evita el salto a 2 km)
       if (gpsState.fijadoPorSatelite && gpsState.precision <= 30 && acc > 120 && !forzarInmediato) {
         actualizarSemaforoGPS("OK", `GPS ±${gpsState.precision}m`);
         return;
@@ -2636,11 +3192,6 @@
       const ahora = Date.now();
       const tiempoTranscurrido = ahora - gpsState.ultimoGeocodeTs;
 
-      // CONTRAMEDIDA 2: Actualizar la calle al instante si:
-      // - Es la primera lectura o se pidió forzar, O
-      // - El GPS acaba de mejorar su precisión (ej. bajó de antena 500m a satélite 4m), O
-      // - El asesor se movió >= 18 metros en campo, O
-      // - Pasaron más de 10 segundos
       const debeActualizarDireccion =
         forzarInmediato ||
         !gpsState.calleMasCercana ||
@@ -2710,7 +3261,6 @@
       }
     }
 
-    // CONTRAMEDIDA 3: Prioridad estricta al primer resultado exacto de Google Maps + Verificador Vial Huacho vs Hualmay
     async function resolverCalleMasCercanaRapido(lat, lng, esperarSiEnCurso = false) {
       if (gpsState.geocodificandoEnCurso && !esperarSiEnCurso) return;
       gpsState.geocodificandoEnCurso = true;
@@ -2733,7 +3283,6 @@
           fetchRapidoConLimite(urlOsm, { headers: { "Accept-Language": "es" } }, 1700)
         ]);
 
-        // 1. Evaluar Google Maps dando prioridad a results[0] (que contiene la calle y localidad exacta del punto)
         if (resG && resG.ok) {
           try {
             const dataG = await resG.json();
@@ -2763,7 +3312,6 @@
                   if (!codigoPostal && c.types.includes("postal_code")) {
                     codigoPostal = nombreComp;
                   }
-                  // Priorizar "locality" (ej. Huacho) sobre administrative_area_level_3 cuando vienen en el primer resultado
                   if (c.types.includes("locality")) {
                     locItem = nombreComp;
                   }
@@ -2781,7 +3329,6 @@
                 if (!nombreCalle && viaItem) {
                   nombreCalle = viaItem;
                   if (numItem) numeroPuerta = numItem;
-                  // Tomar el distrito que acompaña directamente a esa calle en Google Maps
                   if (!distritoGoogle && (locItem || admin3Item)) {
                     distritoGoogle = locItem || admin3Item;
                   }
@@ -2796,7 +3343,6 @@
           } catch (e) {}
         }
 
-        // 2. Respaldo con OpenStreetMap
         if (resOsm && resOsm.ok) {
           try {
             const dataOsm = await resOsm.json();
@@ -2815,7 +3361,6 @@
           } catch (e) {}
         }
 
-        // 3. Pasar por el Verificador Vial y Territorial (Corrige Av. Miguel Grau -> Distrito de Huacho)
         const distritoCandidato = distritoGoogle || distritoOsm;
         const ubigeoExacto = normalizarUbigeoYViasPeru(
           nombreCalle,
@@ -2860,7 +3405,6 @@
 
         gpsState.direccionCompleta = partesDireccion.join(", ");
 
-        // Actualizar interfaz principal
         const elTitulo = document.getElementById("calleDetectadaTitulo");
         if (elTitulo) elTitulo.textContent = `${gpsState.calleMasCercana}, ${etiquetaDistritoPostal}`;
 
@@ -2919,8 +3463,7 @@
     }
 
     /***************************************************************************
-     * 12. MOTOR DE CÁMARA EN VIVO 100% VERÍDICA (WEBRTC LIVE STREAM)
-     *     Refresca el satélite al abrir la cámara y bloquea subir de galería
+     * 13. MOTOR DE CÁMARA EN VIVO 100% VERÍDICA (WEBRTC) Y COMPRESIÓN PARA DRIVE
      ***************************************************************************/
     let streamCamaraActiva = null;
     let lenteCamaraActual = "user";
@@ -2951,7 +3494,6 @@
       modoCapturaActual = modo;
       lenteCamaraActual = lenteInicial;
 
-      // CONTRAMEDIDA 4: Al abrir la cámara, solicitar lectura satelital fresca (maximumAge: 0) en paralelo mientras el asesor enfoca su rostro
       navigator.geolocation.getCurrentPosition(
         (pos) => procesarNuevaLecturaSatelital(pos, true),
         () => {},
@@ -3051,7 +3593,6 @@
 
       cerrarCamaraEnVivo();
 
-      // Si el usuario disparó en menos de 1 segundo antes de que terminara la primera geocodificación, resolver antes de estampar
       if (!gpsState.calleMasCercana) {
         await resolverCalleMasCercanaRapido(gpsState.lat, gpsState.lng, true);
       }
@@ -3064,7 +3605,8 @@
         const canvas = document.getElementById("hiddenCanvas");
         const ctx = canvas.getContext("2d");
 
-        const maxDimension = (modo === "GESTION") ? 1920 : 1024;
+        // En ASISTENCIA optimizamos a 800px para que suba rápido a Google Drive en baja calidad legible
+        const maxDimension = (modo === "GESTION") ? 1920 : 800;
         let width = origWidth;
         let height = origHeight;
 
@@ -3171,12 +3713,14 @@
         ctx.fillText(cintaSuperior, rightX, currentY - 2);
         ctx.restore();
 
-        const calidadJpeg = (modo === "GESTION") ? 0.94 : 0.76;
+        const calidadJpeg = (modo === "GESTION") ? 0.92 : 0.62;
         ultimoBase64Original = canvas.toDataURL("image/jpeg", calidadJpeg);
         ultimoBlobGenerado = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", calidadJpeg));
 
-        ultimaMiniaturaAlbum = generarMiniaturaLigera(canvas, 400, 0.65);
-        ultimoBase64Servidor = (modo === "ASISTENCIA") ? generarMiniaturaLigera(canvas, 720, 0.68) : ultimaMiniaturaAlbum;
+        // Miniatura para el álbum local IndexedDB
+        ultimaMiniaturaAlbum = generarMiniaturaLigera(canvas, 380, 0.60);
+        // Imagen optimizada en baja calidad lista para alojarse 100% en Google Drive
+        ultimoBase64DriveLigero = (modo === "ASISTENCIA") ? generarMiniaturaLigera(canvas, 680, 0.58) : ultimaMiniaturaAlbum;
 
         const fechaCorta = obtenerFechaLocalIso(ahora);
         const limpNombre = (usuarioActivo ? usuarioActivo.nombre : "ASESOR").replace(/[^A-Z0-9]/gi, "_");
@@ -3440,7 +3984,7 @@
     }
 
     /***************************************************************************
-     * 13. CONFIRMACIÓN INSTANTÁNEA (0.1 SEGUNDOS) CON ENVÍO EN SEGUNDO PLANO
+     * 14. CONFIRMACIÓN INSTANTÁNEA (0.1s) CON SUBIDA 100% A GOOGLE DRIVE
      ***************************************************************************/
     function abrirModalPreview(dataUrl, modo, urlDriveOriginal = "", itemAlbum = null) {
       document.getElementById("imgPreviewResultado").src = dataUrl;
@@ -3462,7 +4006,7 @@
       }
 
       if (modo === "LECTURA" || modo === "ALBUM_VIEW") {
-        badge.textContent = modo === "ALBUM_VIEW" ? `MI GESTIÓN CREDIBAN • ${itemAlbum?.fechaIso || ""}` : "VISOR DE EVIDENCIA FOTOGRÁFICA";
+        badge.textContent = modo === "ALBUM_VIEW" ? `MI GESTIÓN CREDIBAN • ${itemAlbum?.fechaIso || ""}` : "VISOR DE EVIDENCIA EN GOOGLE DRIVE";
         boxAsistencia.classList.add("hidden");
         boxGestion.classList.add("hidden");
         boxLectura.classList.remove("hidden");
@@ -3533,7 +4077,7 @@
         minutosTardanza: minTardanza,
         minutosExtras: minExtras,
         minutosExcesoRefri: 0,
-        fotoUrl: ultimoBase64Servidor,
+        fotoUrl: "",
         linkFotoOriginal: "",
         sincronizadoNube: false
       };
@@ -3548,16 +4092,17 @@
       document.getElementById("inputMotivoAsistencia").value = "";
       guardarBorradorFormulario();
 
+      // Enviamos la foto ligera SOLO para crear el archivo en Google Drive y dejamos fotoMiniBase64 vacío ("")
       encolarEnvioAsistenciaSegundoPlano({
         action: "registrarAsistencia",
         ...registroLocal,
-        fotoBase64: ultimoBase64Servidor,
-        fotoMiniBase64: ultimaMiniaturaAlbum
+        fotoBase64: ultimoBase64DriveLigero,
+        fotoMiniBase64: ""
       }, registroLocal);
     }
 
     /***************************************************************************
-     * 14. GUARDADO EN CARPETA FIJADA "Mi gestión Crediban" Y FILTRO POR FECHA
+     * 15. GUARDADO EN CARPETA FIJADA "Mi gestión Crediban" Y ÁLBUM POR FECHA
      ***************************************************************************/
     async function guardarArchivoEnCarpetaCrediban(blob, nombreArchivo, miniaturaBase64) {
       const ahora = new Date();
@@ -3788,9 +4333,15 @@
       }
       renderizarGaleriaGestion();
     }
-
+  </script>
+<!-- FIN DE LA PARTE 4 DE 5 — PEGA LA PARTE 5 JUSTO DEBAJO DE ESTA LÍNEA --><!-- ============================================================================
+     SISTEMA INTEGRAL DE ASISTENCIA, RR.HH. Y FOTOS DE GESTIÓN - CREDIBAN PERÚ S.A.C.
+     PARTE 5 DE 5: Motor RR.HH. WhatsApp (Avisos, Reporte Global por Semana/Rango y Privado),
+     Exportador PDF ("SUPERVISADO", Horas Extras Sí/No, Resumen vs. Detallado por Asesor/Día)
+     ============================================================================ -->
+  <script>
     /***************************************************************************
-     * 15. SUPERVISIÓN DE ASISTENCIAS Y ANÁLISIS EJECUTIVO (SEPARANDO TARDANZA Y EXTRAS)
+     * 16. SUPERVISIÓN DE ASISTENCIAS Y SINCRONIZACIÓN RÁPIDA (CERO BASE64)
      ***************************************************************************/
     function actualizarTextoHorarioSede() {
       if (!usuarioActivo) return;
@@ -3859,7 +4410,7 @@
           return pasaSede && pasaRol;
         }
 
-        if (esUsuarioAdministrador(usuarioActivo)) {
+        if (esUsuarioAdministrador(usuarioActivo) || colaboradorEsDelegadoSede(usuarioActivo.nombre)) {
           return u.sede === usuarioActivo.sedeOperativa && u.rol !== "GERENTE";
         }
 
@@ -3895,6 +4446,12 @@
       if (document.getElementById("filtroDesde")) document.getElementById("filtroDesde").value = hoyIso;
       if (document.getElementById("filtroHasta")) document.getElementById("filtroHasta").value = hoyIso;
       if (document.getElementById("filtroFechaAlbumGestion")) document.getElementById("filtroFechaAlbumGestion").value = hoyIso;
+
+      // Inicializar selectores de fecha del Módulo RR.HH.
+      if (document.getElementById("rrhhSemanaInput")) document.getElementById("rrhhSemanaInput").value = hoyIso;
+      const rngSem = obtenerRangoSemanaIso(hoyIso);
+      if (document.getElementById("rrhhDesdeInput")) document.getElementById("rrhhDesdeInput").value = rngSem.inicio;
+      if (document.getElementById("rrhhHastaInput")) document.getElementById("rrhhHastaInput").value = rngSem.fin;
     }
 
     function aplicarModoFecha(modo) {
@@ -3923,33 +4480,23 @@
       document.getElementById("iconFormatoReporte").className = formatoReporteTabla ? "fa-solid fa-grip mr-1" : "fa-solid fa-table-list mr-1";
     }
 
-    function guardarRegistrosLocales() {
-      try {
-        localStorage.setItem("crediban_asistencias_db_v11", JSON.stringify(registrosAsistenciaGlobal.slice(0, 150)));
-      } catch (e) {}
-    }
-
     async function cargarAsistenciasDesdeServidor(mostrarAlerta = false) {
       if (!usuarioActivo) return;
       const iconSync = document.getElementById("iconSyncReporte");
       if (iconSync) iconSync.classList.add("fa-spin");
 
-      const localData = localStorage.getItem("crediban_asistencias_db_v11") || localStorage.getItem("crediban_asistencias_db_v10");
-      if (localData) {
-        try { registrosAsistenciaGlobal = JSON.parse(localData); } catch (e) {}
-      }
-
       renderizarMisRegistrosHoyUsuario();
 
       try {
-        const urlReq = `${CONFIG_SISTEMA.ATTENDANCE_API_URL}?action=init&rol=GERENTE&sede=${encodeURIComponent(usuarioActivo.sedeOperativa)}&nombre=${encodeURIComponent(usuarioActivo.nombre)}&t=${Date.now()}`;
+        const rolConsulta = (esUsuarioGerente(usuarioActivo) || esUsuarioAdministrador(usuarioActivo) || colaboradorEsDelegadoSede(usuarioActivo.nombre))
+          ? "GERENTE"
+          : usuarioActivo.rol;
+
+        const urlReq = `${CONFIG_SISTEMA.ATTENDANCE_API_URL}?action=init&rol=${encodeURIComponent(rolConsulta)}&sede=${encodeURIComponent(usuarioActivo.sedeOperativa)}&nombre=${encodeURIComponent(usuarioActivo.nombre)}&t=${Date.now()}`;
         const resp = await fetch(urlReq);
         const data = await resp.json();
 
         if (data && data.status === "ok") {
-          if (data.parametros) {
-            aplicarParametrosRecibidos(data.parametros);
-          }
           if (Array.isArray(data.registros)) {
             const limpios = extraerConfiguracionGerencialDeRegistros(data.registros);
             const idsEnServidor = new Set(limpios.map(r => r.id));
@@ -3973,6 +4520,9 @@
         renderizarMisRegistrosHoyUsuario();
         if (esUsuarioGerente(usuarioActivo) || esUsuarioAdministrador(usuarioActivo)) {
           renderizarReportes();
+        }
+        if (pestanaActual === "RRHH" && usuarioPuedeVerModuloRRHH(usuarioActivo)) {
+          renderizarModuloRRHH();
         }
       }
     }
@@ -4019,16 +4569,16 @@
           }
           if (rolFiltroReporte === "ADMINISTRADOR" && rRol !== "ADMINISTRADOR") return false;
           if (rolFiltroReporte === "ASESOR" && (rRol === "ADMINISTRADOR" || rRol === "GERENTE")) return false;
-        } else if (esUsuarioAdministrador(usuarioActivo)) {
+        } else if (esUsuarioAdministrador(usuarioActivo) || colaboradorEsDelegadoSede(usuarioActivo.nombre)) {
           if (rSede !== usuarioActivo.sedeOperativa) return false;
           if (rRol === "GERENTE") return false;
         } else {
           return false;
         }
 
-        const obligado = colaboradorDebeMarcar(rNombre);
-        if (obligacionFiltro === "OBLIGADOS" && !obligado) return false;
-        if (obligacionFiltro === "EXONERADOS" && obligado) return false;
+        const supervisado = colaboradorDebeMarcar(rNombre);
+        if (obligacionFiltro === "OBLIGADOS" && !supervisado) return false;
+        if (obligacionFiltro === "EXONERADOS" && supervisado) return false;
 
         if (colabFiltro !== "TODOS" && rNombre !== colabFiltro) return false;
         if (equipoFiltro !== "TODOS" && rEquipo !== equipoFiltro) return false;
@@ -4054,6 +4604,15 @@
       const m = Number(minutos) || 0;
       const horas = (m / 60).toFixed(1);
       return `${m}m (${horas}h)`;
+    }
+
+    function obtenerUrlWhatsAppPersonalizada(celular, textoMensaje) {
+      const numLimpio = limpiarTelefonoPeru(celular);
+      const encoded = encodeURIComponent(textoMensaje);
+      if (numLimpio && numLimpio.length >= 9) {
+        return `https://wa.me/${numLimpio}?text=${encoded}`;
+      }
+      return `https://wa.me/?text=${encoded}`;
     }
 
     function renderizarReportes() {
@@ -4095,7 +4654,7 @@
 
       document.getElementById("analisisEtiquetaPeriodo").textContent = `${alcanceSedeTxt} • ${periodoTxt}`;
       document.getElementById("analisisTextoResumen").innerHTML =
-        `📊 <strong>Alcance:</strong> ${colabElegido === 'TODOS' ? 'Todo el personal filtrado' : colabElegido} (${total} marcajes, ${entradas.length} ingresos). ` +
+        `📊 <strong>Alcance:</strong> ${colabElegido === 'TODOS' ? 'Todo el personal supervisado' : colabElegido} (${total} marcajes, ${entradas.length} ingresos). ` +
         `✅ <strong>Índice de Puntualidad:</strong> ${pctPuntualidad}% (${puntuales} ingresos a tiempo). ` +
         `⏰ <strong>Tardanza Acumulada:</strong> ${tardanzasMin} min (${(tardanzasMin / 60).toFixed(2)} hrs) | ` +
         `🍽️ <strong>Exceso Refrigerio:</strong> ${excesoRefriMin} min | ` +
@@ -4103,12 +4662,14 @@
 
       const contPendientes = document.getElementById("listaPendientesHoy");
       if (pendientesHoy.length === 0) {
-        contPendientes.innerHTML = `<span class="text-xs font-bold text-emerald-700">✅ Todo el personal obligado a marcar ya registró su entrada hoy.</span>`;
+        contPendientes.innerHTML = `<span class="text-xs font-bold text-emerald-700">✅ Todo el personal supervisado ya registró su entrada hoy.</span>`;
       } else {
         contPendientes.innerHTML = pendientesHoy.map(u => {
-          const msg = encodeURIComponent(`Hola ${u.nombre}, el sistema de asistencia CREDIBAN reporta que aún no has registrado tu ENTRADA de hoy (${hoyIso}) en sede ${u.sede}.`);
+          const reglaSede = PARAMETROS_SEDES[u.sede] || { entradaLV: "08:30" };
+          const msg = `👋 Hola *${u.nombre}*, te saludamos del *Área de Recursos Humanos de CREDIBAN* 🏢.\n\n⏰ Te recordamos que aún no figura tu registro de *ENTRADA* de hoy (${hoyIso}) en la *Sede ${u.sede}* (Hora oficial: ${reglaSede.entradaLV}). Por favor registra tu asistencia en la App apenas llegues. ¡Gracias!`;
+          const urlWa = obtenerUrlWhatsAppPersonalizada(u.celular, msg);
           return `
-            <a href="https://wa.me/?text=${msg}" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-rose-200 text-[11px] font-bold text-rose-800 shadow-sm hover:bg-rose-100">
+            <a href="${urlWa}" target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-rose-200 text-[11px] font-bold text-rose-800 shadow-sm hover:bg-rose-100">
               <span>${u.nombre} (${u.rol === 'ADMINISTRADOR' ? 'ADMIN' : u.rol})</span>
               <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i>
             </a>`;
@@ -4130,7 +4691,7 @@
 
           const badgePermiso = motivoPermiso
             ? `<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-900 text-[9px] font-black">🛡️ ${motivoPermiso}</span>`
-            : "";
+            : `<span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 text-[9px] font-black">SUPERVISADO</span>`;
           const badgeRol = r.rol === "ADMINISTRADOR"
             ? `<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-black">🛡️ ADMIN</span>`
             : `<span class="px-2 py-0.5 rounded bg-emerald-50 text-[#1B4332] text-[10px] font-extrabold">${r.rol}</span>`;
@@ -4169,7 +4730,7 @@
               <div class="flex flex-col items-end gap-1.5 shrink-0">
                 ${r.linkMapa ? `<a href="${r.linkMapa}" target="_blank" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-extrabold"><i class="fa-solid fa-map mr-1"></i>Mapa</a>` : ''}
                 ${tieneFoto
-                  ? `<button type="button" onclick="verFotoDeRegistro(${idx})" class="px-2.5 py-1 rounded-lg bg-[#59B447] text-white text-[10px] font-extrabold"><i class="fa-solid fa-image mr-1"></i>Foto</button>`
+                  ? `<button type="button" onclick="verFotoDeRegistro(${idx})" class="px-2.5 py-1 rounded-lg bg-[#59B447] text-white text-[10px] font-extrabold"><i class="fa-solid fa-image mr-1"></i>Drive</button>`
                   : `<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-500 text-[9px] font-bold">⚡ Solo GPS</span>`}
               </div>
             </div>`;
@@ -4193,7 +4754,7 @@
             <td class="p-2.5 font-bold ${extras > 0 ? 'text-blue-600' : 'text-slate-400'}">${aplicaHorasExtrasPorRol(r.rol) ? (extras > 0 ? '+' + extras + ' min' : '0 min') : 'No aplica'}</td>
             <td class="p-2.5 max-w-[230px] truncate" title="${r.direccion}">${r.direccion}</td>
             <td class="p-2.5 text-center">
-              ${tieneFoto ? `<button type="button" onclick="verFotoDeRegistro(${idx})" class="px-2.5 py-1 rounded bg-emerald-100 text-[#1B4332] font-bold text-xs">Ver Foto</button>` : '<span class="text-[10px] text-slate-400 font-bold">GPS</span>'}
+              ${tieneFoto ? `<button type="button" onclick="verFotoDeRegistro(${idx})" class="px-2.5 py-1 rounded bg-emerald-100 text-[#1B4332] font-bold text-xs">Ver Drive</button>` : '<span class="text-[10px] text-slate-400 font-bold">GPS</span>'}
             </td>
           </tr>`;
       }).join("");
@@ -4207,8 +4768,8 @@
       const filtrados = obtenerRegistrosFiltrados();
       const reg = filtrados[indiceFiltrado];
       if (!reg) return;
-      const urlImagen = reg.fotoUrl || reg.linkFotoOriginal || "";
-      abrirModalPreview(urlImagen, "LECTURA", reg.linkFotoOriginal || urlImagen);
+      const urlImagen = reg.linkFotoOriginal || reg.fotoUrl || "";
+      abrirModalPreview(urlImagen, "LECTURA", urlImagen);
     }
 
     function renderizarResumenGerencialSedes() {
@@ -4239,7 +4800,316 @@
     }
 
     /***************************************************************************
-     * 16. EXPORTACIÓN PDF SÍNCRONA INSTANTÁNEA CON LOGO CREDIBAN Y ANÁLISIS
+     * 17. MOTOR DEL CENTRO DE RECURSOS HUMANOS (RR.HH.) Y AVISOS WHATSAPP
+     ***************************************************************************/
+    function obtenerSedeSeleccionadaRRHH() {
+      const sel = document.getElementById("rrhhSedeSelect");
+      if (esUsuarioGerente(usuarioActivo) && sel && sel.value) {
+        return sel.value;
+      }
+      return usuarioActivo ? (usuarioActivo.sedeOperativa || "HUACHO") : "HUACHO";
+    }
+
+    function cambiarModoPeriodoRRHH(modo) {
+      modoPeriodoRRHH = modo;
+      ["SEMANA", "RANGO", "HOY"].forEach(m => {
+        const btn = document.getElementById(`btnRrhhPer_${m}`);
+        if (btn) {
+          btn.className = (m === modo)
+            ? "px-2.5 py-1 rounded-lg text-[11px] font-extrabold bg-[#59B447] text-white"
+            : "px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-slate-600";
+        }
+      });
+
+      const boxSem = document.getElementById("rrhhBoxSemana");
+      const boxRng = document.getElementById("rrhhBoxRango");
+      if (boxSem) boxSem.classList.toggle("hidden", modo !== "SEMANA");
+      if (boxRng) boxRng.classList.toggle("hidden", modo !== "RANGO");
+
+      generarReportesTextoRRHH();
+    }
+
+    function construirMensajeIndividualRRHH(colaborador, entradaHoy, reglaSede, plantillaModo) {
+      const hoyIso = obtenerFechaLocalIso();
+      const esSabado = (new Date().getDay() === 6);
+      const horaOficial = esSabado ? (reglaSede.entradaSab || "09:00") : (reglaSede.entradaLV || "08:30");
+      const horaSalidaOficial = esSabado ? (reglaSede.salidaSab || "13:30") : (reglaSede.salidaLV || "18:30");
+
+      let modoEfectivo = plantillaModo;
+      if (plantillaModo === "AUTO") {
+        if (!entradaHoy) {
+          const ahora = new Date();
+          const partes = String(horaOficial).split(":").map(Number);
+          const minLimite = (partes[0] || 8) * 60 + (partes[1] || 30) + (Number(reglaSede.toleranciaMin) || 10);
+          const minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+          modoEfectivo = (minAhora > minLimite) ? "TARDE_SIN_MARCAR" : "POR_LLEGAR";
+        } else if ((Number(entradaHoy.minutosTardanza) || 0) > 0) {
+          modoEfectivo = "LLEGO_TARDE";
+        } else {
+          modoEfectivo = "PUNTUAL_OK";
+        }
+      }
+
+      if (modoEfectivo === "POR_LLEGAR") {
+        return `👋 Hola *${colaborador.nombre}*, te saludamos del *Área de Recursos Humanos de CREDIBAN* 🏢.\n\n⏳ Te recordamos que tu horario de ingreso en la *Sede ${colaborador.sede}* es a las *${horaOficial}* (Tolerancia: ${reglaSede.toleranciaMin || 10} min). Por favor, recuerda registrar tu *ENTRADA* en la App de Asistencia apenas llegues a la agencia. ¡Que tengas una excelente jornada! 💪`;
+      }
+      if (modoEfectivo === "TARDE_SIN_MARCAR") {
+        return `🚨 Hola *${colaborador.nombre}*, te escribimos del *Área de Recursos Humanos de CREDIBAN* 🏢.\n\n⏰ En nuestro sistema de control aún no figura tu marcaje de *ENTRADA* del día de hoy (${hoyIso}) en la *Sede ${colaborador.sede}* (Hora de ingreso: *${horaOficial}*). Te encuentras con tardanza; por favor registra tu asistencia de inmediato al llegar o indícanos si te encuentras en comisión de campo. 📲`;
+      }
+      if (modoEfectivo === "LLEGO_TARDE") {
+        return `⚠️ Hola *${colaborador.nombre}*, te saludamos del *Área de Recursos Humanos de CREDIBAN* 🏢.\n\n📋 Hoy (${hoyIso}) tu registro de *ENTRADA* en la *Sede ${colaborador.sede}* se realizó a las *${entradaHoy.horaTexto}*, generando *+${entradaHoy.minutosTardanza} min de tardanza* respecto al horario oficial (${horaOficial}). Te agradeceremos tomar las previsiones para ingresar puntualmente. 🙏`;
+      }
+      if (modoEfectivo === "REFRIGERIO_RETORNO") {
+        return `🍽️ Hola *${colaborador.nombre}*, te saludamos del *Área de Recursos Humanos de CREDIBAN* 🏢.\n\n⏱️ Te recordamos registrar puntualmente tu *SALIDA A REFRIGERIO* y tu *RETORNO DE REFRIGERIO* (Tiempo asignado: ${reglaSede.refrigerioMin || 60} min) dentro de la App de Asistencia. ¡Buen provecho!`;
+      }
+      if (modoEfectivo === "SALIDA_FINAL") {
+        return `🏁 Hola *${colaborador.nombre}*, te saludamos del *Área de Recursos Humanos de CREDIBAN* 🏢.\n\n📲 Te recordamos registrar tu *SALIDA FINAL* en la App al culminar tus labores de hoy (${horaSalidaOficial}) en la *Sede ${colaborador.sede}*. ¡Muchas gracias por tu esfuerzo de hoy!`;
+      }
+
+      return `✅ Hola *${colaborador.nombre}*, te saludamos del *Área de Recursos Humanos de CREDIBAN* 🏢.\n\n👏 ¡Gracias por tu puntualidad! Tu ingreso de hoy (${hoyIso}) en la *Sede ${colaborador.sede}* quedó correctamente registrado a las *${entradaHoy ? entradaHoy.horaTexto : horaOficial}*. ¡Éxitos en tu gestión!`;
+    }
+
+    function renderizarModuloRRHH() {
+      if (!usuarioPuedeVerModuloRRHH(usuarioActivo)) return;
+
+      const sedeActual = obtenerSedeSeleccionadaRRHH();
+      const hoyIso = obtenerFechaLocalIso();
+      const reglaSede = PARAMETROS_SEDES[sedeActual] || { entradaLV: "08:30", salidaLV: "18:30", toleranciaMin: 10, refrigerioMin: 60 };
+      const plantillaModo = document.getElementById("rrhhPlantillaAvisoSelect")?.value || "AUTO";
+
+      const badgeRol = document.getElementById("badgeRolControlRRHH");
+      if (badgeRol) {
+        badgeRol.textContent = esUsuarioGerente(usuarioActivo)
+          ? `Gerencia • Sede ${sedeActual}`
+          : esUsuarioAdministrador(usuarioActivo)
+          ? `Administrador • Sede ${sedeActual}`
+          : `Delegado Control • Sede ${sedeActual}`;
+      }
+
+      // Colaboradores supervisados de la sede seleccionada
+      const personalSede = catalogoUsuarios.filter(
+        u => u.sede === sedeActual && u.rol !== "GERENTE" && colaboradorDebeMarcar(u.nombre)
+      );
+
+      const registrosHoySede = registrosAsistenciaGlobal.filter(
+        r => r.sede === sedeActual && String(r.fechaIso || "").slice(0, 10) === hoyIso && r.nombre !== SYNC_CONFIG_MARKER
+      );
+
+      let presentesHoy = 0;
+      let tardanzasHoy = 0;
+
+      const tarjetasHtml = personalSede.map(u => {
+        const marcasPersonaHoy = registrosHoySede.filter(r => r.nombre === u.nombre);
+        const regEntrada = marcasPersonaHoy.find(r => r.tipo === "ENTRADA");
+        const minTard = regEntrada ? (Number(regEntrada.minutosTardanza) || 0) : 0;
+
+        if (regEntrada) {
+          presentesHoy++;
+          if (minTard > 0) tardanzasHoy++;
+        }
+
+        const estadoBadge = !regEntrada
+          ? `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-black">🚨 Sin Marcar Entrada</span>`
+          : minTard > 0
+          ? `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-black">⏰ Tardanza +${minTard}m (${regEntrada.horaTexto})</span>`
+          : `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black">✅ Puntual (${regEntrada.horaTexto})</span>`;
+
+        const msgRRHH = construirMensajeIndividualRRHH(u, regEntrada, reglaSede, plantillaModo);
+        const urlWa = obtenerUrlWhatsAppPersonalizada(u.celular, msgRRHH);
+        const etiquetaCelular = u.celular
+          ? `<span class="text-[10px] font-bold text-emerald-700"><i class="fa-solid fa-phone mr-0.5"></i>+${u.celular}</span>`
+          : `<span class="text-[10px] font-semibold text-amber-600"><i class="fa-solid fa-circle-Exclamation mr-0.5"></i>Elegir contacto en WA</span>`;
+
+        const etiquetaBoton = !regEntrada
+          ? "Avisar Llegada / Tardanza"
+          : minTard > 0
+          ? "Notificar Tardanza RR.HH."
+          : "Enviar Aviso RR.HH.";
+
+        return `
+          <div class="p-3 rounded-2xl border ${!regEntrada ? 'border-rose-200 bg-rose-50/40' : minTard > 0 ? 'border-amber-200 bg-amber-50/40' : 'border-slate-200 bg-white'} flex items-center justify-between gap-2.5 shadow-sm">
+            <div class="min-w-0 flex-1 space-y-1">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 text-[9px] font-black">${u.rol}</span>
+                <span class="text-xs font-black text-slate-900 truncate">${u.nombre}</span>
+              </div>
+              <div class="flex items-center gap-2 flex-wrap">
+                ${estadoBadge}
+                ${etiquetaCelular}
+              </div>
+            </div>
+
+            <a href="${urlWa}" target="_blank" class="px-3 py-2 rounded-xl bg-[#25D366] hover:bg-[#1ebe5d] text-white text-[10px] font-black uppercase tracking-wide shadow-sm flex items-center gap-1.5 shrink-0">
+              <i class="fa-brands fa-whatsapp text-sm"></i>
+              <span>${etiquetaBoton}</span>
+            </a>
+          </div>`;
+      }).join("");
+
+      const pendientesHoy = Math.max(0, personalSede.length - presentesHoy);
+
+      document.getElementById("rrhhKpiTotalPersonal").textContent = personalSede.length;
+      document.getElementById("rrhhKpiPresentesHoy").textContent = presentesHoy;
+      document.getElementById("rrhhKpiTardanzasHoy").textContent = tardanzasHoy;
+      document.getElementById("rrhhKpiPendientesHoy").textContent = pendientesHoy;
+
+      const contLista = document.getElementById("rrhhListaAsesoresHoy");
+      if (contLista) {
+        contLista.innerHTML = personalSede.length > 0
+          ? tarjetasHtml
+          : `<div class="col-span-2 p-4 text-center text-xs font-bold text-slate-400 bg-slate-50 rounded-xl">No hay personal supervisado en esta sede.</div>`;
+      }
+
+      generarReportesTextoRRHH();
+    }
+
+    function obtenerRangoFechasModuloRRHH() {
+      const hoyIso = obtenerFechaLocalIso();
+      if (modoPeriodoRRHH === "HOY") {
+        return { inicio: hoyIso, fin: hoyIso, etiqueta: `Hoy (${hoyIso})` };
+      }
+      if (modoPeriodoRRHH === "RANGO") {
+        const d = document.getElementById("rrhhDesdeInput")?.value || hoyIso;
+        const h = document.getElementById("rrhhHastaInput")?.value || hoyIso;
+        return { inicio: d, fin: h, etiqueta: `Del ${d} al ${h}` };
+      }
+      const refSem = document.getElementById("rrhhSemanaInput")?.value || hoyIso;
+      const rng = obtenerRangoSemanaIso(refSem);
+      return { inicio: rng.inicio, fin: rng.fin, etiqueta: `Semana (${rng.inicio} al ${rng.fin})` };
+    }
+
+    let cacheMensajesPrivadosRRHH = {};
+
+    function generarReportesTextoRRHH() {
+      const sedeActual = obtenerSedeSeleccionadaRRHH();
+      const rango = obtenerRangoFechasModuloRRHH();
+      const incluirExtras = document.getElementById("chkRrhhIncluirExtrasTexto")?.checked !== false;
+
+      const personalSede = catalogoUsuarios.filter(
+        u => u.sede === sedeActual && u.rol !== "GERENTE" && colaboradorDebeMarcar(u.nombre)
+      );
+
+      const registrosRango = registrosAsistenciaGlobal.filter(r => {
+        const rFecha = String(r.fechaIso || "").slice(0, 10);
+        return (
+          r.sede === sedeActual &&
+          r.nombre !== SYNC_CONFIG_MARKER &&
+          rFecha >= rango.inicio &&
+          rFecha <= rango.fin
+        );
+      });
+
+      let lineasGlobal = [
+        `📋 *REPORTE DE ASISTENCIA - ÁREA DE RECURSOS HUMANOS CREDIBAN* 🏢`,
+        `📍 *Sede:* ${sedeActual}`,
+        `🗓️ *Período:* ${rango.etiqueta}`,
+        `━━━━━━━━━━━━━━━━━━━━`
+      ];
+
+      cacheMensajesPrivadosRRHH = {};
+      const contPrivados = document.getElementById("rrhhListaReportePrivadoAsesores");
+      const htmlPrivados = [];
+
+      personalSede.forEach((u, idx) => {
+        const regsPersona = registrosRango.filter(r => r.nombre === u.nombre);
+        const entradasPersona = regsPersona.filter(r => r.tipo === "ENTRADA");
+        const diasAsistidos = new Set(entradasPersona.map(r => r.fechaIso)).size;
+        const puntuales = entradasPersona.filter(r => (Number(r.minutosTardanza) || 0) === 0).length;
+        const tardanzasCount = entradasPersona.length - puntuales;
+        const minTardanza = regsPersona.reduce((acc, r) => acc + (Number(r.minutosTardanza) || 0), 0);
+        const minRefri = regsPersona.reduce((acc, r) => acc + (Number(r.minutosExcesoRefri) || 0), 0);
+        const minExtras = regsPersona.reduce((acc, r) => acc + obtenerMinutosExtrasValidos(r), 0);
+
+        const iconoEstado = minTardanza === 0 && diasAsistidos > 0 ? "🟢" : minTardanza > 0 ? "🟡" : "🔴";
+        let lineaPersona = `${idx + 1}. ${iconoEstado} *${u.nombre}* (${u.rol})\n` +
+          `   ✅ Días asist.: *${diasAsistidos}* | 🎯 Puntual: *${puntuales}* | ⏰ Tardanzas: *${tardanzasCount}* (*${minTardanza} min*)`;
+
+        if (minRefri > 0) {
+          lineaPersona += ` | 🍽️ Exc. Refri: *${minRefri} min*`;
+        }
+        if (incluirExtras && aplicaHorasExtrasPorRol(u.rol) && minExtras > 0) {
+          lineaPersona += ` | ⚡ H. Extras: *${minExtras} min*`;
+        }
+        lineasGlobal.push(lineaPersona);
+
+        // Construir el reporte detallado día por día para envío privado a este asesor
+        const fechasUnicas = Array.from(new Set(regsPersona.map(r => r.fechaIso))).sort();
+        const detalleDias = fechasUnicas.length > 0
+          ? fechasUnicas.map(f => {
+              const delDia = regsPersona.filter(x => x.fechaIso === f);
+              const ent = delDia.find(x => x.tipo === "ENTRADA");
+              const salF = delDia.find(x => x.tipo === "SALIDA FINAL");
+              const tardDia = ent ? (Number(ent.minutosTardanza) || 0) : 0;
+              return `  • 📅 *${f}:* Entrada ${ent ? ent.horaTexto : '--:--'} ${tardDia > 0 ? `(⏰ +${tardDia}m)` : '(✅ Puntual)'} | Salida ${salF ? salF.horaTexto : '--:--'}`;
+            }).join("\n")
+          : `  • Sin registros en este período.`;
+
+        let textoPrivado =
+          `👋 Hola *${u.nombre}*, el *Área de Recursos Humanos de CREDIBAN* 🏢 te comparte tu resumen individual de asistencia:\n\n` +
+          `📍 *Sede:* ${sedeActual}\n` +
+          `🗓️ *Período:* ${rango.etiqueta}\n` +
+          `✅ *Días con Entrada:* ${diasAsistidos} (${puntuales} puntuales / ${tardanzasCount} con tardanza)\n` +
+          `⏰ *Tardanza Acumulada:* ${minTardanza} min (${(minTardanza / 60).toFixed(2)} hrs)\n` +
+          `🍽️ *Exceso Refrigerio:* ${minRefri} min\n` +
+          (incluirExtras && aplicaHorasExtrasPorRol(u.rol) ? `⚡ *Horas Extras:* ${minExtras} min\n` : ``) +
+          `\n📌 *Detalle por Día:*\n${detalleDias}\n\n` +
+          `¡Gracias por tu compromiso en CREDIBAN! 💚`;
+
+        cacheMensajesPrivadosRRHH[u.nombre] = {
+          celular: u.celular,
+          texto: textoPrivado
+        };
+
+        const urlPrivadoWa = obtenerUrlWhatsAppPersonalizada(u.celular, textoPrivado);
+        htmlPrivados.push(`
+          <div class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <p class="text-xs font-black text-slate-800 truncate">${u.nombre}</p>
+              <p class="text-[10px] font-semibold text-slate-500">Días: <strong>${diasAsistidos}</strong> • Tardanza: <strong class="${minTardanza > 0 ? 'text-rose-600' : 'text-emerald-700'}">${minTardanza}m</strong></p>
+            </div>
+            <a href="${urlPrivadoWa}" target="_blank" class="px-2.5 py-1.5 rounded-xl bg-[#1B4332] hover:bg-[#0F291E] text-white text-[10px] font-extrabold flex items-center gap-1 shrink-0">
+              <i class="fa-brands fa-whatsapp text-[#25D366] text-xs"></i>
+              <span>Enviar Privado</span>
+            </a>
+          </div>
+        `);
+      });
+
+      lineasGlobal.push(`━━━━━━━━━━━━━━━━━━━━`);
+      lineasGlobal.push(`💚 *Área de Recursos Humanos - CREDIBAN PERÚ*`);
+
+      const txtArea = document.getElementById("rrhhTextoReporteGlobal");
+      if (txtArea) txtArea.value = lineasGlobal.join("\n");
+
+      if (contPrivados) {
+        contPrivados.innerHTML = htmlPrivados.join("");
+      }
+    }
+
+    function copiarReporteGlobalRRHH() {
+      const txtArea = document.getElementById("rrhhTextoReporteGlobal");
+      if (!txtArea || !txtArea.value) return;
+      navigator.clipboard.writeText(txtArea.value).then(() => {
+        mostrarToast("📋 Reporte Global copiado al portapapeles");
+      }).catch(() => {
+        txtArea.select();
+        document.execCommand("copy");
+        mostrarToast("📋 Reporte Global copiado");
+      });
+    }
+
+    function enviarReporteGlobalWhatsApp() {
+      const txtArea = document.getElementById("rrhhTextoReporteGlobal");
+      if (!txtArea || !txtArea.value) return;
+      window.open(`https://wa.me/?text=${encodeURIComponent(txtArea.value)}`, "_blank");
+    }
+
+    /***************************************************************************
+     * 18. EXPORTACIÓN PDF EJECUTIVA:
+     *     - Usa "SUPERVISADO" en lugar de "OBLIGADO"
+     *     - Permite elegir si considerar Horas Extras o no (chkPdfIncluirExtras)
+     *     - Permite elegir entre "Solo Resumen" o "Detallado: Primero el Global y
+     *       luego Cada Asesor por Separado con su Registro por Día"
      ***************************************************************************/
     function generarLogoCredibanSincronoPNG() {
       try {
@@ -4272,6 +5142,14 @@
       }
     }
 
+    function obtenerNombreDiaCorto(fechaIso) {
+      const partes = String(fechaIso || "").split("-").map(Number);
+      if (partes.length < 3) return "";
+      const d = new Date(partes[0], partes[1] - 1, partes[2], 12, 0, 0);
+      const dias = ["DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB"];
+      return dias[d.getDay()] || "";
+    }
+
     function exportarReporteAsistenciaPDF() {
       if (!usuarioActivo || (!esUsuarioGerente(usuarioActivo) && !esUsuarioAdministrador(usuarioActivo))) return;
 
@@ -4281,11 +5159,14 @@
         return;
       }
 
+      const modoDetallePdf = document.getElementById("selectPdfModoDetalle")?.value || "DETALLADO_POR_ASESOR";
+      const incluirHorasExtras = document.getElementById("chkPdfIncluirExtras")?.checked !== false;
+
       const btnPdf = document.getElementById("btnExportarPdfReporte");
       const txtOrig = btnPdf ? btnPdf.innerHTML : "";
       if (btnPdf) {
         btnPdf.disabled = true;
-        btnPdf.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Descargando PDF...</span>`;
+        btnPdf.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> <span>Generando PDF...</span>`;
       }
 
       try {
@@ -4297,6 +5178,7 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
 
+        // CABECERA CORPORATIVA CREDIBAN
         doc.setFillColor(15, 41, 30);
         doc.rect(0, 0, 297, 30, "F");
 
@@ -4322,11 +5204,14 @@
           : `AGENCIA ${usuarioActivo.sedeOperativa}`;
         const colabElegido = document.getElementById("filtroTrabajadorReporte")?.value || "TODOS";
         const periodoTxt = obtenerDescripcionPeriodoActual();
+        const tituloTipoPdf = modoDetallePdf === "RESUMEN"
+          ? "REPORTE EJECUTIVO DE ASISTENCIA (RESUMEN CONSOLIDADO)"
+          : "REPORTE EJECUTIVO DETALLADO (CONSOLIDADO GLOBAL + DESGLOSE POR ASESOR Y DIA)";
 
         doc.setTextColor(255, 255, 255);
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(13);
-        doc.text("REPORTE EJECUTIVO DE ASISTENCIA, PUNTUALIDAD Y HORAS", 84, 12);
+        doc.setFontSize(12);
+        doc.text(tituloTipoPdf, 84, 12);
 
         doc.setFontSize(8.5);
         doc.setTextColor(167, 243, 208);
@@ -4334,7 +5219,7 @@
 
         doc.setFontSize(7.5);
         doc.setTextColor(226, 232, 240);
-        doc.text(`Emitido por: ${usuarioActivo.nombre} (${usuarioActivo.rol})  |  Fecha y Hora de Emision: ${new Date().toLocaleString("es-PE")}`, 84, 24.5);
+        doc.text(`Emitido por: ${usuarioActivo.nombre} (${usuarioActivo.rol})  |  Horas Extras: ${incluirHorasExtras ? 'CONSIDERADAS' : 'NO CONSIDERADAS'}  |  Emision: ${new Date().toLocaleString("es-PE")}`, 84, 24.5);
 
         const totalMarcajes = filtrados.length;
         const entradas = filtrados.filter(r => r.tipo === "ENTRADA");
@@ -4348,27 +5233,29 @@
 
         doc.setFillColor(234, 247, 232);
         doc.setDrawColor(89, 180, 71);
-        doc.roundedRect(12, 34, 273, 22, 2, 2, "FD");
+        doc.roundedRect(12, 34, 273, 20, 2, 2, "FD");
 
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(9.5);
+        doc.setFontSize(9);
         doc.setTextColor(27, 67, 50);
-        doc.text("ANALISIS EJECUTIVO DEL PERIODO SELECCIONADO (TARDANZAS Y HORAS EXTRAS SEPARADAS)", 16, 40.5);
+        doc.text("1. RESUMEN EJECUTIVO GLOBAL DEL PERIODO SELECCIONADO", 16, 40);
 
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.2);
+        doc.setFontSize(8);
         doc.setTextColor(15, 23, 42);
         doc.text(
           `- Total Marcajes Analizados: ${totalMarcajes} (${entradas.length} registros de Entrada: ${puntuales} puntuales y ${conTardanza} con tardanza - Puntualidad del ${pctPuntualidad}%).`,
           16,
-          46.5
-        );
-        doc.text(
-          `- Tardanza de Entrada Acumulada: ${totalTardanzaMin} min (${(totalTardanzaMin / 60).toFixed(2)} hrs)   |   Exceso de Refrigerio: ${totalExcesoRefriMin} min   |   Horas Extras (Exclusivo Cajeros y Administradores): ${totalExtrasMin} min (${(totalExtrasMin / 60).toFixed(2)} hrs).`,
-          16,
-          52.5
+          45.5
         );
 
+        const lineaMetricasTxt = incluirHorasExtras
+          ? `- Tardanza de Entrada Acumulada: ${totalTardanzaMin} min (${(totalTardanzaMin / 60).toFixed(2)} hrs)   |   Exceso de Refrigerio: ${totalExcesoRefriMin} min   |   Horas Extras (Caja/Admin): ${totalExtrasMin} min (${(totalExtrasMin / 60).toFixed(2)} hrs).`
+          : `- Tardanza de Entrada Acumulada: ${totalTardanzaMin} min (${(totalTardanzaMin / 60).toFixed(2)} hrs)   |   Exceso de Refrigerio: ${totalExcesoRefriMin} min.`;
+
+        doc.text(lineaMetricasTxt, 16, 51);
+
+        // AGRUPAR POR COLABORADOR PARA EL CUADRO CONSOLIDADO GLOBAL Y EL DESGLOSE INDIVIDUAL
         const mapaPorPersona = {};
         filtrados.forEach(r => {
           const key = `${r.nombre}_${r.sede}`;
@@ -4381,7 +5268,8 @@
               totalMarcas: 0,
               minTardanza: 0,
               minExcesoRefri: 0,
-              minExtras: 0
+              minExtras: 0,
+              registros: []
             };
           }
           const item = mapaPorPersona[key];
@@ -4390,33 +5278,46 @@
           item.minTardanza += Number(r.minutosTardanza) || 0;
           item.minExcesoRefri += Number(r.minutosExcesoRefri) || 0;
           item.minExtras += obtenerMinutosExtrasValidos(r);
+          item.registros.push(r);
         });
 
-        const filasResumenPersona = Object.values(mapaPorPersona).map(p => [
-          p.nombre,
-          p.rol,
-          p.sede,
-          p.diasConEntrada.size,
-          p.totalMarcas,
-          `${p.minTardanza} min (${(p.minTardanza / 60).toFixed(2)} h)`,
-          `${p.minExcesoRefri} min`,
-          aplicaHorasExtrasPorRol(p.rol) ? `${p.minExtras} min (${(p.minExtras / 60).toFixed(2)} h)` : "No aplica (0m)",
-          colaboradorDebeMarcar(p.nombre) ? "OBLIGADO" : obtenerMotivoPermisoEspecial(p.nombre)
-        ]);
+        const listaPersonas = Object.values(mapaPorPersona).sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+        // TABLA 1: CONSOLIDADO GLOBAL POR COLABORADOR (Usa "SUPERVISADO" en lugar de "OBLIGADO")
+        const cabecerasResumen = incluirHorasExtras
+          ? ["COLABORADOR", "CARGO / RANGO", "SEDE", "DIAS ASIST.", "MARCAJES", "TARDANZA ENTRADA", "EXCESO REFRI.", "H. EXTRAS (CAJA/ADMIN)", "CONDICION"]
+          : ["COLABORADOR", "CARGO / RANGO", "SEDE", "DIAS ASIST.", "MARCAJES", "TARDANZA ENTRADA", "EXCESO REFRI.", "CONDICION"];
+
+        const filasResumenPersona = listaPersonas.map(p => {
+          const condicionTexto = colaboradorDebeMarcar(p.nombre) ? "SUPERVISADO" : obtenerMotivoPermisoEspecial(p.nombre);
+          if (incluirHorasExtras) {
+            return [
+              p.nombre,
+              p.rol,
+              p.sede,
+              p.diasConEntrada.size,
+              p.totalMarcas,
+              `${p.minTardanza} min (${(p.minTardanza / 60).toFixed(2)} h)`,
+              `${p.minExcesoRefri} min`,
+              aplicaHorasExtrasPorRol(p.rol) ? `${p.minExtras} min (${(p.minExtras / 60).toFixed(2)} h)` : "No aplica",
+              condicionTexto
+            ];
+          }
+          return [
+            p.nombre,
+            p.rol,
+            p.sede,
+            p.diasConEntrada.size,
+            p.totalMarcas,
+            `${p.minTardanza} min (${(p.minTardanza / 60).toFixed(2)} h)`,
+            `${p.minExcesoRefri} min`,
+            condicionTexto
+          ];
+        });
 
         doc.autoTable({
-          startY: 60,
-          head: [[
-            "COLABORADOR",
-            "CARGO / RANGO",
-            "SEDE",
-            "DIAS ASIST.",
-            "MARCAJES",
-            "TARDANZA ENTRADA",
-            "EXCESO REFRI.",
-            "H. EXTRAS (CAJA/ADMIN)",
-            "CONDICION"
-          ]],
+          startY: 57,
+          head: [cabecerasResumen],
           body: filasResumenPersona,
           theme: "grid",
           headStyles: { fillColor: [27, 67, 50], textColor: 255, fontSize: 7.5, fontStyle: "bold" },
@@ -4425,47 +5326,127 @@
           margin: { left: 12, right: 12 }
         });
 
-        const posYDetalle = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY + 6 : 110;
-        const filasDetalle = filtrados.map(r => {
-          const tard = Number(r.minutosTardanza) || 0;
-          const refri = Number(r.minutosExcesoRefri) || 0;
-          const ext = obtenerMinutosExtrasValidos(r);
-          return [
-            r.fechaIso,
-            r.horaTexto,
-            r.nombre,
-            `${r.rol} (${r.sede})`,
-            r.tipo,
-            tard > 0 ? `+${tard} min` : "0 min",
-            refri > 0 ? `+${refri} min` : "0 min",
-            aplicaHorasExtrasPorRol(r.rol) ? (ext > 0 ? `+${ext} min` : "0 min") : "No aplica",
-            r.direccion || ""
-          ];
-        });
+        // SI EL USUARIO ELIGIÓ "DETALLADO_POR_ASESOR":
+        // Primero muestra el consolidado global (arriba) y luego CADA ASESOR POR SEPARADO con su registro día por día
+        if (modoDetallePdf === "DETALLADO_POR_ASESOR") {
+          let currentY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY + 8 : 110;
 
-        doc.autoTable({
-          startY: posYDetalle,
-          head: [[
-            "FECHA",
-            "HORA",
-            "COLABORADOR",
-            "RANGO / SEDE",
-            "TIPO MARCAJE",
-            "TARDANZA",
-            "EXC. REFRI",
-            "H. EXTRAS",
-            "DIRECCION EXACTA (DISTRITO / PROVINCIA)"
-          ]],
-          body: filasDetalle,
-          theme: "striped",
-          headStyles: { fillColor: [89, 180, 71], textColor: 255, fontSize: 7.5, fontStyle: "bold" },
-          bodyStyles: { fontSize: 6.8, textColor: [30, 41, 59] },
-          columnStyles: { 8: { cellWidth: 78 } },
-          margin: { left: 12, right: 12 }
-        });
+          listaPersonas.forEach((persona, idxPersona) => {
+            if (currentY > 165) {
+              doc.addPage();
+              currentY = 15;
+            }
+
+            const condicionPersona = colaboradorDebeMarcar(persona.nombre) ? "SUPERVISADO" : obtenerMotivoPermisoEspecial(persona.nombre);
+
+            // Cinta de encabezado individual del Asesor / Colaborador
+            doc.setFillColor(234, 247, 232);
+            doc.setDrawColor(89, 180, 71);
+            doc.roundedRect(12, currentY, 273, 8, 1.5, 1.5, "FD");
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(8.2);
+            doc.setTextColor(15, 41, 30);
+
+            const resumenExtrasAsesor = (incluirHorasExtras && aplicaHorasExtrasPorRol(persona.rol))
+              ? `  |  H. Extras: ${persona.minExtras} min`
+              : "";
+
+            doc.text(
+              `2.${idxPersona + 1} REGISTRO INDIVIDUAL POR DIA: ${persona.nombre} (${persona.rol} - SEDE ${persona.sede})  |  Condicion: ${condicionPersona}  |  Dias Asist.: ${persona.diasConEntrada.size}  |  Tardanza Total: ${persona.minTardanza} min${resumenExtrasAsesor}`,
+              15,
+              currentY + 5.3
+            );
+
+            // Agrupar los registros del colaborador por DÍA (ordenados cronológicamente)
+            const mapaDias = {};
+            persona.registros.forEach(reg => {
+              const f = reg.fechaIso || "";
+              if (!mapaDias[f]) {
+                mapaDias[f] = {
+                  fechaIso: f,
+                  entrada: "--:--",
+                  salidaRefri: "--:--",
+                  retornoRefri: "--:--",
+                  salidaFinal: "--:--",
+                  minTardanza: 0,
+                  minExcesoRefri: 0,
+                  minExtras: 0,
+                  direcciones: []
+                };
+              }
+              const dObj = mapaDias[f];
+              if (reg.tipo === "ENTRADA") dObj.entrada = reg.horaTexto;
+              if (reg.tipo === "SALIDA REFRIGERIO") dObj.salidaRefri = reg.horaTexto;
+              if (reg.tipo === "RETORNO REFRIGERIO") dObj.retornoRefri = reg.horaTexto;
+              if (reg.tipo === "SALIDA FINAL") dObj.salidaFinal = reg.horaTexto;
+
+              dObj.minTardanza += Number(reg.minutosTardanza) || 0;
+              dObj.minExcesoRefri += Number(reg.minutosExcesoRefri) || 0;
+              dObj.minExtras += obtenerMinutosExtrasValidos(reg);
+              if (reg.direccion && !dObj.direcciones.includes(reg.direccion)) {
+                dObj.direcciones.push(reg.direccion);
+              }
+            });
+
+            const diasOrdenados = Object.values(mapaDias).sort((a, b) => a.fechaIso.localeCompare(b.fechaIso));
+
+            const headAsesorDia = incluirHorasExtras
+              ? ["FECHA", "DIA", "ENTRADA", "SALIDA REFRI.", "RETORNO REFRI.", "SALIDA FINAL", "TARDANZA", "EXC. REFRI.", "H. EXTRAS", "DIRECCION VERIFICADA (DISTRITO / PROVINCIA)"]
+              : ["FECHA", "DIA", "ENTRADA", "SALIDA REFRI.", "RETORNO REFRI.", "SALIDA FINAL", "TARDANZA", "EXC. REFRI.", "DIRECCION VERIFICADA (DISTRITO / PROVINCIA)"];
+
+            const bodyAsesorDia = diasOrdenados.map(d => {
+              const diaSem = obtenerNombreDiaCorto(d.fechaIso);
+              const dirTxt = d.direcciones[0] || "Ubicación GPS registrada";
+              if (incluirHorasExtras) {
+                return [
+                  d.fechaIso,
+                  diaSem,
+                  d.entrada,
+                  d.salidaRefri,
+                  d.retornoRefri,
+                  d.salidaFinal,
+                  d.minTardanza > 0 ? `+${d.minTardanza} min` : "Puntual (0m)",
+                  d.minExcesoRefri > 0 ? `+${d.minExcesoRefri} min` : "0 min",
+                  aplicaHorasExtrasPorRol(persona.rol) ? (d.minExtras > 0 ? `+${d.minExtras} min` : "0 min") : "No aplica",
+                  dirTxt
+                ];
+              }
+              return [
+                d.fechaIso,
+                diaSem,
+                d.entrada,
+                d.salidaRefri,
+                d.retornoRefri,
+                d.salidaFinal,
+                d.minTardanza > 0 ? `+${d.minTardanza} min` : "Puntual (0m)",
+                d.minExcesoRefri > 0 ? `+${d.minExcesoRefri} min` : "0 min",
+                dirTxt
+              ];
+            });
+
+            const colIndexDir = incluirHorasExtras ? 9 : 8;
+            const colStyles = {};
+            colStyles[colIndexDir] = { cellWidth: 82 };
+
+            doc.autoTable({
+              startY: currentY + 9.5,
+              head: [headAsesorDia],
+              body: bodyAsesorDia,
+              theme: "striped",
+              headStyles: { fillColor: [89, 180, 71], textColor: 255, fontSize: 7.2, fontStyle: "bold" },
+              bodyStyles: { fontSize: 6.8, textColor: [30, 41, 59] },
+              columnStyles: colStyles,
+              margin: { left: 12, right: 12 }
+            });
+
+            currentY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY + 7 : currentY + 35;
+          });
+        }
 
         const limpSede = alcanceSedeTxt.replace(/[^A-Z0-9]/gi, "_");
-        doc.save(`Reporte_Ejecutivo_Asistencia_CREDIBAN_${limpSede}_${obtenerFechaLocalIso()}.pdf`);
+        const sufijoModo = modoDetallePdf === "RESUMEN" ? "RESUMEN" : "DETALLADO_POR_ASESOR";
+        doc.save(`Reporte_Asistencia_CREDIBAN_${limpSede}_${sufijoModo}_${obtenerFechaLocalIso()}.pdf`);
         mostrarToast("✅ Reporte PDF descargado al instante");
       } catch (errPdf) {
         console.error("Error generando PDF:", errPdf);
@@ -4487,7 +5468,7 @@
       const cabeceras = [
         "ID", "Fecha", "Hora", "Colaborador", "Rango", "Sede", "Area",
         "Condicion_Asistencia", "Tipo_Marcaje", "Minutos_Tardanza_Entrada",
-        "Minutos_Exceso_Refrigerio", "Minutos_Extras_Cajero_Admin", "Direccion_Exacta", "Link_Foto"
+        "Minutos_Exceso_Refrigerio", "Minutos_Extras_Cajero_Admin", "Direccion_Exacta", "Link_Foto_Drive"
       ];
       const filas = filtrados.map(r => [
         r.id,
@@ -4497,7 +5478,7 @@
         r.rol,
         r.sede,
         r.equipo,
-        `"${colaboradorDebeMarcar(r.nombre) ? 'OBLIGADO' : obtenerMotivoPermisoEspecial(r.nombre)}"`,
+        `"${colaboradorDebeMarcar(r.nombre) ? 'SUPERVISADO' : obtenerMotivoPermisoEspecial(r.nombre)}"`,
         r.tipo,
         r.minutosTardanza || 0,
         r.minutosExcesoRefri || 0,
@@ -4515,7 +5496,7 @@
     }
 
     /***************************************************************************
-     * 17. RELOJ DIGITAL EN VIVO (CIERRE DE DÍA ESTRICTO A LAS 23:59:59)
+     * 19. RELOJ DIGITAL EN VIVO (CIERRE DE DÍA ESTRICTO A LAS 23:59:59)
      ***************************************************************************/
     let ultimaFechaVerificadaReloj = obtenerFechaLocalIso();
 
@@ -4549,18 +5530,18 @@
       const sede = usuarioActivo?.sedeOperativa || "HUACHO";
       const minPermitidos = Number(PARAMETROS_SEDES[sede]?.refrigerioMin) || 60;
       const limiteMs = fechaInicio.getTime() + minPermitidos * 60 * 1000;
-      localStorage.setItem("crediban_refri_limite_v11", String(limiteMs));
+      localStorage.setItem("crediban_refri_limite_v12", String(limiteMs));
       verificarRefrigerioActivo();
     }
 
     function detenerCronometroRefrigerio() {
-      localStorage.removeItem("crediban_refri_limite_v11");
+      localStorage.removeItem("crediban_refri_limite_v12");
       if (intervaloRefrigerio) clearInterval(intervaloRefrigerio);
       document.getElementById("refrigerioBanner").classList.add("hidden");
     }
 
     function verificarRefrigerioActivo() {
-      const limiteStr = localStorage.getItem("crediban_refri_limite_v11");
+      const limiteStr = localStorage.getItem("crediban_refri_limite_v12");
       const banner = document.getElementById("refrigerioBanner");
       if (!limiteStr) {
         banner.classList.add("hidden");
